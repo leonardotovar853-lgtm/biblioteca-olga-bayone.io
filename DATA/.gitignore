@@ -1,2 +1,4 @@
 DATA/
 __pycache__/
+credenciales.json
+credenciales_cuentas.json
