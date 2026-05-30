@@ -1,0 +1,222 @@
+/*------------------------------------------*/
+/* CONTENIDO DE BANNER*/
+/*------------------------------------------*/
+.main-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;   
+    padding: 0;
+    min-height: 80vh;
+}
+
+h2 {
+    margin-bottom: 10px;
+    width: auto;
+    display: inline-block;
+}
+
+
+.banner-hero {
+    width: 100%;
+    height: 500px; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.55)),url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000');
+    background-size: cover; 
+    background-position: center; 
+    position: relative;
+    background-attachment: fixed;
+    margin-bottom: 20px;
+}
+
+/* Evitar background-attachment fixed en móviles (mejora rendimiento y evita solapes) */
+@media (max-width: 700px) {
+    .banner-hero {
+        background-attachment: scroll;
+        height: auto;
+        padding: 40px 12px;
+    }
+    .banner-info {
+        max-width: 100%;
+        padding: 12px;
+    }
+}
+
+
+.banner-overlay {
+    background-color: rgba(0, 0, 0, 0.15); 
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.banner-info {
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 20px;
+}
+
+
+.banner-info h2 {
+    background-color: transparent; 
+    border: none;
+    box-shadow: none;
+    color: white;
+    font-size: 35px;
+    width: auto;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+
+.separador {
+    width: 100px;
+    border: 2px solid transparent;
+    margin: 10px;
+}
+
+
+.btn-primario, .btn-secundario, .btn-append .btn-registro {
+    display: inline-block;
+    padding: 12px 25px;
+    margin: 25px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-primario {
+    background-color: #3b46c4;
+    color: white;
+    padding: 12px 25px;
+    border: 2px solid #3b46c4;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secundario {
+    background-color: transparent;
+    color: white;
+    padding: 12px 25px;
+    border: 2px solid white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.btn-primario:hover {
+    background-color: #003366;
+    border-color: #003366;
+}
+
+.btn-secundario:hover {
+    background-color: white;
+    color: #003366;
+    border-color: white;
+}
+.btn-registro {
+    background-color: #fff;
+    color:#003366 ;
+    padding: 12px 25px;
+    margin: 25px 10px;
+    border: 2px solid white;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+    gap: 8px; 
+}
+.btn-registro:hover {
+    background-color: transparent;
+    color: #fff;
+    border-color: white;
+}
+/* Fondo oscuro detrás de la ventana */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* La ventana blanca */
+.ventana-registro {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    position: relative;
+    max-width: 400px;
+    width: 90%;
+    animation: aparecer 0.3s ease;
+}
+
+/* Botón de cerrar (la X) */
+.btn-cerrar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* El botón de Google */
+.btn-google-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.input-registro {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn-iniciar-sesion {
+    width: 100%;
+    padding: 12px;
+    background-color: #3b46c4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.btn-google-auth:hover {
+    background: #f1f1f1;
+}
+
+@keyframes aparecer {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+

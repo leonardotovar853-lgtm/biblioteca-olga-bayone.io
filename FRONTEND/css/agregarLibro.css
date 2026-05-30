@@ -1,0 +1,246 @@
+/*----------------------------------------*/
+/* CONTENIDO DE AGREGAR LIBRO*/
+/*------------------------------------------*/
+.banner-agregar {
+    /* Reemplaza el URL por el link de la imagen que elijas */
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)), 
+                url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop');
+    
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Efecto Parallax: la imagen se queda quieta al bajar */
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+}
+
+.banner-content h2 {
+    font-size: 3rem;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    color: #f8fafc;
+    margin: 15px;
+
+}
+.banner-content h3 {
+    color: #f8fafc;
+    margin: 30px 20px;
+    font-size: 1.75em;
+}
+
+.banner-content p {
+    font-size: 1.4rem;
+    color:  #f8fafc;
+    font-weight: 500;
+    margin: 15px;
+}
+.banner-content li {
+    color:#fff;
+    font-size: 1.2em;
+    margin: 5px;
+}
+.btn-append{
+    background-color: #3b46c4;
+    color: white;
+    padding: 10px 20px;
+    border: 2px solid #3b46c4;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin:auto;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.instructions {
+    max-width: 1100px;
+    padding: 20px;
+    margin: -100px auto 40px auto; /* Sube el cuadro hacia el banner */
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    position: relative;
+    z-index: 2;
+}
+.instructions ol {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    padding: 20px;
+}
+
+.instructions li {
+    width: 30%;
+    min-width: 260px;
+    max-width: 360px;
+    height: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow:  0 4px 15px rgba(6, 24, 44, 0.18);
+    padding: 20px;
+    margin: 20px auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;    align-items: center;
+}
+.instructions li img {
+    width: 250px;
+    height: auto;
+    margin: 10px auto;
+    
+}
+.instructions li p {
+    margin-top: 10px;
+    font-size: 0.8em;
+    color: #333;
+    margin-top: 10px;
+}
+.instructions h3 {
+    margin-bottom: 5px;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+
+.instructions li::after {
+    content: ""; /* Agrega un espacio después del texto */
+    display: inline-block;
+    width: 10px; /* Ajusta el espacio entre el texto y el check */
+}
+
+.instructions li:last-child::after {
+    content: ""; /* Elimina el espacio después del último elemento */
+    width: 0;
+}
+
+
+.instructions > ol {
+    padding-left: 20px; /* Para que el texto no quede pegado al check */
+}
+
+.instructions > ol > li {
+    font-size: 1.2em;
+    color: #333;
+}
+.instructions p  {
+    text-align: center;
+}
+
+.btn-append:hover{
+    background-color: #003366;
+    border-color: #003366;
+}
+.fin-intruccions {
+    font-size: 1.1em;
+    color: #555;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+@media (max-width : 1100px) {
+    .instructions ol {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .instructions {
+        margin:-50px auto 40px auto;
+    }
+    .instructions li {
+        width: calc(33.333% - 14px);
+        min-width: 260px;
+    }
+}
+
+@media (max-width : 768px) {
+    .banner-agregar {
+        height: auto;
+        min-height: 360px;
+        background-attachment: scroll;
+        padding: 80px 20px;
+    }
+
+    .banner-content h2 {
+        font-size: 2.2rem;
+    }
+
+    .banner-content p {
+        font-size: 1rem;
+    }
+
+    .instructions {
+        margin: -30px auto 30px auto;
+        padding: 15px;
+    }
+
+    .instructions ol {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+    .instructions li {
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .instructions li img {
+        width: 220px;
+    }
+
+    .instructions h3 {
+        font-size: 1.5em;
+    }
+
+    .instructions li p {
+        font-size: 0.9em;
+    }
+
+    .btn-append {
+        display: block;
+        width: min(280px, 100%);
+        margin: 18px auto;
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width : 480px) {
+    .banner-content h2 {
+        font-size: 1.6rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+    }
+
+    .instructions {
+        padding: 12px;
+    }
+
+    .instructions li {
+        padding: 18px;
+    }
+
+    .instructions li img {
+        width: 180px;
+    }
+
+    .instructions h3 {
+        font-size: 1.3em;
+    }
+
+    .instructions li p {
+        font-size: 0.82em;
+    }
+
+    .btn-append {
+        width: min(260px, 100%);
+    }
+}
+
+

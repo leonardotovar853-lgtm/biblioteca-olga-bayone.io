@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Repositorio</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="../css/estilos.css">
+        <link rel="stylesheet" href="../css/catalogo.css">
+        <link rel="stylesheet" href="../css/banners.css">
+        <link rel="stylesheet" href="../css/libros.css">
+        <link rel="stylesheet" href="../css/accesoArea.css">
+        <link rel="icon" href="../logo_olga_bayone.png">
+    </head>
+    <body>
+        <nav id="menu" class="nav-menu">
+            <div class="nav-content">
+                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                <h1 class="title">Biblioteca Olga Bayone</h1>
+
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+
+                <ul class="options">
+                    <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                    <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
+                    <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
+                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Libro</a></li>
+                    <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
+                    <li><a class="op" href="sobre_nosotros.html"><i class="fa-solid fa-people-group"></i> Nosotros</a></li>
+                </ul>
+            </div>
+        </nav>
+        <main>
+            <section class = 'banner-catalogo'>
+                <div class = 'contenido-banner'>
+                    <h2 class="titulo_seccion">Explora nuestra colección</h2>
+                    <p>Encuentra los libros en la Biblioteca Olga Bayone</p>
+                    <div class="search-container">
+                        <input type="search" id="buscador" placeholder="Busca Proyectos de Investigación...">
+                        <select id="filtro-area">
+                            <optgroup label="REPOSITORIO DE TESIS">
+                                <option value="all">Todas las categorías</option>
+                                <option value="Salud">Salud</option>
+                                <option value="Educación">Educación</option>
+                                <option value="Orientación Vocacional">Orientación Vocacional</option>
+                                <option value="Tecnología">Tecnología (Tesis)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </section>
+            <section class="book-content">
+                <div class="grid-libros">
+                <div class='libro-card' data-category='Tecnología (Tesis) Tesis' data-year='General' libro-id='7a344204'>
+                    <img src="https://drive.google.com/uc?export=view&id=1vPcnRiA9jxgTYb-34CJSa3oSzaDfpsqs">
+                    <div class="badge-tesis">Tesis</div>
+                    <h3>DISEÑO Y CREACIÓN DE UNA PÁGINA WEB, UTILIZANDO EL FRAMEWORK VUE.JS, ESTILO BIBLIOTECA VIRTUAL, PARA</h3>
+                    <p class="autor-name">Luis Herrera & Marco Álvarez</p>
+                    <p class="año-public"><b>2021</b></p>
+                    
+                    <div class="card-footer">
+                        <button class="btn-flip">Ver Descricion</button>
+                        <a href="https://riujap.ujap.edu.ve/server/api/core/bitstreams/9bc2c517-6411-4a65-a89b-fd41046dc33a/content" target="_blank" class="btn-leer">Leer Tesis</a>
+                        <button class="btn-like" onclick="darLike('7a344204')">
+                            ❤️ <span id="count-7a344204">0</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class='libro-card' data-category='Tecnología (Tesis) Tesis' data-year='General' libro-id='63dcc660'>
+                    <img src="">
+                    <div class="badge-tesis">Tesis</div>
+                    <h3>COMPETENCIAS BÁSICAS EN EL MANEJO DE LAS TIC EN EL DESEMPEÑO DEL DOCENTE UNIVERSITARIO</h3>
+                    <p class="autor-name">Ochoa & Silva</p>
+                    <p class="año-public"><b>2015</b></p>
+                    
+                    <div class="card-footer">
+                        <button class="btn-flip">Ver Descricion</button>
+                        <a href="https://servicio.bc.uc.edu.ve/educacion/revista/47/art21.pdf" target="_blank" class="btn-leer">Leer Tesis</a>
+                        <button class="btn-like" onclick="darLike('63dcc660')">
+                            ❤️ <span id="count-63dcc660">0</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class='libro-card' data-category='Educación (Tesis) Tesis' data-year='General' libro-id='a9b36df1'>
+                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAowMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQIH/8QAIhABAQEAAgICAQUAAAAAAAAAAAERIUExgVFhcRKRobHw/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDs8qUXEqIAAaKCHIdAVD9koCgAHIBoYoCKgEqovAGhwAAABpoB2KCGKmgYgZATFn4iaoCs6sBdAANEAKAAALDswgAqApROwD0qaAioBnwn6pPOqaAaSr0BLPk/AAcnAYAzy0nrQA9wBTRcBFTgBSpJfgBdTVTgE36OexcBDQAVDAXDE5UDAOADDD2AABkCHYC+DylAs5XE1QQVAKCAbCXUu9LKAC8AAZoCbi8QBAUANgB2qAByALlNNQCC1AEUwEKAB+D1QBQA/wBhOPIYBwnniWrTQThGsADABfAgASLDgCeEVAKgAlwki4b9/wAAQ3lFyAKgC4IvuACAGIoC06DAFRdBP7FQFTpUBBQGcXEtWAQDAUAEX1A2AB58AGgAKgCiHkBRAXUzkLwBYi6nrQBOPuAKE/SaCz7vo4qLACyACKm8rx15Ayhz8oCw6ACKAJVAEUAZAAQAVQBFAEqzwABQBAAf/9k=">
+                    <div class="badge-tesis">Tesis</div>
+                    <h3>LOS MAPAS CONCEPTUALES COMO ESTRATEGIA DIDÁCTICA PARA MEJORAR EL PROCESO DE ENSEÑANZA EN EDUCACIÓN P</h3>
+                    <p class="autor-name">Abrantes Marisol, Mata María y Rondón Luzmary</p>
+                    <p class="año-public"><b>2013</b></p>
+                    
+                    <div class="card-footer">
+                        <button class="btn-flip">Ver Descricion</button>
+                        <a href="https://saber.ucv.ve/bitstream/10872/17117/1/Tesis%20COMPLETA.pdf" target="_blank" class="btn-leer">Leer Tesis</a>
+                        <button class="btn-like" onclick="darLike('a9b36df1')">
+                            ❤️ <span id="count-a9b36df1">0</span>
+                        </button>
+                    </div>
+                </div>
+                
+            </section>
+            <section id="recomendaciones" style="display:none;">
+                <h2>Recomendaciones Relacionadas</h2>
+                <div class="grid-libros" id="grid-recomendaciones"></div>
+            </section>
+        </main>
+        <script>
+            const librosData = [{"titulo": "DISE\u00d1O Y CREACI\u00d3N DE UNA P\u00c1GINA WEB, UTILIZANDO EL FRAMEWORK VUE.JS, ESTILO BIBLIOTECA VIRTUAL, PARA", "autor": "Luis Herrera & Marco \u00c1lvarez", "area": "Tecnolog\u00eda (Tesis)", "nivel": "General", "tipo": "Tesis", "anio_publicacion": "2021", "link": "https://riujap.ujap.edu.ve/server/api/core/bitstreams/9bc2c517-6411-4a65-a89b-fd41046dc33a/content", "link_portada": "https://drive.google.com/uc?export=view&id=1vPcnRiA9jxgTYb-34CJSa3oSzaDfpsqs", "descripcion": "Tesis de bibliotecas digitales", "ID": "7a344204"}, {"titulo": "COMPETENCIAS B\u00c1SICAS EN EL MANEJO DE LAS TIC EN EL DESEMPE\u00d1O DEL DOCENTE UNIVERSITARIO", "autor": "Ochoa & Silva", "area": "Tecnolog\u00eda (Tesis)", "nivel": "General", "tipo": "Tesis", "anio_publicacion": "2015", "link": "https://servicio.bc.uc.edu.ve/educacion/revista/47/art21.pdf", "link_portada": "", "descripcion": "TIC", "ID": "63dcc660"}, {"titulo": "LOS MAPAS CONCEPTUALES COMO ESTRATEGIA DID\u00c1CTICA PARA MEJORAR EL PROCESO DE ENSE\u00d1ANZA EN EDUCACI\u00d3N P", "autor": "Abrantes Marisol, Mata Mar\u00eda y Rond\u00f3n Luzmary", "area": "Educaci\u00f3n (Tesis)", "nivel": "General", "tipo": "Tesis", "anio_publicacion": "2013", "link": "https://saber.ucv.ve/bitstream/10872/17117/1/Tesis%20COMPLETA.pdf", "link_portada": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAowMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQIH/8QAIhABAQEAAgICAQUAAAAAAAAAAAERIUExgVFhcRKRobHw/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDs8qUXEqIAAaKCHIdAVD9koCgAHIBoYoCKgEqovAGhwAAABpoB2KCGKmgYgZATFn4iaoCs6sBdAANEAKAAALDswgAqApROwD0qaAioBnwn6pPOqaAaSr0BLPk/AAcnAYAzy0nrQA9wBTRcBFTgBSpJfgBdTVTgE36OexcBDQAVDAXDE5UDAOADDD2AABkCHYC+DylAs5XE1QQVAKCAbCXUu9LKAC8AAZoCbi8QBAUANgB2qAByALlNNQCC1AEUwEKAB+D1QBQA/wBhOPIYBwnniWrTQThGsADABfAgASLDgCeEVAKgAlwki4b9/wAAQ3lFyAKgC4IvuACAGIoC06DAFRdBP7FQFTpUBBQGcXEtWAQDAUAEX1A2AB58AGgAKgCiHkBRAXUzkLwBYi6nrQBOPuAKE/SaCz7vo4qLACyACKm8rx15Ayhz8oCw6ACKAJVAEUAZAAQAVQBFAEqzwABQBAAf/9k=", "descripcion": "hola", "ID": "a9b36df1"}];
+        </script>  
+        <script src="../js/buscadorRepositorio.js"></script> 
+        <script src="../js/nav.js"></script>
+        <script src="../js/stars.js"></script>
+    </body>
+</html>

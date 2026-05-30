@@ -1,0 +1,173 @@
+/*------------------------------------------*/
+/* CONTENIDO DE CATALOGO DE LIBROS */
+/*------------------------------------------*/
+
+.grid-libros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 280px));
+    gap: 24px;
+    justify-content: center;
+    padding: 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.titulo_seccion {
+    justify-content: center;
+    margin: 10px;
+    display: flex;
+    font-size: 32px;
+}
+
+.libro-card {
+    width: 260px;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 10px 30px rgba(6, 24, 44, 0.10);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    /* Cambios clave aquí: */
+    display: flex;
+    flex-direction: column;
+    min-height: 450px; /* Un poquito más de altura para que respire */
+    position: relative; 
+}
+
+.libro-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(6, 24, 44, 0.18);
+}
+
+.libro-card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.libro-card h3 {
+    font-size: 1.05rem;
+    color: #1d2939;
+    margin: 14px 16px 6px;
+    line-height: 1.3;
+    text-align: left;
+}
+
+.autor-name {
+    margin: 0 16px 4px;
+    font-size: 0.9rem;
+    color: #4b5563;
+    text-align: left;
+}
+
+.año-public {
+    margin: 0 16px 12px;
+    font-size: 0.84rem;
+    color: #6b7280;
+    text-align: left;
+}
+
+
+.badge-libro, .badge-tesis {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ffffff;
+    color: #0f3f87;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    box-shadow: 0 5px 12px rgba(6, 24, 44, 0.18);
+}
+
+.libro-card .card-body {
+    padding: 0 16px;
+    flex-grow: 1;
+}
+
+.btn-leer {
+    flex-grow: 1; /* Para que ocupe el espacio disponible en el footer */
+    text-decoration: none;
+    background: #28a745;
+    color: white;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s;
+    /* BORRA ESTO: position: absolute; bottom: 15px; width: 90%; */
+}
+.btn-leer:hover {
+    background-color: #1d782f;
+}
+
+.btn-flip {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(219, 207, 45, 0.8);
+    border: none;
+    color: #333;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 5px 12px rgba(6, 24, 44, 0.18);
+}
+.btn-flip:hover {
+    background: rgb(155, 147, 35);
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px 15px 15px; /* Espacio interno abajo */
+    gap: 10px; /* Separación entre el like y el botón leer */
+    margin-top: auto; /* EMPUJA TODO EL FOOTER AL FONDO DE LA TARJETA */
+}
+
+.btn-like {
+    background: white;
+    border: 1px solid #ff4b2b;
+    color: #ff4b2b;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+    white-space: nowrap; /* Evita que el número se vaya abajo */
+}
+
+.btn-like:hover {
+    background: #ff4b2b;
+    color: white;
+}
+
+#recomendaciones {
+    max-width: 1200px;  /* Limita el ancho máximo */
+    margin: 0 auto;     /* Centra horizontalmente la sección */
+    text-align: center; /* Asegura que todo dentro esté centrado */
+}
+
+#recomendaciones h2 {
+    font-size: 28px;
+    color: #111;
+    text-align: center;
+    padding: 5px;
+    margin-bottom: 20px;
+}
+
+
+
+.libro-card {
+    transition: opacity 0.3s ease-in-out, transform 0.2s ease;
+}

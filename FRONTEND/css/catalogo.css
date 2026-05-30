@@ -1,0 +1,163 @@
+/* ==========================================================================
+   BANNER DEL CATÁLOGO (ESTILOS GENERALES / COMPUTADORA)
+   ========================================================================== */
+.banner-catalogo {
+    width: 100%;
+    height: 450px; /* Altura original de PC */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                      url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed;
+    display: flex;             
+    flex-direction: column;    
+    justify-content: center;   
+    align-items: center;       
+    color: white;              
+    text-align: center;
+}
+
+/* Caja contenedora interna que protege el texto */
+.contenido-banner {
+    width: 100%;
+    max-width: 1100px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.banner-catalogo h2 {
+    color: white;
+    font-size: 40px;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+
+.banner-catalogo p {
+    color: #e0e0e0; 
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Contenedor Flexbox para los inputs en fila (Computadora) */
+.search-container {
+    margin: 30px auto 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; 
+    gap: 15px;
+}
+
+/* Estilo unificado, limpio y sin repeticiones para Buscador y Selects */
+#buscador, #filtro-area, #filtro-año {
+    padding: 14px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.35); 
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.35);       
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(8px);                 
+    box-sizing: border-box;
+    height: 50px; /* Altura fija estándar para PC */
+}
+
+/* Tamaños proporcionales en fila */
+#buscador {
+    flex: 1 1 360px;
+    min-width: 260px;
+    max-width: 520px;
+}
+
+#filtro-area {
+    flex: 0 1 240px;
+    min-width: 180px;
+}
+
+#filtro-año {
+    flex: 0 1 140px;
+    min-width: 120px;
+}
+
+#buscador::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Desplegables oscuros para que se lea el texto */
+#filtro-area option, #filtro-año option {
+    background-color: #222; 
+    color: white;
+    padding: 10px;
+}
+
+/* Efecto Focus (Verde) */
+#buscador:focus, #filtro-area:focus, #filtro-año:focus {
+    border-color: #28a745; 
+    background-color: rgba(0, 0, 0, 0.55);
+    box-shadow: 0 0 14px rgba(40, 167, 69, 0.35);
+}
+
+@media (width: 768px ) and (max-width: 1024px) {
+    .banner-catalogo {
+        height: 400px; /* Altura reducida para tablets */
+    }
+    .banner-catalogo h2 {
+        font-size: 32px;
+    }
+    .banner-catalogo p {
+        font-size: 16px;
+    }
+    #buscador, #filtro-area, #filtro-año {
+        height: 45px; /* Altura ligeramente reducida para tablets */
+        font-size: 14px;
+    }
+    #filtro-area, #filtro-año {
+        flex: 0 1 180px;
+        width: 260px; /* Ajuste para tablets */
+    }
+}
+
+@media (max-width: 840px) {
+    .banner-catalogo {
+        height: auto;
+        padding: 40px 16px;
+        background-attachment: scroll;
+    }
+
+    .banner-catalogo h2 {
+        font-size: 30px;
+        line-height: 1.1;
+    }
+
+    .banner-catalogo p {
+        font-size: 15px;
+    }
+
+    .search-container {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 360px;
+        margin: 20px auto 0 auto;
+        padding: 0 10px;
+    }
+
+    #buscador, #filtro-area, #filtro-año {
+        width: 100%;
+        max-width: 340px;
+        min-width: 280px;
+        height: 44px;
+        margin: 0;
+        padding: 0 14px;
+        box-sizing: border-box;
+        font-size: 15px;
+    }
+
+    #buscador, #filtro-area, #filtro-año {
+        flex: 0 1 auto;
+    }
+}
