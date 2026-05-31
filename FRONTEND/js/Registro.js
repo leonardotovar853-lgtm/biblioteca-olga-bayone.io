@@ -82,7 +82,7 @@ function Registro() {
         <h2>Bienvenido</h2>
         <p>Usa tu cuenta institucional para explorar la biblioteca.</p>
         <button id="google-login-btn" class="btn-google-auth">
-            <img src="google-icon.png" alt="G" width="20" style="vertical-align: middle; margin-right: 8px;">
+            <img src="../google-icon.png" alt="G" width="20" style="vertical-align: middle; margin-right: 8px;">
             Continuar con Google
         </button>
     </div>
