@@ -228,7 +228,6 @@ def crear_web(biblioteca):
     <link rel="stylesheet" href="../css/libros.css">
     <link rel="stylesheet" href="../css/accesoArea.css">
     <link rel="stylesheet" href="../css/catalogo.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <nav id = "menu" class="nav-menu">
@@ -348,7 +347,8 @@ def crear_web(biblioteca):
     <script>
         const librosData = """ + json.dumps(libros_data) + """;
     </script>
-    <script src="../js/Registro.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="Registro.js" defer></script>
     <script src="../js/recomendacionInicio.js"></script>
     <script src="../js/nav.js"></script>
     <script src="../js/stars.js"></script>
