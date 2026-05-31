@@ -4,10 +4,22 @@
 .area-content {
     margin: 60px 0;
     width: 100%;
-    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.70)),url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop');
+    position: relative;
+    overflow: hidden;
+    background-image: linear-gradient(180deg, rgba(32, 41, 62, 0.35), rgba(8, 15, 32, 0.75)), url('https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=2070&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
-    padding: 45px 0 35px;
+    background-attachment: fixed;
+    border-radius: 36px;
+    padding: 55px 0 40px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.24);
+}
+.area-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 28%), radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 24%);
+    pointer-events: none;
 }
 .area-content h2 {
     font-size: clamp(2rem, 2.4vw, 3rem);
