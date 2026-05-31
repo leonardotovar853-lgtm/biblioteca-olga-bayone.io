@@ -348,7 +348,7 @@ def crear_web(biblioteca):
         const librosData = """ + json.dumps(libros_data) + """;
     </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="Registro.js" defer></script>
+    <script src="../js/Registro.js" defer></script>
     <script src="../js/recomendacionInicio.js"></script>
     <script src="../js/nav.js"></script>
     <script src="../js/stars.js"></script>
