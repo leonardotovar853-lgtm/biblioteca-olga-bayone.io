@@ -1,73 +1,92 @@
-// 1. Inicializamos Google una sola vez al cargar la página
-google.accounts.id.initialize({
-    client_id: "520347031267-ph0fosq8l2ngoinasnm4b914vnrbqk1k.apps.googleusercontent.com",
-    ux_mode: 'popup',
-    itp_support: true,
-    callback: async (response) => {
-        // Decodificación del JWT de Google
-        const base64Url = response.credential.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-
-        const payload = JSON.parse(jsonPayload);
-        
-        // Guardamos los datos nativos de Google agregando el ID único ('sub')
-        window.datosGoogle = { 
-            id: payload.sub, 
-            given_name: payload.given_name,
-            email: payload.email,
-            picture: payload.picture,
-            credential: response.credential 
-        };
-
-        const divGoogle = document.querySelector('.ventana-registro #div-google');
-        const divLogin = document.querySelector('.ventana-registro #contenedor-login');
-        const divSeccionRegistro = document.querySelector('.ventana-registro #seccion-registro');
-
-        if (payload.email.endsWith('@olgabayone.com')) {
-            try {
-                // CORRECCIÓN 1: Apuntar al endpoint real de verificación del backend
-                const loginRespuesta = await fetch('http://localhost:5000/api/verificar-usuario', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: payload.sub }) 
-                });
-                const loginData = await loginRespuesta.json();
-
-                // Si el servidor responde que el usuario ya existe en Google Sheets
-                if (loginRespuesta.ok && loginData.existe) {
-                    alert(`Bienvenido de vuelta, ${loginData.usuario.nombre}`);
-                    localStorage.setItem('bibliotecaUsuario', JSON.stringify(loginData.usuario));
-                    
-                    const overlayActual = document.querySelector('.modal-overlay');
-                    if (overlayActual) document.body.removeChild(overlayActual);
-                    window.location.reload();
-                    return;
-                }
-            } catch (error) {
-                console.warn('No se pudo verificar el usuario automáticamente:', error);
-            }
-
-            // Si no existe, desplegamos el formulario escolar de la Olga Bayone
-            if(divGoogle && divSeccionRegistro) {
-                divGoogle.style.display = 'none';
-                divSeccionRegistro.style.display = 'block';
-                divSeccionRegistro.querySelector('h2').innerText = `Hola, ${payload.given_name}`;
-            } else {
-                // Si el modal aún no está abierto, guardamos el nombre para cuando se muestre
-                window.pendingDatosGoogle = { given_name: payload.given_name };
-            }
-        } else {
-            alert("Acceso denegado: Usa tu cuenta institucional @olgabayone.com");
-            if(divGoogle && divLogin) {
-                divGoogle.style.display = 'none';
-                divLogin.style.display = 'block';
-            }
-        }
+function initializeGoogleAuth() {
+    if (window.location.protocol === 'file:') {
+        console.warn('Google Sign-In no se inicializará en file://. Usa un servidor local HTTP.');
+        return;
     }
-});
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+        google.accounts.id.initialize({
+            client_id: "520347031267-ph0fosq8l2ngoinasnm4b914vnrbqk1k.apps.googleusercontent.com",
+            ux_mode: 'popup',
+            itp_support: true,
+            callback: async (response) => {
+                // Guardamos el token en memoria global para usarlo en el formulario final si es necesario
+                window.googleCredential = response.credential;
+
+                // Decodificación del JWT de Google
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const payload = JSON.parse(jsonPayload);
+                
+                // Guardamos los datos nativos de Google agregando el ID único ('sub')
+                window.datosGoogle = { 
+                    id: payload.sub, 
+                    given_name: payload.given_name,
+                    email: payload.email,
+                    picture: payload.picture,
+                    credential: response.credential
+                };
+
+                const divGoogle = document.querySelector('.ventana-registro #div-google');
+                const divLogin = document.querySelector('.ventana-registro #contenedor-login');
+                const divSeccionRegistro = document.querySelector('.ventana-registro #seccion-registro');
+
+                // PERMITIR GMAIL PARA PRUEBAS LOCALES (Remover @gmail.com cuando esté en producción)
+                if (payload.email.endsWith('@olgabayone.com') || payload.email.endsWith('@gmail.com')) {
+                    try {
+                        // CORRECCIÓN 1: Enviamos la credencial completa (Token) para validación segura en Python
+                        const loginRespuesta = await fetch('http://localhost:5000/api/verificar-usuario', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ credential: response.credential }) 
+                        });
+                        const loginData = await loginRespuesta.json();
+
+                        // Si el servidor responde que el usuario ya existe en Google Sheets
+                        if (loginRespuesta.ok && loginData.existe) {
+                            alert(`Bienvenido de vuelta, ${loginData.usuario.nombre}`);
+                            localStorage.setItem('bibliotecaUsuario', JSON.stringify(loginData.usuario));
+                            
+                            const overlayActual = document.querySelector('.modal-overlay');
+                            if (overlayActual) document.body.removeChild(overlayActual);
+                            window.location.reload();
+                            return;
+                        }
+                    } catch (error) {
+                        console.warn('No se pudo verificar el usuario automáticamente:', error);
+                    }
+
+                    // Si no existe, desplegamos el formulario escolar de la Olga Bayone
+                    if(divGoogle && divSeccionRegistro) {
+                        divGoogle.style.display = 'none';
+                        divSeccionRegistro.style.display = 'block';
+                        divSeccionRegistro.querySelector('h2').innerText = `Hola, ${payload.given_name}`;
+                    } else {
+                        // Si el modal aún no está abierto, guardamos el nombre para cuando se muestre
+                        window.pendingDatosGoogle = { given_name: payload.given_name };
+                    }
+                } else {
+                    alert("Acceso denegado: Usa tu cuenta institucional @olgabayone.com");
+                    if(divGoogle && divLogin) {
+                        divGoogle.style.display = 'none';
+                        divLogin.style.display = 'block';
+                    }
+                }
+            }
+        });
+    };
+    document.head.appendChild(script);
+}
+
+initializeGoogleAuth();
 
 function Registro() {
     const overlay = document.createElement("div");
@@ -82,7 +101,7 @@ function Registro() {
         <h2>Bienvenido</h2>
         <p>Usa tu cuenta institucional para explorar la biblioteca.</p>
         <button id="google-login-btn" class="btn-google-auth">
-            <img src="../google-icon.png" alt="G" width="20" style="vertical-align: middle; margin-right: 8px;">
+            <i class="fa-brands fa-google" style="vertical-align: middle; margin-right: 8px; font-size: 20px;"></i>
             Continuar con Google
         </button>
     </div>
@@ -129,6 +148,11 @@ function Registro() {
 
     // Al hacer clic en Continuar con Google
     VentanaRegistro.querySelector('#google-login-btn').onclick = () => {
+        if (window.location.protocol === 'file:') {
+            alert('Debes abrir la página mediante HTTP local (por ejemplo http://localhost:8000), no con file://.');
+            return;
+        }
+
         VentanaRegistro.querySelector('#contenedor-login').style.display = 'none';
         const divGoogle = VentanaRegistro.querySelector('#div-google');
         divGoogle.style.display = 'block';
@@ -137,23 +161,23 @@ function Registro() {
             if (!window.google?.accounts?.id) {
                 throw new Error('Google Identity Services no cargado');
             }
-            google.accounts.id.prompt(); 
+            google.accounts.id.prompt();
         } catch (error) {
             console.error('Error al inicializar Google Sign-In:', error);
-            alert('No se pudo iniciar Google Sign-In. Asegúrate de estar usando http://localhost.');
+            alert('No se pudo iniciar Google Sign-In. Asegúrate de estar usando http://localhost y de que la librería de Google esté cargada.');
             divGoogle.style.display = 'none';
             VentanaRegistro.querySelector('#contenedor-login').style.display = 'block';
         }
     };
 
-    // Botón Finalizar Registro (CONEXIÓN ADAPTADA A TU CLASE SERVIDOR EN PYTHON)
+    // Botón Finalizar Registro
     VentanaRegistro.querySelector('#btn-enviar-registro').onclick = async () => {
-        // Asegurarnos de que el usuario se haya autenticado con Google
-        if (!window.datosGoogle || !window.datosGoogle.id) {
+        // CORRECCIÓN: Validamos con la credencial cruda en memoria global
+        if (!window.googleCredential) {
             alert('Debes iniciar sesión con Google antes de finalizar el registro.');
             return;
         }
-        const cedula = VentanaRegistro.querySelector('#reg-cedula').value;
+        const cedula = VentanaRegistro.querySelector('#reg-cedula').value.trim();
         const rol = VentanaRegistro.querySelector('#reg-rol').value;
         const anio = VentanaRegistro.querySelector('#reg-anio').value;
 
@@ -162,37 +186,33 @@ function Registro() {
             return;
         }
 
-        // CORRECCIÓN 2: Mapear los nombres de variables exactos que espera tu backend
+        // CORRECCIÓN 2: Estructura recomendada enviando la credencial cruda para seguridad
+        // Nota: Si tu backend ya está diseñado para recibir datos sueltos sin validar el token,
+        // puedes dejar el objeto anterior, pero lo ideal por seguridad web es pasar 'credential'.
         const datosUsuario = {
-            id: window.datosGoogle?.id, // Envía el string 'sub'
-            nombre: window.datosGoogle?.given_name,
-            correo: window.datosGoogle?.email,
-            foto_url: window.datosGoogle?.picture,
+            credential: window.googleCredential,
             cedula: cedula,
             rol: rol,
             anio_seccion: anio
         };
 
         try {
-            // CORRECCIÓN 3: Apuntar al puerto y endpoint correcto de registro de tu app Python
-            const respuesta = await fetch('http://localhost:5000/agregar_usuario', {
+            // CORRECCIÓN 3: Asegúrate de que este endpoint coincida con tu backend en Flask
+            const respuesta = await fetch('http://localhost:5000/api/registro-usuario', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosUsuario)
             });
 
             const resultado = await respuesta.json();
 
             if (respuesta.ok) {
-                alert(`¡Registro exitoso! Bienvenido, ${datosUsuario.nombre}.`);
-                // Guardamos el objeto plano en localStorage para persistencia del cliente
-                localStorage.setItem('bibliotecaUsuario', JSON.stringify(datosUsuario));
+                alert(`¡Registro exitoso! Perfil creado correctamente.`);
+                // Guardamos el usuario retornado por Python para persistencia en frontend
+                localStorage.setItem('bibliotecaUsuario', JSON.stringify(resultado.usuario));
                 document.body.removeChild(overlay);
                 window.location.reload();
             } else {
-                // Muestra el mensaje de error arrojado por tus validaciones @property de Python
                 alert(`Error en el sistema: ${resultado.error || resultado.mensaje}`);
             }
         } catch (error) {
