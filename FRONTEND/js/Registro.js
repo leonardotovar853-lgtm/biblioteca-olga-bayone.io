@@ -102,7 +102,8 @@ google.accounts.id.initialize({
             if (respuesta.ok) {
                 alert(`¡Registro exitoso! Perfil creado correctamente.`);
                 localStorage.setItem('bibliotecaUsuario', JSON.stringify(resultado.usuario));
-                document.body.removeChild(overlay);
+                const overlayElem = document.querySelector('.modal-overlay');
+                if (overlayElem) document.body.removeChild(overlayElem);
                 window.location.reload();
             } else {
                 // Captura los raise ValueError enviados por tus setters de Python (ej: Cédula inválida)

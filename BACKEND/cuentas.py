@@ -12,7 +12,7 @@ from flask_cors import CORS
 GOOGLE_CLIENT_ID = "520347031267-ph0fosq8l2ngoinasnm4b914vnrbqk1k.apps.googleusercontent.com"
 
 class Usuario:
-    def __init__(self, id_google, cedula, nombre, correo, foto_url, rol, año_seccion, fecha_registro=None):
+    def __init__(self, id_google, cedula, nombre, correo, foto_url, rol, anio_seccion, fecha_registro=None):
         # 1. Inicializamos las variables internas directamente con valores limpios
         self._id = str(id_google) if id_google else str(uuid.uuid4())
         self._nombre = nombre.strip().title() if nombre else None  # .title() maneja Nombres y Apellidos
@@ -20,11 +20,11 @@ class Usuario:
         self._foto_url = foto_url
         self._intereses = []
         self._fecha_registro = fecha_registro or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         # 2. Las variables que requieren validaciones estrictas las pasamos por sus setters
         self.cedula = cedula
         self.rol = rol
-        self.año_seccion = año_seccion
+        self.anio_seccion = anio_seccion
         
     def to_dict(self):
         return {
@@ -34,7 +34,7 @@ class Usuario:
             'correo': self._correo,
             'foto_url': self._foto_url,
             'rol': self._rol,
-            'año_seccion': self._año_seccion,
+            'anio_seccion': self._anio_seccion,
             'intereses': self._intereses,
             'fecha_registro': self._fecha_registro
         }
@@ -48,7 +48,7 @@ class Usuario:
             self._correo, 
             self._foto_url, 
             self._rol, 
-            self._año_seccion, 
+            self._anio_seccion, 
             intereses_texto, 
             self._fecha_registro
         ]
@@ -97,15 +97,15 @@ class Usuario:
             raise ValueError("Rol no válido. Debe ser 'admin', 'estudiante' o 'profesor'")   
         
     @property
-    def año_seccion(self):
-        return self._año_seccion
+    def anio_seccion(self):
+        return self._anio_seccion
 
-    @año_seccion.setter
-    def año_seccion(self, value):
+    @anio_seccion.setter
+    def anio_seccion(self, value):
         anios_validos = ["1A", "1B","1C", "2A", "2B", "3A", "3B", "4A", "4B","4C","5A","5B","5C", "no_aplica", "No Aplica"]
-        val_str = str(value).strip()
+        val_str = str(value).strip() if value is not None else ""
         if value and val_str in anios_validos:
-            self._año_seccion = val_str
+            self._anio_seccion = val_str
         else:
             raise ValueError("Año/sección no válido o formato incorrecto.")
         
@@ -167,7 +167,7 @@ class Servidor:
             if celda:
                 fila = celda.row
                 datos = self.worksheet.row_values(fila)
-                columnas = ['id', 'cedula', 'nombre', 'correo', 'foto_url', 'rol', 'año_seccion', 'intereses', 'fecha_registro']
+                columnas = ['id', 'cedula', 'nombre', 'correo', 'foto_url', 'rol', 'anio_seccion', 'intereses', 'fecha_registro']
                 
                 # Asegurar que la longitud coincida por si faltan campos al final
                 while len(datos) < len(columnas):
@@ -244,7 +244,7 @@ class Servidor:
                     correo=payload.get('email'),
                     foto_url=payload.get('picture'),
                     rol=data.get('rol'),
-                    año_seccion=data.get('anio_seccion'), # ¡Arreglado el choque de nombres!
+                    anio_seccion=data.get('anio_seccion'), # ¡Arreglado el choque de nombres!
                     fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 )
 
