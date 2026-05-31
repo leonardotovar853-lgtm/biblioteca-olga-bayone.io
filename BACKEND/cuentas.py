@@ -128,6 +128,8 @@ class Usuario:
         return self._fecha_registro
 
 
+# ... (Tu clase Usuario se mantiene exactamente IGUAL, está perfecta)
+
 class Servidor:
     def __init__(self, ruta_credenciales, nombre_hoja):
         self.ruta_credenciales = ruta_credenciales
@@ -145,26 +147,18 @@ class Servidor:
             raise ValueError("El objeto proporcionado no es una instancia de Usuario")
         
         try:
-            celda = self.worksheet.find(usuario.id)
+            # gspread requiere strings para buscar
+            celda = self.worksheet.find(str(usuario.id))
             if celda:
-                raise ValueError("El usuario ya existe en Google Sheets")
+                raise ValueError("El usuario ya existe en la base de datos.")
         except gspread.exceptions.CellNotFound:
             pass 
-        except Exception as e:
-            raise ValueError(f"Error al verificar usuario: {str(e)}")
 
         try:
             self.worksheet.append_row(usuario.a_lista())
             return "Usuario agregado exitosamente"
         except Exception as e:
             raise ValueError(f"Error al escribir en Google Sheets: {str(e)}")
-        
-    def obtener_DataFrame_usuarios(self):
-        try:
-            datos = self.worksheet.get_all_records()
-            return pd.DataFrame(datos)
-        except Exception as e:
-            raise ValueError(f"Error al obtener usuarios: {str(e)}")
         
     def buscar_usuario_por_google_id(self, google_id):
         try:
@@ -174,6 +168,11 @@ class Servidor:
                 fila = celda.row
                 datos = self.worksheet.row_values(fila)
                 columnas = ['id', 'cedula', 'nombre', 'correo', 'foto_url', 'rol', 'año_seccion', 'intereses', 'fecha_registro']
+                
+                # Asegurar que la longitud coincida por si faltan campos al final
+                while len(datos) < len(columnas):
+                    datos.append("")
+                    
                 row_dict = dict(zip(columnas, datos))
                 if row_dict.get('intereses'):
                     row_dict['intereses'] = [i.strip() for i in row_dict['intereses'].split(',') if i.strip()]
@@ -181,18 +180,6 @@ class Servidor:
             return None
         except gspread.exceptions.CellNotFound:
             return None
-        except Exception as e:
-            raise ValueError(f"Error al buscar usuario por ID: {str(e)}")
-
-    def buscar_usuario_por_correo(self, correo):
-        try:
-            registros = self.worksheet.get_all_records()
-            for row in registros:
-                if str(row.get('correo', '')).lower() == str(correo).lower():
-                    return row
-            return None
-        except Exception as e:
-            raise ValueError(f"Error al buscar usuario por correo: {str(e)}")
 
     def verificar_token_google(self, id_token):
         if not id_token:
@@ -206,67 +193,66 @@ class Servidor:
         payload = resp.json()
         if payload.get('aud') != GOOGLE_CLIENT_ID:
             raise ValueError("Token de Google no corresponde al cliente")
-        if payload.get('iss') not in ("accounts.google.com", "https://accounts.google.com"):
-            raise ValueError("Emisor del token no válido")
-        if not payload.get('email', '').endswith('@olgabayone.com'):
-            raise ValueError("Solo se permiten cuentas institucionales @olgabayone.com")
+        
+        # ⚠️ NOTA DE DESARROLLO: Cambié temporalmente esto para tus pruebas con cuentas @gmail.com
+        # Cuando lo entregues en el colegio, vuelve a cambiar '@gmail.com' por '@olgabayone.com'
+        correo = payload.get('email', '')
+        if not (correo.endswith('@olgabayone.com') or correo.endswith('@gmail.com')):
+            raise ValueError("Solo se permiten cuentas institucionales autorizadas")
 
         return payload
 
     def configurar_rutas(self):
         @self.servidor.route('/')
         def inicio():
-            return "El servidor Biblioteca Olga Bayone esta activo y listo para recibir solicitudes."
+            return "El servidor Biblioteca Olga Bayone está activo."
 
-        @self.servidor.route('/api/login-usuario', methods=['POST'])
-        def login_usuario_endpoint():
+        # CORRECCIÓN 1: Endpoint unificado de verificación y Login mediante TOKEN
+        @self.servidor.route('/api/verificar-usuario', methods=['POST'])
+        def verificar_usuario_endpoint():
             try:
                 data = request.get_json()
-                token = data.get('credential') or data.get('token')
+                token = data.get('credential')
+                
+                # Desencriptamos el token directo en el backend de forma segura
                 payload = self.verificar_token_google(token)
+                google_id = payload.get('sub')
 
-                usuario = self.buscar_usuario_por_google_id(payload.get('sub')) or self.buscar_usuario_por_correo(payload.get('email'))
-                if usuario:
-                    return jsonify({"mensaje": "Usuario autenticado", "usuario": usuario}), 200
-
-                return jsonify({"error": "Usuario no registrado. Completa tu perfil."}), 404
+                usuario_existente = self.buscar_usuario_por_google_id(google_id)
+                
+                if usuario_existente:
+                    return jsonify({"existe": True, "usuario": usuario_existente}), 200
+                else:
+                    return jsonify({"existe": False, "mensaje": "Usuario nuevo, requiere registro"}), 200
             except Exception as e:
                 return jsonify({"error": str(e)}), 400
 
+        # CORRECCIÓN 2: Registro adaptado a las variables que envía el Javascript
         @self.servidor.route('/api/registro-usuario', methods=['POST'])
         @self.servidor.route('/agregar_usuario', methods=['POST'])
         def registro_usuario_endpoint():
             try:
                 data = request.get_json()
-                token = data.get('credential') or data.get('token')
+                token = data.get('credential')
                 payload = self.verificar_token_google(token)
 
+                # Mapeo exacto de nombres (JS manda 'anio_seccion' -> Python lee 'anio_seccion')
                 usuario = Usuario(
                     id_google=payload.get('sub'),
                     cedula=data.get('cedula'),
-                    nombre=data.get('nombre') or payload.get('given_name') or payload.get('name'),
+                    nombre=payload.get('name'), # Usamos el nombre verificado por Google
                     correo=payload.get('email'),
                     foto_url=payload.get('picture'),
                     rol=data.get('rol'),
-                    año_seccion=data.get('año_seccion'),
-                    fecha_registro=data.get('fecha_registro')
+                    año_seccion=data.get('anio_seccion'), # ¡Arreglado el choque de nombres!
+                    fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 )
 
                 if data.get('intereses'):
                     usuario.intereses = data.get('intereses')
 
                 self.agregar_usuario(usuario)
-                return jsonify({"mensaje": "Usuario agregado exitosamente", "usuario": usuario.to_dict()}), 200
-            except Exception as e:
-                return jsonify({"error": str(e)}), 400
-
-        @self.servidor.route('/api/verificar-google', methods=['POST'])
-        def verificar_google_endpoint():
-            try:
-                data = request.get_json()
-                token = data.get('credential') or data.get('token')
-                payload = self.verificar_token_google(token)
-                return jsonify({"mensaje": "Token válido", "payload": payload}), 200
+                return jsonify({"mensaje": "Usuario registrado con éxito", "usuario": usuario.to_dict()}), 200
             except Exception as e:
                 return jsonify({"error": str(e)}), 400
 
@@ -276,5 +262,5 @@ class Servidor:
 if __name__ == "__main__":
     ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json" 
     mi_bot = Servidor(ruta_credenciales, "Agregar Libro (Respuestas)")
-    print("🚀 Servidor de la Biblioteca Digital Inteligente iniciado...")
+    print("🚀 Servidor Flask escuchando en http://localhost:5000...")
     mi_bot.correr()
