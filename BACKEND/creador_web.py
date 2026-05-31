@@ -7,14 +7,17 @@ def subir_cambios_a_github():
     try:
         print("Iniciando subida automática a GitHub...")
         
-        # 1. Ejecuta 'git add .' para añadir los nuevos libros generados
-        subprocess.run(["git", "add", "."], check=True)
+        # Definimos la ruta absoluta exacta de tu repositorio de Git
+        ruta_repositorio = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL"
+        
+        # 1. Ejecuta 'git add .' dentro de la carpeta correcta usando cwd
+        subprocess.run(["git", "add", "."], check=True, cwd=ruta_repositorio)
         
         # 2. Hace el commit automático indicando la actualización de datos
-        subprocess.run(["git", "commit", "-m", "Actualización automática de libros desde el Panel de Control"], check=True)
+        subprocess.run(["git", "commit", "-m", "Actualización automática de libros desde el Panel de Control"], check=True, cwd=ruta_repositorio)
         
-        # 3. Sube los cambios a main aplicando el bypass de seguridad de forma invisible
-        subprocess.run(["git", "push", "origin", "main", "-o", "secret-scanning=bypass"], check=True)
+        # 3. Sube los cambios a main aplicando el bypass de seguridad
+        subprocess.run(["git", "push", "origin", "main", "-o", "secret-scanning=bypass"], check=True, cwd=ruta_repositorio)
         
         print("¡Web actualizada con éxito en internet!")
         return True
