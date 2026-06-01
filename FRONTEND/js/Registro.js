@@ -198,7 +198,7 @@ function Registro() {
 
         try {
             // CORRECCIÓN 3: Asegúrate de que este endpoint coincida con tu backend en Flask
-            const respuesta = await fetch('http://localhost:5000/api/registro-usuario', {
+            const respuesta = await fetch('http://127.0.0.1:5000', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosUsuario)
