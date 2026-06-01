@@ -264,7 +264,7 @@ def crear_web(biblioteca):
                     <div class="botones-banner">
                         <a href="catalogo.html" class="btn-primario"><i class="fa-solid fa-magnifying-glass"></i>Explorar Libros</a>
                         <a href="sobre_proyecto.html" class="btn-secundario"><i class="fa-solid fa-circle-info"></i>Más Información</a>
-                        <a class="btn-registro">Iniciar Seccion</a>
+                        <a class="btn-registro">Iniciar Sesión</a>
                     </div>
                 </div>
             </div>
@@ -342,7 +342,7 @@ def crear_web(biblioteca):
         </section>
     </main>
     <footer>
-        <p>&copy; 2026 Biblioteca Digital Olga Bayone. Todos los derechos reservados.</p>
+        <p>&copy; 2026 Leonardo Tovar. Todos los derechos reservados.</p>
     </footer>
     <script>
         const librosData = """ + json.dumps(libros_data) + """;
