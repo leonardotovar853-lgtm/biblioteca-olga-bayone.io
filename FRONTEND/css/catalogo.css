@@ -82,19 +82,24 @@
     min-width: 120px;
 }
 
+#filtro-tipo {
+    flex: 0 1 180px;
+    min-width: 140px;
+}
+
 #buscador::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
 /* Desplegables oscuros para que se lea el texto */
-#filtro-area option, #filtro-año option {
+#filtro-area option, #filtro-año option, #filtro-tipo option {
     background-color: #222; 
     color: white;
     padding: 10px;
 }
 
 /* Efecto Focus (Verde) */
-#buscador:focus, #filtro-area:focus, #filtro-año:focus {
+#buscador:focus, #filtro-area:focus, #filtro-año:focus, #filtro-tipo:focus {
     border-color: #28a745; 
     background-color: rgba(0, 0, 0, 0.55);
     box-shadow: 0 0 14px rgba(40, 167, 69, 0.35);
@@ -110,11 +115,11 @@
     .banner-catalogo p {
         font-size: 16px;
     }
-    #buscador, #filtro-area, #filtro-año {
+    #buscador, #filtro-area, #filtro-año, #filtro-tipo {
         height: 45px; /* Altura ligeramente reducida para tablets */
         font-size: 14px;
     }
-    #filtro-area, #filtro-año {
+    #filtro-area, #filtro-año, #filtro-tipo {
         flex: 0 1 180px;
         width: 260px; /* Ajuste para tablets */
     }
@@ -146,7 +151,7 @@
         padding: 0 10px;
     }
 
-    #buscador, #filtro-area, #filtro-año {
+    #buscador, #filtro-area, #filtro-año, #filtro-tipo {
         width: 100%;
         max-width: 340px;
         min-width: 280px;
@@ -157,7 +162,7 @@
         font-size: 15px;
     }
 
-    #buscador, #filtro-area, #filtro-año {
+    #buscador, #filtro-area, #filtro-año, #filtro-tipo {
         flex: 0 1 auto;
     }
 }
