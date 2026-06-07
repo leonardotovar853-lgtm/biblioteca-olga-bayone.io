@@ -176,6 +176,7 @@ function Registro() {
         if (!window.googleCredential) {
             alert('Debes iniciar sesión con Google antes de finalizar el registro.');
             return;
+
         }
         const cedula = VentanaRegistro.querySelector('#reg-cedula').value.trim();
         const rol = VentanaRegistro.querySelector('#reg-rol').value;
