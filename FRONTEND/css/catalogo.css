@@ -51,7 +51,7 @@
 }
 
 /* Estilo unificado, limpio y sin repeticiones para Buscador y Selects */
-#buscador, #filtro-area, #filtro-año {
+#buscador, #filtro-area, #filtro-año, #filtro-tipo {
     padding: 14px 16px;
     border: 2px solid rgba(255, 255, 255, 0.35); 
     border-radius: 12px;

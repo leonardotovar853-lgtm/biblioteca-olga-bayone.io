@@ -193,6 +193,12 @@ def crear_web(biblioteca):
                                 <option value="Tecnología">Tecnología (Tesis)</option>
                             </optgroup>
                         </select>
+                        <select id="filtro-tipo">
+                            <option value="all">Todos</option>
+                            <option value="Tesis">Tesis de Grado</option>
+                            <option value="Guias de Estudio">Guías de Estudio</option>
+                            <option value="Videos">Videos</option>
+                        </select>
                     </div>
                 </div>
             </section>
