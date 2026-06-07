@@ -158,13 +158,6 @@ function Registro() {
         divGoogle.style.display = 'block';
 
         try {
-            if (!window.google.accounts.email.endsWith('@olgabayone.com') ) {
-                alert("Acceso denegado: Usa tu cuenta institucional @olgabayone.com");
-
-                divGoogle.style.display = 'none';
-                VentanaRegistro.querySelector('#contenedor-login').style.display = 'block';
-                return;
-            }
             if (!window.google?.accounts?.id) {
                 throw new Error('Google Identity Services no cargado');
             }
@@ -185,6 +178,7 @@ function Registro() {
             return;
 
         }
+
         const cedula = VentanaRegistro.querySelector('#reg-cedula').value.trim();
         const rol = VentanaRegistro.querySelector('#reg-rol').value;
         const anio = VentanaRegistro.querySelector('#reg-anio').value;
