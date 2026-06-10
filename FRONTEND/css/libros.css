@@ -67,7 +67,7 @@
     text-align: left;
 }
 
-.badge-libro, .badge-tesis , badge-guia, .badge-video, .badge-web {
+.badge-libro, .badge-tesis , .badge-guia, .badge-video, .badge-web {
     position: absolute;
     top: 14px;
     left: 14px;
