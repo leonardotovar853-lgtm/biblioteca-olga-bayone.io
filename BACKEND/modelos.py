@@ -1,13 +1,14 @@
-from urllib.parse import urlparse # Para validación de URLs
+from urllib.parse import urlparse  # Para validación de URLs
 import uuid
-import random # Lo mantienes por si acaso, aunque usaremos uuid
+import random 
+import time
 
 class RecursoAcademico:
     # Modelo de recursos académicos (libros, tesis, etc.).
-    
+    anio_actual = time.localtime().tm_year
     # Constantes de la clase (Años, Tipos y Niveles válidos)
-    tipos_validos = {'Libro', 'Tesis'}
-    años_validos = range(1900, 2026)
+    tipos_validos = ['Libro', 'Tesis', 'Guia', 'Video', 'Web']
+    años_validos = range(1900, anio_actual + 1)
     nivel_validos = ['1er Año', '2do Año', '3er Año', '4to Año', '5to Año', 'General']
     
     def __init__(self, titulo, autor, editorial, area, nivel, link, link_portada, tipo, anio_publicacion, descripcion, id_existente=None):
@@ -19,7 +20,6 @@ class RecursoAcademico:
         self._nivel = 'General'
         self._link = ''
         self._link_portada = ''
-        self._tipo = 'Libro'
         self._anio_publicacion = 'Año desconocido'
         self._descripcion = 'Sin descripción'
         
@@ -39,12 +39,11 @@ class RecursoAcademico:
         self.area = area
         self.nivel = nivel
         self.link = link
-        self.link_portada = link_portada_convertido  # ← ¡YA CONVERTIDO!
-        self.tipo = tipo
+        self.link_portada = link_portada_convertido  
         self.anio_publicacion = anio_publicacion
         self.descripcion = descripcion
+        self.tipo = tipo  
     
-    # Método estático para convertir URLs de Google Drive
     @staticmethod
     def _convertir_drive_url(url):
         """Convierte enlaces de Google Drive a formato de imagen."""
@@ -56,89 +55,67 @@ class RecursoAcademico:
                 print(f"Advertencia: No se pudo convertir URL de Drive: {url}")
         return url
     
-    # Propiedades y setters
+    # Propiedades y setters comunes
     @property
-    def titulo(self):
-        return self._titulo
-    
+    def titulo(self): return self._titulo
     @titulo.setter
     def titulo(self, valor):
         valor = str(valor).strip()
-        if not valor or valor.lower() in ['none', 'nan', 'null', '']:
-            self._titulo = 'Sin titulo'
-        else:
-            self._titulo = valor[:100]  # Limita a 100 caracteres para evitar títulos largos
+        self._titulo = 'Sin titulo' if not valor or valor.lower() in ['none', 'nan', 'null', ''] else valor[:100]
     
     @property
-    def autor(self):
-        return self._autor
-    
+    def autor(self): return self._autor
     @autor.setter
     def autor(self, valor):
         valor = str(valor).strip()
-        if not valor or valor.lower() in ['none', 'nan', 'null', '']:
-            self._autor = 'Anónimo'
-        else:
-            self._autor = valor[:100]  # Limita a 100 caracteres
+        self._autor = 'Anónimo' if not valor or valor.lower() in ['none', 'nan', 'null', ''] else valor[:100]
     
     @property
-    def tipo(self):
-        return self._tipo
-    
+    def tipo(self): return self._tipo
     @tipo.setter
     def tipo(self, valor):
-        valor = str(valor).strip().capitalize()
-        if valor in self.tipos_validos:
-            self._tipo = valor
-        else:
-            print(f"Advertencia: Tipo '{valor}' no válido, asignando 'Libro'.")
-            self._tipo = 'Libro'
+        val = str(valor).strip().capitalize()
+        self._tipo = val if val in self.tipos_validos else 'Libro'
     
     @property
-    def editorial(self):
-        return self._editorial
-    
+    def editorial(self): return self._editorial
     @editorial.setter
     def editorial(self, valor):
         valor = str(valor).strip()
-        if not valor or valor.lower() in ['none', 'nan', 'null', '']:
-            self._editorial = 'N/A'
-        else:
-            self._editorial = valor[:100]  # Limita a 100 caracteres
+        self._editorial = 'N/A' if not valor or valor.lower() in ['none', 'nan', 'null', ''] else valor[:100]
     
     @property
-    def area(self):
-        return self._area
-    
+    def area(self): return self._area
     @area.setter
     def area(self, valor):
         valor = str(valor).strip()
-        if not valor or valor.lower() in ['none', 'nan', 'null', '']:
-            self._area = 'General'
-        else:
-            self._area = valor[:100]  # Limita a 100 caracteres
+        self._area = 'General' if not valor or valor.lower() in ['none', 'nan', 'null', ''] else valor[:100]
     
     @property
-    def anio_publicacion(self):
-        return self._anio_publicacion
-    
+    def anio_publicacion(self): return self._anio_publicacion
     @anio_publicacion.setter
     def anio_publicacion(self, valor):
+        valor_str = str(valor).strip()
+        if valor_str in ['N/A', 'Año desconocido', '']:
+            self._anio_publicacion = 'Año desconocido'
+            return
         try:
-            año = int(float(str(valor).strip()))
+            año = int(float(valor_str))
             if año in self.años_validos:
                 self._anio_publicacion = str(año)
             else:
                 print(f"Advertencia: Año '{año}' fuera de rango, asignando 'Año desconocido'.")
                 self._anio_publicacion = 'Año desconocido'
         except (ValueError, TypeError):
-            print(f"Advertencia: Valor de año inválido '{valor}', asignando 'Año desconocido'.")
-            self._anio_publicacion = 'Año desconocido'
+            # Si contiene ":" es una duración de video, permitimos guardarla sin levantar alertas
+            if ":" in valor_str:
+                self._anio_publicacion = valor_str
+            else:
+                print(f"Advertencia: Valor de año inválido '{valor}', asignando 'Año desconocido'.")
+                self._anio_publicacion = 'Año desconocido'
     
     @property
-    def nivel(self):
-        return self._nivel
-    
+    def nivel(self): return self._nivel
     @nivel.setter
     def nivel(self, valor):
         valor = str(valor).strip()
@@ -149,9 +126,7 @@ class RecursoAcademico:
             self._nivel = 'General'
     
     @property
-    def link(self):
-        return self._link
-    
+    def link(self): return self._link
     @link.setter
     def link(self, valor):
         valor = str(valor).strip()
@@ -163,15 +138,11 @@ class RecursoAcademico:
             self._link = ''
     
     @property
-    def link_portada(self):
-        return self._link_portada
-
+    def link_portada(self): return self._link_portada
     @link_portada.setter
     def link_portada(self, valor):
-        # Si es string y no está vacío
         if isinstance(valor, str) and valor.strip():
             valor_limpio = valor.strip()
-            # ✅ Solo guardar si empieza con http o es base64 (para no perder datos)
             if valor_limpio.startswith(('http://', 'https://', 'data:image')):
                 self._link_portada = valor_limpio
             else:
@@ -181,67 +152,231 @@ class RecursoAcademico:
             self._link_portada = ''
     
     @property
-    def descripcion(self):
-        return self._descripcion
-    
+    def descripcion(self): return self._descripcion
     @descripcion.setter
     def descripcion(self, valor):
         valor = str(valor).strip()
-        if not valor or valor.lower() in ['none', 'nan', 'null', '']:
-            self._descripcion = 'Sin descripción'
-        else:
-            self._descripcion = valor[:500]  # Limita a 500 caracteres
+        self._descripcion = 'Sin descripción' if not valor or valor.lower() in ['none', 'nan', 'null', ''] else valor[:500]
     
     @property
-    def id(self):  
-        return self._id
+    def id(self): return self._id
 
-    # Métodos y propiedades adicionales
-    @property
-    def es_tesis(self):
-        return self._tipo == 'Tesis'
-    
     def generar_tarjeta_html(self):
-        # Sanitiza valores para evitar inyección
-        area_safe = self._area.replace("'", "&#39;")
-        tipo_safe = self._tipo.replace("'", "&#39;")
-        titulo_safe = self._titulo.replace("'", "&#39;")
-        autor_safe = self._autor.replace("'", "&#39;")
-        anio_safe = self._anio_publicacion.replace("'", "&#39;")
+        raise NotImplementedError("Cada subclase debe implementar su propio diseño de tarjeta HTML")
+
+    def to_dict(self):
+        return {
+            'ID': self.id, 'tipo': self.tipo, 'titulo': self.titulo, 'autor': self.autor,
+            'editorial': self.editorial, 'area': self.area, 'nivel': self.nivel, 'link': self.link, 
+            'link_portada': self.link_portada, 'anio_publicacion': self.anio_publicacion, 'descripcion': self.descripcion
+        }
         
-        return f"""
-                <div class='libro-card' data-category='{area_safe} {tipo_safe}' data-year='{self._nivel}' libro-id='{self._id}'>
-                    <img src="{self._link_portada}">
-                    <div class="badge-{self._tipo.lower()}">{tipo_safe}</div>
-                    <h3>{titulo_safe}</h3>
-                    <p class="autor-name">{autor_safe}</p>
-                    <p class="año-public"><b>{anio_safe}</b></p>
-                    
-                    <div class="card-footer">
-                        <button class="btn-flip">Ver Descricion</button>
-                        <a href="{self._link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
-                        <button class="btn-like" onclick="darLike('{self._id}')">
-                            ❤️ <span id="count-{self._id}">0</span>
-                        </button>
-                    </div>
-                </div>
-                """
+class Libro(RecursoAcademico):
+    def __init__(self, titulo, autor, editorial, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None):
+        # ✅ Eliminadas las asignaciones redundantes posteriores, el constructor padre ya las ejecuta limpiamente
+        super().__init__(titulo, autor, editorial, area, nivel, link, link_portada, 'Libro', anio_publicacion, descripcion=descripcion, id_existente=id_existente)
     
     def to_dict(self):
-        """Convierte el recurso a un diccionario para JSON."""
-        return {
-            'titulo': self._titulo,
-            'autor': self._autor,
-            'area': self._area,
-            'nivel': self._nivel,
-            'tipo': self._tipo,
-            'anio_publicacion': self._anio_publicacion,
-            'link': self._link,
-            'link_portada': self._link_portada,
-            'descripcion': self._descripcion,
-            'ID': self._id
-        }
+        d = super().to_dict()
+        d.update({'tipo': 'Libro', 'autor': self.autor, 'editorial': self.editorial, 'anio_publicacion': self.anio_publicacion})
+        return d
+        
+    def generar_tarjeta_html(self):
+        area_safe = self.area.replace("'", "&#39;")
+        tipo_safe = self.tipo.replace("'", "&#39;")
+        titulo_safe = self.titulo.replace("'", "&#39;")
+        autor_safe = self.autor.replace("'", "&#39;")
+        editorial_safe = self.editorial.replace("'", "&#39;")
+        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
+        
+        return f"""
+        <div class='libro-card' data-category='{area_safe} Libro' data-year='{self.nivel}' libro-id='{self.id}'>
+            <img src="{self.link_portada}">
+            <div class="badge-{self.tipo.lower()}">{tipo_safe}</div>
+            <h3>{titulo_safe}</h3>
+            <p class="autor-name">{autor_safe} | {editorial_safe}</p>
+            <p class="año-public"><b>{anio_safe}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="{self.link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
+                <button class="btn-like" onclick="darLike('{self.id}')">
+                    ❤️ <span id="count-{self.id}">0</span>
+                </button>
+            </div>
+        </div>
+        """
+                
+class Tesis(RecursoAcademico):
+    def __init__(self, titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None):
+        super().__init__(titulo, autor, 'N/A', area, nivel, link, link_portada, 'Tesis', anio_publicacion, descripcion, id_existente)
+        self.tutor = tutor  # Mantenemos la referencia explícita local para claridad del modelo de Tesis
+        self.asesor_metodologico = asesor_metodologico  # Guardamos el asesor metodológico por separado
+        
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({
+            'tipo': 'Tesis',
+            'autor': self.autor,
+            'tutor': self.tutor,
+            'asesor_metodologico': self.asesor_metodologico,
+            'anio_publicacion': self.anio_publicacion
+        })
+        return d
+        
+    def generar_tarjeta_html(self):
+        area_safe = self.area.replace("'", "&#39;")
+        tipo_safe = self.tipo.replace("'", "&#39;")
+        titulo_safe = self.titulo.replace("'", "&#39;")
+        autor_safe = self.autor.replace("'", "&#39;")
+        tutor_safe = self.tutor.replace("'", "&#39;")
+        asesor_safe = self.asesor_metodologico.replace("'", "&#39;")
+        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
+        
+        return f"""
+        <div class='libro-card' data-category='{area_safe} Tesis' data-year='{self.nivel}' libro-id='{self.id}'>
+            <img src="{self.link_portada}">
+            <div class="badge-{self.tipo.lower()}">{tipo_safe}</div>
+            <h3>{titulo_safe}</h3>
+            <p class="autor-name">Autores: {autor_safe}</p>
+            <p class="año-public">Tutor: {tutor_safe} | Asesor metodológico: {asesor_safe} | <b>{anio_safe}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="{self.link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
+                <button class="btn-like" onclick="darLike('{self.id}')">
+                    ❤️ <span id="count-{self.id}">0</span>
+                </button>
+            </div>
+        </div>
+        """
+                
+class GuiaEstudio(RecursoAcademico):
+    def __init__(self, titulo, autor, temas, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, link_portada=''):
+        super().__init__(titulo, autor or 'Institucional', 'Material de Estudio', area, nivel, link, link_portada, 'Guia', anio_publicacion, descripcion, id_existente)
+        self.temas = temas
+        
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({
+            'tipo': 'Guia',
+            'autor': self.autor,
+            'temas_clave': self.temas,
+            'anio_publicacion': self.anio_publicacion
+        })
+        return d
+        
+    def generar_tarjeta_html(self):
+        area_safe = self.area.replace("'", "&#39;")
+        tipo_safe = self.tipo.replace("'", "&#39;")
+        titulo_safe = self.titulo.replace("'", "&#39;")
+        autor_safe = self.autor.replace("'", "&#39;")
+        temas_safe = self.temas.replace("'", "&#39;")
+        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
+        
+        portada = self.link_portada if self.link_portada else "/static/images/default-pdf.png"
+        
+        return f"""
+        <div class='libro-card' data-category='{area_safe} Guia' data-year='{self.nivel}' libro-id='{self.id}'>
+            <img src="{portada}">
+            <div class="badge-{self.tipo.lower()}">📄 {tipo_safe}</div>
+            <h3>{titulo_safe}</h3>
+            <p class="autor-name">Autor: {autor_safe}</p>
+            <p class="año-public">Año: <b>{anio_safe}</b></p>
+            <p class="autor-name">Temas: {temas_safe}</p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="{self.link}" target="_blank" class="btn-leer">Descargar PDF</a>
+                <button class="btn-like" onclick="darLike('{self.id}')">
+                    ❤️ <span id="count-{self.id}">0</span>
+                </button>
+            </div>
+        </div>
+        """
+        
+class VideoTutorial(RecursoAcademico):
+    def __init__(self, titulo, duracion, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Multimedia', link_portada=''):
+        super().__init__(titulo, autor, 'Internet', area, nivel, link, link_portada, 'Video', anio_publicacion, descripcion, id_existente)
+        self.duracion = duracion
+        
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({
+            'tipo': 'Video',
+            'duracion': self.duracion,
+            'anio_publicacion': self.anio_publicacion
+        })
+        return d
+        
+    def generar_tarjeta_html(self):
+        area_safe = self.area.replace("'", "&#39;")
+        tipo_safe = self.tipo.replace("'", "&#39;")
+        titulo_safe = self.titulo.replace("'", "&#39;")
+        duracion_safe = self.duracion.replace("'", "&#39;")
+        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
+        
+        portada = self.link_portada if self.link_portada else "/static/images/default-video.png"
+        
+        return f"""
+        <div class='libro-card' data-category='{area_safe} Video' data-year='{self.nivel}' libro-id='{self.id}'>
+            <img src="{portada}">
+            <div class="badge-{self.tipo.lower()}">🎥 {tipo_safe}</div>
+            <h3>{titulo_safe}</h3>
+            <p class="autor-name">Duración: {duracion_safe}</p>
+            <p class="año-public">Año: <b>{anio_safe}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="{self.link}" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
+                <button class="btn-like" onclick="darLike('{self.id}')">
+                    ❤️ <span id="count-{self.id}">0</span>
+                </button>
+            </div>
+        </div>
+        """
 
+class PaginasWeb(RecursoAcademico):
+    def __init__(self, titulo, plataforma, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Webmaster', link_portada=''):
+        super().__init__(titulo, autor, 'Plataforma Digital', area, nivel, link, link_portada, 'Web', anio_publicacion, descripcion, id_existente)
+        self.plataforma = plataforma
+        
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({
+            'tipo': 'Web',
+            'plataforma': self.plataforma,
+            'anio_publicacion': self.anio_publicacion
+        })
+        return d
+        
+    def generar_tarjeta_html(self):
+        area_safe = self.area.replace("'", "&#39;")
+        tipo_safe = self.tipo.replace("'", "&#39;")
+        titulo_safe = self.titulo.replace("'", "&#39;")
+        plataforma_safe = self.plataforma.replace("'", "&#39;")
+        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
+        
+        portada = self.link_portada if self.link_portada else "/static/images/default-web.png"
+        
+        return f"""
+        <div class='libro-card' data-category='{area_safe} Web' data-year='{self.nivel}' libro-id='{self.id}'>
+            <img src="{portada}">
+            <div class="badge-{self.tipo.lower()}">🌐 {tipo_safe}</div>
+            <h3>{titulo_safe}</h3>
+            <p class="autor-name">Plataforma: {plataforma_safe}</p>
+            <p class="año-public">Año: <b>{anio_safe}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="{self.link}" target="_blank" class="btn-leer" style="background-color: #0076d6; color: white;">Visitar Sitio</a>
+                <button class="btn-like" onclick="darLike('{self.id}')">
+                    ❤️ <span id="count-{self.id}">0</span>
+                </button>
+            </div>
+        </div>
+        """
+                
 class Biblioteca:
     def __init__(self, nombre):
         self.nombre = nombre
@@ -253,7 +388,6 @@ class Biblioteca:
         else:
             print(f"Advertencia: Intento de agregar recurso inválido: {type(recurso)}")
     
-    # Métodos adicionales para extensibilidad
     def contar_recursos(self):
         return len(self.lista_libros)
     
@@ -279,20 +413,16 @@ class Biblioteca:
         return None
     
     def recomendar_similares(self, recurso, limite=5):
-        """Recomienda libros similares basados en autor, área y año."""
+        """Recomienda recursos similares basados en autor, área y año."""
         similares = []
-        # Por autor
         similares.extend([r for r in self.buscar_por_autor(recurso.autor) if r != recurso])
-        # Por área
         similares.extend([r for r in self.buscar_por_area(recurso.area) if r != recurso and r not in similares])
-        # Por año cercano (mismo año o +-1)
         try:
             anio = int(recurso.anio_publicacion)
             for offset in [-1, 0, 1]:
                 similares.extend([r for r in self.buscar_por_anio(anio + offset) if r != recurso and r not in similares])
         except ValueError:
             pass
-        # Remover duplicados y limitar
         return list(dict.fromkeys(similares))[:limite]
     
     def exportar_a_lista_dict(self):
@@ -301,7 +431,12 @@ class Biblioteca:
     
     def exportar_libros(self):
         """Exporta solo los libros (no tesis) a una lista de diccionarios."""
-        return [libro.to_dict() for libro in self.lista_libros if not libro.es_tesis]
+        return [libro.to_dict() for libro in self.lista_libros if not isinstance(libro, Tesis)]
+
     def exportar_tesis(self):
         """Exporta solo las tesis a una lista de diccionarios."""
-        return [libro.to_dict() for libro in self.lista_libros if libro.es_tesis]
+        return [libro.to_dict() for libro in self.lista_libros if isinstance(libro, Tesis)]
+    
+    def exportar_repositorio(self):
+        """Exporta los recursos que no son libros a una lista de diccionarios."""
+        return [libro.to_dict() for libro in self.lista_libros if not isinstance(libro, Libro)]

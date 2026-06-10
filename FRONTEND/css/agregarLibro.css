@@ -134,15 +134,75 @@
     background-color: #003366;
     border-color: #003366;
 }
-.fin-intruccions {
-    font-size: 1.1em;
-    color: #555;
+
+.registro-content {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 36px 30px;
+    background: linear-gradient(180deg, rgba(248, 249, 250, 0.98), rgba(255, 255, 255, 0.95));
+    border: 1px solid rgba(59, 70, 196, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
+.registro-content h3 {
+    font-size: 2.2rem;
+    margin-bottom: 24px;
+    color: #152238;
+    letter-spacing: 0.02em;
+}
+
+.registro-content p {
+    font-size: 1rem;
+    color: #475569;
+    margin-bottom: 32px;
+    line-height: 1.75;
+}
+
+.registro-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+    justify-items: stretch;
+    align-items: stretch;
+}
+
+.registro-option {
+    background: linear-gradient(135deg, #3b46c4 0%, #5567ff 100%);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 18px;
+    text-decoration: none;
+    font-size: 1.05rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    box-shadow: 0 16px 30px rgba(59, 70, 196, 0.18);
+    min-height: 170px;
+}
+
+.registro-option:hover,
+.registro-option:focus-visible {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 38px rgba(59, 70, 196, 0.22);
+    background: linear-gradient(135deg, #2f3bb8 0%, #4058ff 100%);
+}
+
+.registro-option strong {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.registro-option span {
+    display: block;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+}
 
 @media (max-width : 1100px) {
     .instructions ol {

@@ -30,14 +30,14 @@ def clasificar_tarjetas(biblioteca):
     tarjetas_catalogo = []
     tarjetas_repositorio = []
     
-    for libro in biblioteca.lista_libros:
-        tipo_normalizado = libro.tipo.strip().lower()
-        html_targeta = libro.generar_tarjeta_html()
+    for recurso in biblioteca.lista_libros:
+        tipo_normalizado = recurso.tipo.strip().lower()
+        html_targeta = recurso.generar_tarjeta_html()
             
-        if tipo_normalizado == 'tesis':
-                tarjetas_repositorio.append(html_targeta)
-        else:
+        if tipo_normalizado == 'libro':
                 tarjetas_catalogo.append(html_targeta)
+        else:
+                tarjetas_repositorio.append(html_targeta)
                 
     return tarjetas_catalogo, tarjetas_repositorio
 
@@ -48,7 +48,7 @@ def crear_web(biblioteca):
         tarjetas_catalogo, tarjetas_repositorio = clasificar_tarjetas(biblioteca)
         
         libros_data = biblioteca.exportar_libros()
-        tesis_data = biblioteca.exportar_tesis()
+        tesis_data = biblioteca.exportar_repositorio()
         
         # --- 2. PLANTILLAS HTML ---
         html_inicio_catalogo = """
@@ -415,3 +415,4 @@ def ejecucion_final():
         print(f'ERROR: {e}')
         return False
     
+ejecucion_final()
