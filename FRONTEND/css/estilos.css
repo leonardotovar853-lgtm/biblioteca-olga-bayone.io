@@ -61,6 +61,11 @@ a {
     position: relative;
 }
 
+.recommend-section p {
+    color: #475569;
+    margin-bottom: 20px;
+}
+
 .recommend-section h2::after {
     content: '';
     width: 68px;

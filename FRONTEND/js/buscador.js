@@ -23,6 +23,7 @@ function aplicarFiltros() {
         const textoLibro = tarjeta.textContent.toLowerCase();
         const materiaLibro = tarjeta.getAttribute('data-category');
         const anioLibro = tarjeta.getAttribute('data-year');
+        const tipo = tarjeta.getAttribute('data-year')
 
         // --- CONDICIONES LÓGICAS ---
         

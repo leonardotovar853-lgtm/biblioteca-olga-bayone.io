@@ -52,7 +52,7 @@ function initializeGoogleAuth() {
 
                         // Si el servidor responde que el usuario ya existe en Google Sheets
                         if (loginRespuesta.ok && loginData.existe) {
-                            alert(`Bienvenido de vuelta, ${loginData.usuario.nombre}`);
+                            mostrarAlerta(`Bienvenido de vuelta, ${loginData.usuario.nombre}`, 'success');
                             localStorage.setItem('bibliotecaUsuario', JSON.stringify(loginData.usuario));
                             
                             const overlayActual = document.querySelector('.modal-overlay');
@@ -74,7 +74,7 @@ function initializeGoogleAuth() {
                         window.pendingDatosGoogle = { given_name: payload.given_name };
                     }
                 } else {
-                    alert("Acceso denegado: Usa tu cuenta institucional @olgabayone.com");
+                    mostrarAlerta("Acceso denegado: Usa tu cuenta institucional @olgabayone.com", 'error');
                     if(divGoogle && divLogin) {
                         divGoogle.style.display = 'none';
                         divLogin.style.display = 'block';
@@ -84,6 +84,36 @@ function initializeGoogleAuth() {
         });
     };
     document.head.appendChild(script);
+}
+
+function mostrarAlerta(mensaje, tipo = 'info', duracion = 4500) {
+    const contenedor = document.querySelector('.custom-alert-container') || document.createElement('div');
+    if (!contenedor.classList.contains('custom-alert-container')) {
+        contenedor.className = 'custom-alert-container';
+        document.body.appendChild(contenedor);
+    }
+
+    const alerta = document.createElement('div');
+    alerta.className = `custom-alert custom-alert--${tipo}`;
+    alerta.innerHTML = `
+        <span class="custom-alert__texto">${mensaje}</span>
+        <button type="button" class="custom-alert__close" aria-label="Cerrar">×</button>
+    `;
+
+    alerta.querySelector('.custom-alert__close').onclick = () => {
+        alerta.classList.remove('mostrar');
+        setTimeout(() => alerta.remove(), 200);
+    };
+
+    contenedor.appendChild(alerta);
+    requestAnimationFrame(() => alerta.classList.add('mostrar'));
+
+    setTimeout(() => {
+        if (alerta.parentElement) {
+            alerta.classList.remove('mostrar');
+            setTimeout(() => alerta.remove(), 200);
+        }
+    }, duracion);
 }
 
 initializeGoogleAuth();
@@ -149,7 +179,7 @@ function Registro() {
     // Al hacer clic en Continuar con Google
     VentanaRegistro.querySelector('#google-login-btn').onclick = () => {
         if (window.location.protocol === 'file:') {
-            alert('Debes abrir la página mediante HTTP local (por ejemplo http://localhost:8000), no con file://.');
+            mostrarAlerta('Debes abrir la página mediante HTTP local (por ejemplo http://localhost:8000), no con file://.', 'error');
             return;
         }
 
@@ -164,7 +194,7 @@ function Registro() {
             google.accounts.id.prompt();
         } catch (error) {
             console.error('Error al inicializar Google Sign-In:', error);
-            alert('No se pudo iniciar Google Sign-In. Asegúrate de estar usando http://localhost y de que la librería de Google esté cargada.');
+            mostrarAlerta('No se pudo iniciar Google Sign-In. Asegúrate de estar usando http://localhost y de que la librería de Google esté cargada.', 'error');
             divGoogle.style.display = 'none';
             VentanaRegistro.querySelector('#contenedor-login').style.display = 'block';
         }
@@ -174,7 +204,7 @@ function Registro() {
     VentanaRegistro.querySelector('#btn-enviar-registro').onclick = async () => {
         // CORRECCIÓN: Validamos con la credencial cruda en memoria global
         if (!window.googleCredential) {
-            alert('Debes iniciar sesión con Google antes de finalizar el registro.');
+            mostrarAlerta('Debes iniciar sesión con Google antes de finalizar el registro.', 'error');
             return;
 
         }
@@ -184,7 +214,7 @@ function Registro() {
         const anio = VentanaRegistro.querySelector('#reg-anio').value;
 
         if (!cedula || !rol || !anio) {
-            alert("Por favor, rellena todos los campos antes de finalizar.");
+            mostrarAlerta("Por favor, rellena todos los campos antes de finalizar.", 'error');
             return;
         }
 
@@ -209,17 +239,17 @@ function Registro() {
             const resultado = await respuesta.json();
 
             if (respuesta.ok) {
-                alert(`¡Registro exitoso! Perfil creado correctamente.`);
+                mostrarAlerta(`¡Registro exitoso! Perfil creado correctamente.`, 'success');
                 // Guardamos el usuario retornado por Python para persistencia en frontend
                 localStorage.setItem('bibliotecaUsuario', JSON.stringify(resultado.usuario));
                 document.body.removeChild(overlay);
                 window.location.reload();
             } else {
-                alert(`Error en el sistema: ${resultado.error || resultado.mensaje}`);
+                mostrarAlerta(`Error en el sistema: ${resultado.error || resultado.mensaje}`, 'error');
             }
         } catch (error) {
             console.error("Error al conectar con el backend:", error);
-            alert("Hubo un problema de red al procesar tu cuenta.");
+            mostrarAlerta("Hubo un problema de red al procesar tu cuenta.", 'error');
         }
     };
 
