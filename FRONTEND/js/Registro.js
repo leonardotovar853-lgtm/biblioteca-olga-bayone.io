@@ -86,7 +86,11 @@ function initializeGoogleAuth() {
     document.head.appendChild(script);
 }
 
-function mostrarAlerta(mensaje, tipo = 'info', duracion = 4500) {
+function mostrarAlerta(mensaje, tipo = 'info', duracion) {
+    // Duración por defecto: más larga para 'success' porque a veces se cierra el modal
+    const durPorDefecto = tipo === 'success' ? 7000 : 4500;
+    const dur = typeof duracion === 'number' ? duracion : durPorDefecto;
+
     const contenedor = document.querySelector('.custom-alert-container') || document.createElement('div');
     if (!contenedor.classList.contains('custom-alert-container')) {
         contenedor.className = 'custom-alert-container';
@@ -113,7 +117,7 @@ function mostrarAlerta(mensaje, tipo = 'info', duracion = 4500) {
             alerta.classList.remove('mostrar');
             setTimeout(() => alerta.remove(), 200);
         }
-    }, duracion);
+    }, dur);
 }
 
 window.alert = (mensaje) => mostrarAlerta(String(mensaje), 'info');
