@@ -116,6 +116,8 @@ function mostrarAlerta(mensaje, tipo = 'info', duracion = 4500) {
     }, duracion);
 }
 
+window.alert = (mensaje) => mostrarAlerta(String(mensaje), 'info');
+
 initializeGoogleAuth();
 
 function Registro() {
