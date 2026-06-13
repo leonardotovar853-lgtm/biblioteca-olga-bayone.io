@@ -1,12 +1,14 @@
 
 const inputBuscador = document.getElementById('buscador');
 const menuMateria = document.getElementById('filtro-area');
+const menuTipo = document.getElementById('filtro-tipo');
 
 // 2. Función Maestra de Filtrado (Lógica Booleana AND)
 function aplicarFiltros() {
     // Obtenemos los valores actuales de los filtros
     const textoUsuario = inputBuscador.value.toLowerCase().trim();
     const materiaElegida = menuMateria.value;
+    const tipoElegido = menuTipo ? menuTipo.value : "all";
 
     // Seleccionamos todas las tarjetas de libros generadas por Python
     const tarjetas = document.querySelectorAll('.libro-card');
@@ -15,18 +17,22 @@ function aplicarFiltros() {
         // Extraemos los metadatos de la tarjeta
         const textoLibro = tarjeta.textContent.toLowerCase();
         const materiaLibro = tarjeta.getAttribute('data-category');
+        const tipoLibro = tarjeta.getAttribute('data-type') || "";
 
         // --- CONDICIONES LÓGICAS ---
         
         // C1: ¿El texto escrito está en el título, autor o descripción?
         const coincideTexto = textoLibro.includes(textoUsuario);
 
-        // C2: ¿La materia o el tipo está dentro de los metadatos? (Uso de subcadenas)
+        // C2: ¿La materia está dentro de los metadatos?
         const coincideMateria = (materiaElegida === "all" || materiaLibro.includes(materiaElegida));
 
+        // C3: ¿El tipo coincide o se seleccionaron todos?
+        const coincideTipo = (tipoElegido === "all" || tipoLibro === tipoElegido);
+
         // --- RESULTADO FINAL ---
-        // El libro solo se muestra si cumple las TRES condiciones al mismo tiempo
-        if (coincideTexto && coincideMateria) {
+        // El libro solo se muestra si cumple todas las condiciones al mismo tiempo
+        if (coincideTexto && coincideMateria && coincideTipo) {
             tarjeta.style.display = "block";
             // Pequeño efecto visual de entrada
             tarjeta.style.opacity = "1";
@@ -44,6 +50,7 @@ function aplicarFiltros() {
 // Cada vez que el usuario haga algo, la función se ejecuta automáticamente
 inputBuscador.addEventListener('input', aplicarFiltros);
 menuMateria.addEventListener('change', aplicarFiltros);
+if (menuTipo) menuTipo.addEventListener('change', aplicarFiltros);
 
 // 4. Funciones de Recomendaciones
 function recomendarSimilares(libro, todosLibros, limite = 5) {

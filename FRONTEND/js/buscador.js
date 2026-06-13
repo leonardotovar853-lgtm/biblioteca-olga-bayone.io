@@ -1,4 +1,3 @@
-// ==========================================
 // MOTOR DE BÚSQUEDA Y FILTRADO SINCRONIZADO
 // Proyecto: Biblioteca Digital Olga Bayone
 // ==========================================
@@ -9,61 +8,57 @@ const menuMateria = document.getElementById('filtro-area');
 const menuAnio = document.getElementById('filtro-año');
 const menuTipo = document.getElementById('filtro-tipo');
 
-
 // 2. Función Maestra de Filtrado (Lógica Booleana AND)
 function aplicarFiltros() {
     // Obtenemos los valores actuales de los filtros
     const textoUsuario = inputBuscador.value.toLowerCase().trim();
-    const materiaElegida = menuMateria.value;
-    const anioElegido = menuAnio.value;
-    const tipoElegido = menuTipo.value;
+    const materiaElegida = menuMateria ? menuMateria.value : "all";
+    const anioElegido = menuAnio ? menuAnio.value : "all";
+    const tipoElegido = menuTipo ? menuTipo.value : "all";
 
     // Seleccionamos todas las tarjetas de libros generadas por Python
     const tarjetas = document.querySelectorAll('.libro-card');
 
     tarjetas.forEach(tarjeta => {
-        // Extraemos los metadatos de la tarjeta
+        // Extraemos los metadatos de la tarjeta (manejamos vacíos por seguridad con || "")
         const textoLibro = tarjeta.textContent.toLowerCase();
-        const materiaLibro = tarjeta.getAttribute('data-category');
-        const anioLibro = tarjeta.getAttribute('data-year');
-        const tipo = tarjeta.getAttribute('data-type')
-
+        const materiaLibro = tarjeta.getAttribute('data-category') || "";
+        const anioLibro = tarjeta.getAttribute('data-year') || "";
+        const tipoLibro = tarjeta.getAttribute('data-type') || "";
 
         // --- CONDICIONES LÓGICAS ---
         
         // C1: ¿El texto escrito está en el título, autor o descripción?
         const coincideTexto = textoLibro.includes(textoUsuario);
 
-        // C2: ¿La materia o el tipo está dentro de los metadatos? (Uso de subcadenas)
+        // C2: ¿La materia está dentro de los metadatos?
         const coincideMateria = (materiaElegida === "all" || materiaLibro.includes(materiaElegida));
 
-        // C3: ¿El año coincide (ej: "5to Año") o se seleccionaron todos?
+        // C3: ¿El año coincide o se seleccionaron todos?
         const coincideAnio = (anioElegido === "all" || anioLibro === anioElegido);
 
-        // C4: ¿El tipo coincide (ej: "Tesis") o se seleccionaron todos?
-        const coincideTipo = (tipoElegido === "all" || tipo === tipoElegido)
+        // C4: ¿El tipo coincide o se seleccionaron todos?
+        const coincideTipo = (tipoElegido === "all" || tipoLibro === tipoElegido);
 
         // --- RESULTADO FINAL ---
-        // El libro solo se muestra si cumple las TRES condiciones al mismo tiempo
+        // El libro solo se muestra si cumple las CUATRO condiciones al mismo tiempo
         if (coincideTexto && coincideMateria && coincideAnio && coincideTipo) {
             tarjeta.style.display = "block";
-            // Pequeño efecto visual de entrada
             tarjeta.style.opacity = "1";
         } else {
             tarjeta.style.display = "none";
             tarjeta.style.opacity = "0";
         }
     });
-
-    // Mostrar recomendaciones
-    mostrarRecomendaciones();
+    mostrarRecomendaciones(); // Actualizamos recomendaciones dinámicamente según resultados visibles
 }
 
-// 3. Escuchadores de Eventos (Listeners)
-// Cada vez que el usuario haga algo, la función se ejecuta automáticamente
-inputBuscador.addEventListener('input', aplicarFiltros);
-menuMateria.addEventListener('change', aplicarFiltros);
-menuAnio.addEventListener('change', aplicarFiltros);
+// 3. ESCUCHADORES DE EVENTOS (Activan el filtro en tiempo real)
+if (inputBuscador) inputBuscador.addEventListener('input', aplicarFiltros);
+if (menuMateria) menuMateria.addEventListener('change', aplicarFiltros);
+if (menuAnio) menuAnio.addEventListener('change', aplicarFiltros);
+if (menuTipo) menuTipo.addEventListener('change', aplicarFiltros);
+
 
 // 4. Funciones de Recomendaciones
 function recomendarSimilares(libro, todosLibros, limite = 3) {
