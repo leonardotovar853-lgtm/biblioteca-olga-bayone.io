@@ -190,7 +190,7 @@ class Libro(RecursoAcademico):
         anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
         
         return f"""
-        <div class='libro-card' data-category='{area_safe} Libro' data-year='{self.nivel}' libro-id='{self.id}'>
+        <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
             <img src="{self.link_portada}">
             <div class="badge-{self.tipo.lower()}">{tipo_safe}</div>
             <h3>{titulo_safe}</h3>
@@ -234,7 +234,7 @@ class Tesis(RecursoAcademico):
         anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
         
         return f"""
-        <div class='libro-card' data-category='{area_safe} Tesis' data-year='{self.nivel}' libro-id='{self.id}'>
+        <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
             <img src="{self.link_portada}">
             <div class="badge-{self.tipo.lower()}">{tipo_safe}</div>
             <h3>{titulo_safe}</h3>
@@ -277,7 +277,7 @@ class GuiaEstudio(RecursoAcademico):
         portada = self.link_portada if self.link_portada else "/static/images/default-pdf.png"
         
         return f"""
-        <div class='libro-card' data-category='{area_safe} Guia' data-year='{self.nivel}' libro-id='{self.id}'>
+        <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
             <img src="{portada}">
             <div class="badge-{self.tipo.lower()}">📄 {tipo_safe}</div>
             <h3>{titulo_safe}</h3>
@@ -319,7 +319,7 @@ class VideoTutorial(RecursoAcademico):
         portada = self.link_portada if self.link_portada else "/static/images/default-video.png"
         
         return f"""
-        <div class='libro-card' data-category='{area_safe} Video' data-year='{self.nivel}' libro-id='{self.id}'>
+        <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
             <img src="{portada}">
             <div class="badge-{self.tipo.lower()}">🎥 {tipo_safe}</div>
             <h3>{titulo_safe}</h3>
@@ -360,7 +360,7 @@ class PaginasWeb(RecursoAcademico):
         portada = self.link_portada if self.link_portada else "/static/images/default-web.png"
         
         return f"""
-        <div class='libro-card' data-category='{area_safe} Web' data-year='{self.nivel}' libro-id='{self.id}'>
+        <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
             <img src="{portada}">
             <div class="badge-{self.tipo.lower()}">🌐 {tipo_safe}</div>
             <h3>{titulo_safe}</h3>

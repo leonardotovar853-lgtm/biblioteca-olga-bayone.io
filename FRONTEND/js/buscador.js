@@ -7,6 +7,7 @@
 const inputBuscador = document.getElementById('buscador');
 const menuMateria = document.getElementById('filtro-area');
 const menuAnio = document.getElementById('filtro-año');
+const menuTipo = document.getElementById('filtro-tipo');
 
 // 2. Función Maestra de Filtrado (Lógica Booleana AND)
 function aplicarFiltros() {
@@ -14,6 +15,7 @@ function aplicarFiltros() {
     const textoUsuario = inputBuscador.value.toLowerCase().trim();
     const materiaElegida = menuMateria.value;
     const anioElegido = menuAnio.value;
+    const tipoElegido = menuTipo.value;
 
     // Seleccionamos todas las tarjetas de libros generadas por Python
     const tarjetas = document.querySelectorAll('.libro-card');
@@ -23,7 +25,7 @@ function aplicarFiltros() {
         const textoLibro = tarjeta.textContent.toLowerCase();
         const materiaLibro = tarjeta.getAttribute('data-category');
         const anioLibro = tarjeta.getAttribute('data-year');
-        const tipo = tarjeta.getAttribute('data-year')
+        const tipo = tarjeta.getAttribute('data-type')
 
         // --- CONDICIONES LÓGICAS ---
         
@@ -129,7 +131,8 @@ function mostrarRecomendaciones() {
         tarjeta.className = 'libro-card';
         tarjeta.setAttribute('data-category', `${libro.area} ${libro.tipo}`);
         tarjeta.setAttribute('data-year', libro.nivel);
-        tarjeta.innerHTML = `
+        if (libro.tipo === "Libro") {
+            tarjeta.innerHTML = `
             <img src="${libro.link_portada}" alt="Portada de ${libro.titulo}">
             <div class="badge-${libro.tipo.toLowerCase()}">${libro.tipo}</div>
             <h3>${libro.titulo}</h3>
@@ -144,6 +147,85 @@ function mostrarRecomendaciones() {
                 </div>
             </div>
         `;
+        }
+        else if (libro.tipo === "Tesis") {
+            tarjeta.innerHTML = `
+            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.id}'>
+            <img src="${libro.link_portada}">
+            <div class="badge-${libro.tipo.toLowerCase()}">${libro.tipo}</div>
+            <h3>${libro.titulo}</h3>
+            <p class="autor-name">Autores: ${libro.autor}</p>
+            <p class="año-public">Tutor: ${libro.tutor} | Asesor metodológico: ${libro.asesor} | <b>${libro.anio_publicacion}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="${libro.link}" target="_blank" class="btn-leer">Leer ${libro.tipo}</a>
+                <button class="btn-like" onclick="darLike('${libro.id}')">
+                    ❤️ <span id="count-${libro.id}">0</span>
+                </button>
+            </div>
+        </div>
+            `;
+        }
+        else if (libro.tipo === "Guia") {
+            tarjeta.innerHTML = `
+            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.id}'>
+            <img src="${libro.link_portada}" alt="Portada de ${libro.titulo}">
+            <div class="badge-${libro.tipo.toLowerCase()}">📄 ${libro.tipo}</div>
+            <h3>${libro.titulo}</h3>
+            <p class="autor-name">Autor: ${libro.autor}</p>
+            <p class="año-public">Año: <b>${libro.anio_publicacion}</b></p>
+            <p class="autor-name">Temas: ${libro.temas}</p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="${libro.link}" target="_blank" class="btn-leer">Descargar PDF</a>
+                <button class="btn-like" onclick="darLike('${libro.id}')">
+                    ❤️ <span id="count-${libro.id}">0</span>
+                </button>
+            </div>
+        </div>
+            `;
+        }
+        else if (libro.tipo === "Video") {
+            tarjeta.innerHTML = `
+            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.id}'>
+            <img src="${libro.link_portada}" alt="Portada de ${libro.titulo}">
+            <div class="badge-${libro.tipo.toLowerCase()}">🎥 ${libro.tipo}</div>
+            <h3>${libro.titulo}</h3>
+            <p class="autor-name">Duración: ${libro.duracion}</p>
+            <p class="año-public">Año: <b>${libro.anio_publicacion}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="${libro.link}" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
+                <button class="btn-like" onclick="darLike('${libro.id}')">
+                    ❤️ <span id="count-${libro.id}">0</span>
+                </button>
+            </div>
+        </div>
+            `;
+        }
+
+        else if (libro.tipo === "Web") {
+            tarjeta.innerHTML = `
+            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.id}'>
+            <img src="${libro.link_portada}">
+            <div class="badge-${libro.tipo.toLowerCase()}">🌐 ${libro.tipo}</div>
+            <h3>${libro.titulo}</h3>
+            <p class="autor-name">Plataforma: ${libro.plataforma}</p>
+            <p class="año-public">Año: <b>${libro.anio_publicacion}</b></p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="${libro.link}" target="_blank" class="btn-leer" style="background-color: #0076d6; color: white;">Visitar Sitio</a>
+                <button class="btn-like" onclick="darLike('${libro.id}')">
+                    ❤️ <span id="count-${libro.id}">0</span>
+                </button>
+            </div>
+        </div>
+            `;
+        }
         gridRec.appendChild(tarjeta);
     });
     seccionRec.style.display = 'block';
