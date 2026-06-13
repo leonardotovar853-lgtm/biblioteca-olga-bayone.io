@@ -35,19 +35,21 @@ function mostrarRecomendacionesInicio() {
         tarjeta.setAttribute('data-category', `${libro.area} ${libro.tipo}`);
         tarjeta.setAttribute('data-year', libro.nivel);
         tarjeta.innerHTML = `
-            <img src="${libro.link_portada}" alt="Portada de ${libro.titulo}">
+            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.id}'>
+            <img src="${libro.link_portada}">
             <div class="badge-${libro.tipo.toLowerCase()}">${libro.tipo}</div>
             <h3>${libro.titulo}</h3>
-            <p class="autor-name">${libro.autor}</p>
+            <p class="autor-name">${libro.autor} | ${libro.editorial}</p>
             <p class="año-public"><b>${libro.anio_publicacion}</b></p>
+            
             <div class="card-footer">
-                    <button class="btn-flip">Ver Descricion</button>
-                    <a href="${libro.link}" target="_blank" class="btn-leer">Leer ${libro.tipo}</a>
-                    <button class="btn-like" onclick="darLike('${libro.id}')">
-                        ❤️ <span id="count-${libro.id}">0</span>
-                    </button>
-                </div>
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="${libro.link}" target="_blank" class="btn-leer">Leer ${libro.tipo}</a>
+                <button class="btn-like" onclick="darLike('${libro.id}')">
+                    ❤️ <span id="count-${libro.id}">0</span>
+                </button>
             </div>
+        </div>
         `;
         gridRec.appendChild(tarjeta);
     });
