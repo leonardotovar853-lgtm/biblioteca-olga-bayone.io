@@ -2,12 +2,34 @@
 const inputBuscador = document.getElementById('buscador');
 const menuMateria = document.getElementById('filtro-area');
 const menuTipo = document.getElementById('filtro-tipo');
+const parametros = new URLSearchParams(window.location.search);
+const tipoDesdeBoton = parametros.get('tipo');
+const areaDesdeBoton = parametros.get('area');
+
+// Inicializa filtros desde la URL si están presentes
+function inicializarFiltrosDesdeUrl() {
+    let filtroAplicado = false;
+
+    if (menuTipo && tipoDesdeBoton) {
+        menuTipo.value = tipoDesdeBoton;
+        filtroAplicado = true;
+    }
+
+    if (menuMateria && areaDesdeBoton) {
+        menuMateria.value = areaDesdeBoton;
+        filtroAplicado = true;
+    }
+
+    if (filtroAplicado) {
+        setTimeout(aplicarFiltros, 100);
+    }
+}
 
 // 2. Función Maestra de Filtrado (Lógica Booleana AND)
 function aplicarFiltros() {
     // Obtenemos los valores actuales de los filtros
-    const textoUsuario = inputBuscador.value.toLowerCase().trim();
-    const materiaElegida = menuMateria.value;
+    const textoUsuario = inputBuscador ? inputBuscador.value.toLowerCase().trim() : "";
+    const materiaElegida = menuMateria ? menuMateria.value : "all";
     const tipoElegido = menuTipo ? menuTipo.value : "all";
 
     // Seleccionamos todas las tarjetas de libros generadas por Python
@@ -25,10 +47,10 @@ function aplicarFiltros() {
         const coincideTexto = textoLibro.includes(textoUsuario);
 
         // C2: ¿La materia está dentro de los metadatos?
-        const coincideMateria = (materiaElegida === "all" || materiaLibro.includes(materiaElegida));
+        const coincideMateria = (materiaElegida === "all" || (materiaLibro || "").toLowerCase().includes(materiaElegida.toLowerCase()));
 
         // C3: ¿El tipo coincide o se seleccionaron todos?
-        const coincideTipo = (tipoElegido === "all" || tipoLibro === tipoElegido);
+        const coincideTipo = (tipoElegido === "all" || (tipoLibro || "").toLowerCase() === tipoElegido.toLowerCase());
 
         // --- RESULTADO FINAL ---
         // El libro solo se muestra si cumple todas las condiciones al mismo tiempo
@@ -48,9 +70,12 @@ function aplicarFiltros() {
 
 // 3. Escuchadores de Eventos (Listeners)
 // Cada vez que el usuario haga algo, la función se ejecuta automáticamente
-inputBuscador.addEventListener('input', aplicarFiltros);
-menuMateria.addEventListener('change', aplicarFiltros);
+if (inputBuscador) inputBuscador.addEventListener('input', aplicarFiltros);
+if (menuMateria) menuMateria.addEventListener('change', aplicarFiltros);
 if (menuTipo) menuTipo.addEventListener('change', aplicarFiltros);
+
+// Inicia los filtros con parámetros URL cuando sea necesario
+inicializarFiltrosDesdeUrl();
 
 // 4. Funciones de Recomendaciones
 function recomendarSimilares(libro, todosLibros, limite = 5) {

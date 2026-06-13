@@ -86,6 +86,17 @@
     box-shadow: 0 16px 30px rgba(0,0,0,0.08);
 }
 
+.boton-area .icono.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boton-area .icono.icon i {
+    font-size: 2rem;
+    color: #1f1f1f;
+}
+
 /* El texto h3 que ya tienes */
 .boton-area h3 {
     font-size: 1rem;
