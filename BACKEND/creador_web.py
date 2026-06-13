@@ -196,8 +196,9 @@ def crear_web(biblioteca):
                         <select id="filtro-tipo">
                             <option value="all">Todos</option>
                             <option value="Tesis">Tesis de Grado</option>
-                            <option value="Guias de Estudio">Guías de Estudio</option>
-                            <option value="Videos">Videos</option>
+                            <option value="Guia">Guías de Estudio</option>
+                            <option value="Video">Videos</option>
+                            <option value="Web">Recursos Web</option>
                         </select>
                     </div>
                 </div>
