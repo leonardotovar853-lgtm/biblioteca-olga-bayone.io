@@ -45,7 +45,7 @@ function aplicarFiltros() {
 
         // --- RESULTADO FINAL ---
         // El libro solo se muestra si cumple las TRES condiciones al mismo tiempo
-        if (coincideTexto && coincideMateria && coincideAnio) {
+        if (coincideTexto && coincideMateria && coincideAnio && coincideTipo) {
             tarjeta.style.display = "block";
             // Pequeño efecto visual de entrada
             tarjeta.style.opacity = "1";
