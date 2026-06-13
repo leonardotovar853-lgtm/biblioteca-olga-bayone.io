@@ -7,7 +7,11 @@
 const inputBuscador = document.getElementById('buscador');
 const menuMateria = document.getElementById('filtro-area');
 const menuAnio = document.getElementById('filtro-año');
+<<<<<<< HEAD
 const menuTipo = document.getElementById('filtro-tipo');
+=======
+const munuTipo = document.getElementById('filtro-tipo');
+>>>>>>> 6ff7e32b3ab7e11db2e7d86abe1e05c56694c8b8
 
 // 2. Función Maestra de Filtrado (Lógica Booleana AND)
 function aplicarFiltros() {
@@ -25,7 +29,11 @@ function aplicarFiltros() {
         const textoLibro = tarjeta.textContent.toLowerCase();
         const materiaLibro = tarjeta.getAttribute('data-category');
         const anioLibro = tarjeta.getAttribute('data-year');
+<<<<<<< HEAD
         const tipo = tarjeta.getAttribute('data-type')
+=======
+        const tipo = tarjeta.getAttribute('data-category')
+>>>>>>> 6ff7e32b3ab7e11db2e7d86abe1e05c56694c8b8
 
         // --- CONDICIONES LÓGICAS ---
         
@@ -37,6 +45,9 @@ function aplicarFiltros() {
 
         // C3: ¿El año coincide (ej: "5to Año") o se seleccionaron todos?
         const coincideAnio = (anioElegido === "all" || anioLibro === anioElegido);
+
+        // C4: ¿El tipo coincide (ej: "Tesis") o se seleccionaron todos?
+        const coincideTipo = (tipoElegido === "all" || tipo === tipoElegido)
 
         // --- RESULTADO FINAL ---
         // El libro solo se muestra si cumple las TRES condiciones al mismo tiempo
