@@ -341,9 +341,27 @@ def crear_web(biblioteca):
                     </a>
                 </li>
                 <li>
-                    <a href="repositorio.html" class="boton-area">
+                    <a href="repositorio.html?tipo=Tesis" class="boton-area">
                         <span class="icono icono-tesis"></span>
-                        <h3>Tesis de Grado</h3>
+                        <h3>Proyectos de Invesgación</h3>
+                    </a>
+                </li>
+                <li>
+                    <a href="repositorio.html?tipo=Guia" class="boton-area">
+                        <span class="icono icono-guia"></span>
+                        <h3>Guías de Estudio</h3>
+                    </a>
+                </li>
+                <li>
+                    <a href="repositorio.html?tipo=Video" class="boton-area">
+                        <span class="icono icono-video"></span>
+                        <h3>Videos Educativos</h3>
+                    </a>
+                </li>
+                <li>
+                    <a href="repositorio.html?tipo=Web" class="boton-area">
+                        <span class="icono icono-web"></span>
+                        <h3>Recursos Web</h3>
                     </a>
                 </li>
             </ul>
