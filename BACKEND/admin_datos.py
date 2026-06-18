@@ -27,7 +27,7 @@ def creador_objetos(df_limpio, biblioteca):
         # 🌟 LLAMADA CORREGIDA USANDO LA CLASE RECURSOACADEMICO:
         # Se le pasa 'link' (el recurso) para que extraiga la miniatura de Drive/YouTube
         # Se usa tipo.capitalize() para que coincida con 'Libro', 'Tesis', 'Guia', etc.
-        if not link_portada or link_portada in ['N/A', 'n/a', 'NaN', 'nan'] or not link_portada.startswith(('http://', 'https://')):
+        if not link_portada or link_portada in ['N/A', 'n/a', 'NaN', 'nan'] or not link_portada.startswith(('http://', 'https://', 'data:image')):
             link_portada = RecursoAcademico._generar_portada_automatica(link, tipo.capitalize())
         
         if tipo == 'libro':
