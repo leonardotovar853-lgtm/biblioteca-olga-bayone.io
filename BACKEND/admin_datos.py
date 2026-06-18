@@ -1,7 +1,7 @@
 import pandas as pd
 import gspread
 from urllib.parse import urlparse
-from modelos import Biblioteca, Libro, Tesis, GuiaEstudio, VideoTutorial, PaginasWeb
+from modelos import RecursoAcademico, Biblioteca, Libro, Tesis, GuiaEstudio, VideoTutorial, PaginasWeb
 import uuid
 import random
 import os
@@ -20,9 +20,15 @@ def creador_objetos(df_limpio, biblioteca):
         area = fila.get('Área de Conocimiento', '')
         nivel = fila.get('Nivel de Educación', '')
         link = fila.get('Enlace del recurso', '') 
-        link_portada = ''  
+        link_portada = str(fila.get('Enlace de Portada', '')).strip()
         descripcion = fila.get('Descripción', '')
         anio = fila.get('Año de publicacion', 'Año desconocido') 
+        
+        # 🌟 LLAMADA CORREGIDA USANDO LA CLASE RECURSOACADEMICO:
+        # Se le pasa 'link' (el recurso) para que extraiga la miniatura de Drive/YouTube
+        # Se usa tipo.capitalize() para que coincida con 'Libro', 'Tesis', 'Guia', etc.
+        if not link_portada or link_portada in ['N/A', 'n/a', 'NaN', 'nan'] or not link_portada.startswith(('http://', 'https://')):
+            link_portada = RecursoAcademico._generar_portada_automatica(link, tipo.capitalize())
         
         if tipo == 'libro':
             editorial = fila.get('Editorial', '')

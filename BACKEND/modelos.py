@@ -182,7 +182,7 @@ class RecursoAcademico:
     def link_portada(self, valor):
         if isinstance(valor, str) and valor.strip():
             valor_limpio = valor.strip()
-            if valor_limpio.startswith(('http://', 'https://', 'data:image')):
+            if valor_limpio.startswith(('http://', 'https://', 'data:image', '/static/')):
                 self._link_portada = valor_limpio
             else:
                 print(f"⚠️ Formato de imagen no soportado: {valor_limpio[:50]}...")
