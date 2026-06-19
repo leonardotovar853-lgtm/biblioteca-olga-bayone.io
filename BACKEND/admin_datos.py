@@ -9,7 +9,9 @@ from sistemas_likes import obtener_likes_actualizados
 
 def creador_objetos(df_limpio, biblioteca):
     """
-    Convierte cada fila del DataFrame en un objeto RecursoAcademico
+    Convierte cada fila del DataFrame en un objeto RecursoAcademico.
+    CORREGIDO: Se usan argumentos por nombre (kwargs) para garantizar que 
+    el año y la portada caigan en sus variables correspondientes sin importar el orden del __init__.
     """
     for _, fila in df_limpio.iterrows():
         tipo = str(fila.get('Tipo de Recurso', 'Libro')).strip().lower() 
@@ -24,34 +26,53 @@ def creador_objetos(df_limpio, biblioteca):
         descripcion = fila.get('Descripción', '')
         anio = fila.get('Año de publicacion', 'Año desconocido') 
         
-        # 🌟 LLAMADA CORREGIDA USANDO LA CLASE RECURSOACADEMICO:
-        # Se le pasa 'link' (el recurso) para que extraiga la miniatura de Drive/YouTube
-        # Se usa tipo.capitalize() para que coincida con 'Libro', 'Tesis', 'Guia', etc.
-        if not link_portada or link_portada in ['N/A', 'n/a', 'NaN', 'nan', ''] or not link_portada.startswith(('http://', 'https://', 'data:image')):
-            link_portada = RecursoAcademico._generar_portada_automatica(link, tipo.capitalize())
-        
         if tipo == 'libro':
             editorial = fila.get('Editorial', '')
-            nuevo_recurso = Libro(titulo, autor, editorial, area, nivel, link, link_portada, anio, descripcion, id_existente)
+            nuevo_recurso = Libro(
+                titulo, autor, editorial, area, nivel, link, link_portada, 
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente
+            )
+            
         elif tipo == 'tesis':
             tutor = fila.get('Tutor') or 'Sin Tutor'
             asesor_metodologico = fila.get('Asesor Metodologico') or 'Sin Asesor'
-            nuevo_recurso = Tesis(titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, anio, descripcion, id_existente)
+            nuevo_recurso = Tesis(
+                titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, 
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente
+            )
+            
         elif tipo == 'guia':
             temas = fila.get('Temas Clave') or 'General'
-            nuevo_recurso = GuiaEstudio(titulo, autor, temas, area, nivel, link, link_portada, anio, descripcion, id_existente)
+            # 🌟 Ajustado explícitamente al formato de tu modelos.py
+            nuevo_recurso = GuiaEstudio(
+                titulo=titulo, autor=autor, temas=temas, area=area, nivel=nivel, link=link,
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
+            )
+            
         elif tipo == 'video':
             duracion = fila.get('Duración') or '00:00'
-            nuevo_recurso = VideoTutorial(titulo, duracion, area, nivel, link, link_portada, anio, descripcion, id_existente)
+            # 🌟 Ajustado explícitamente al formato de tu modelos.py
+            nuevo_recurso = VideoTutorial(
+                titulo=titulo, duracion=duracion, area=area, nivel=nivel, link=link,
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
+            )
+            
         elif tipo == 'web':
             plataforma = fila.get('Plataforma') or 'Internet'
-            nuevo_recurso = PaginasWeb(titulo, plataforma, area, nivel, link, link_portada, anio, descripcion, id_existente)
+            nuevo_recurso = PaginasWeb(
+                titulo=titulo, plataforma=plataforma, area=area, nivel=nivel, link=link,
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
+            )
+            
         else:
             editorial = fila.get('Editorial', 'N/A')
-            nuevo_recurso = Libro(titulo, autor, editorial, area, nivel, link, link_portada, anio, descripcion, id_existente)
+            nuevo_recurso = Libro(
+                titulo, autor, editorial, area, nivel, link, link_portada, 
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente
+            )
 
         biblioteca.agregar_recurso(nuevo_recurso)
-
+        
 def limpieza_datos():
     """
     Función principal que orquesta todo el proceso
@@ -227,6 +248,28 @@ def limpieza_datos():
                 return parsed.scheme in ['http', 'https'] and bool(parsed.netloc)
             except:
                 return False
+        # =========================================================================
+        # 🌟 NUEVA SECCIÓN: VERIFICACIÓN Y GENERACIÓN AUTOMÁTICA EN EL DATAFRAME
+        # =========================================================================
+        print("🖼️ Verificando y generando portadas automáticas faltantes...")
+        portadas_actualizadas = []
+
+        for _, fila in Df_final.iterrows():
+            link_recurso = str(fila.get('Enlace del recurso', '')).strip()
+            portada_actual = str(fila.get('Enlace de Portada', '')).strip()
+            tipo_recurso = str(fila.get('Tipo de Recurso', 'Libro')).strip().capitalize()
+            
+            # Si no hay portada, es N/A, o contiene un formato incorrecto (como un Base64 dañado)
+            if not portada_actual or portada_actual in ['N/A', 'n/a', 'NaN', 'nan', ''] or not portada_actual.startswith(('http://', 'https://')):
+                # Invocamos la generación inteligente ANTES de subir el DataFrame
+                portada_nueva = RecursoAcademico._generar_portada_automatica(link_recurso, tipo_recurso)
+                portadas_actualizadas.append(portada_nueva)
+            else:
+                # Si el usuario metió una URL manual válida en el formulario, se conserva
+                portadas_actualizadas.append(portada_actual)
+                
+        Df_final['Enlace de Portada'] = portadas_actualizadas
+        # =========================================================================
 
         print("🔍 Validando enlaces unificados de recursos...")
         Df_final = Df_final[Df_final['Enlace del recurso'].apply(es_url_valida)]
