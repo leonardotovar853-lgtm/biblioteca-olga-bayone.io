@@ -96,6 +96,23 @@
             </div>
         </div>
         
+        <div class='libro-card' data-category='Matemáticas' data-type='Guia' data-year='5to Año' libro-id='51f8cdc8'>
+            <img src="/static/images/default-pdf.png">
+            <div class="badge-guia">📄 Guia</div>
+            <h3>Clase 5 Matrices - Operaciones</h3>
+            <p class="autor-name">Autor: Pedro Quintero</p>
+            <p class="año-public">Año: <b>2022</b></p>
+            <p class="autor-name">Temas: Matrices y Vectores en R2 y R3</p>
+            
+            <div class="card-footer">
+                <button class="btn-flip">Ver Descricion</button>
+                <a href="https://drive.google.com/open?id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf" target="_blank" class="btn-leer">Descargar PDF</a>
+                <button class="btn-like" onclick="darLike('51f8cdc8')">
+                    ❤️ <span id="count-51f8cdc8">0</span>
+                </button>
+            </div>
+        </div>
+        
         <div class='libro-card' data-category='Biología' data-type='Video' data-year='1er Año' libro-id='7fa34007'>
             <img src="https://drive.google.com/thumbnail?sz=w500&id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf">
             <div class="badge-video">🎥 Video</div>
@@ -135,7 +152,7 @@
             </section>
         </main>
         <script>
-            const librosData = [{"ID": "fd06b857", "tipo": "Tesis", "titulo": "CREACI\u00d3N DE BIBLIOTECA DIGITAL INTELIGENTE DIRIGIDA A LA COMUNIDAD ESTUDIANTIL Y DOCENTE DE MEDIA GE", "autor": "Laya F, Tovar L y Vargas J", "editorial": "N/A", "area": "Tecnolog\u00eda", "nivel": "General", "link": "https://drive.google.com/file/d/1tOBBC6mR10hsBsn4BixUsfKXFkg3cjIJ/view?usp=sharing", "link_portada": "https://i.postimg.cc/wBx3yBSh/Portada.png", "anio_publicacion": "2026", "descripcion": "Tesis de biblioteca digital", "tutor": "Yris Diaz", "asesor_metodologico": "Greylis Medina"}, {"ID": "28f08655", "tipo": "Guia", "titulo": "Potencia R - Ejercicios Propuestos", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "3er A\u00f1o", "link": "https://drive.google.com/file/d/1UFE80dpWn6EXkg096-0mETAE1FmaKyts/view?usp=sharing", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1UFE80dpWn6EXkg096-0mETAE1FmaKyts", "anio_publicacion": "2023", "descripcion": "Guia de ejercicios de matem\u00e1tica la amo profe que administra esto....", "temas_clave": "Potencia y Algebra"}, {"ID": "7fa34007", "tipo": "Video", "titulo": "Transporte de agua y nutrientes en la planta", "autor": "Multimedia", "editorial": "Internet", "area": "Biolog\u00eda", "nivel": "1er A\u00f1o", "link": "https://drive.google.com/file/d/1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf/view", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf", "anio_publicacion": "2021", "descripcion": "hola", "duracion": "33:55"}, {"ID": "61980bcc", "tipo": "Web", "titulo": "Thinkercad", "autor": "Webmaster", "editorial": "Plataforma Digital", "area": "Inform\u00e1tica y Tecnolog\u00eda", "nivel": "5to A\u00f1o", "link": "https://www.tinkercad.com/", "link_portada": "/static/images/default-web.png", "anio_publicacion": "2011", "descripcion": "Pagina simuladora de Modelos 3D, Circuitos Electricos, Bloques de Codigo", "plataforma": "Simulador Virtual"}];
+            const librosData = [{"ID": "fd06b857", "tipo": "Tesis", "titulo": "CREACI\u00d3N DE BIBLIOTECA DIGITAL INTELIGENTE DIRIGIDA A LA COMUNIDAD ESTUDIANTIL Y DOCENTE DE MEDIA GE", "autor": "Laya F, Tovar L y Vargas J", "editorial": "N/A", "area": "Tecnolog\u00eda", "nivel": "General", "link": "https://drive.google.com/file/d/1tOBBC6mR10hsBsn4BixUsfKXFkg3cjIJ/view?usp=sharing", "link_portada": "https://i.postimg.cc/wBx3yBSh/Portada.png", "anio_publicacion": "2026", "descripcion": "Tesis de biblioteca digital", "tutor": "Yris Diaz", "asesor_metodologico": "Greylis Medina"}, {"ID": "28f08655", "tipo": "Guia", "titulo": "Potencia R - Ejercicios Propuestos", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "3er A\u00f1o", "link": "https://drive.google.com/file/d/1UFE80dpWn6EXkg096-0mETAE1FmaKyts/view?usp=sharing", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1UFE80dpWn6EXkg096-0mETAE1FmaKyts", "anio_publicacion": "2023", "descripcion": "Guia de ejercicios de matem\u00e1tica la amo profe que administra esto....", "temas_clave": "Potencia y Algebra"}, {"ID": "51f8cdc8", "tipo": "Guia", "titulo": "Clase 5 Matrices - Operaciones", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "5to A\u00f1o", "link": "https://drive.google.com/open?id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf", "link_portada": "/static/images/default-pdf.png", "anio_publicacion": "2022", "descripcion": "Guia de operaciones con matrices", "temas_clave": "Matrices y Vectores en R2 y R3"}, {"ID": "7fa34007", "tipo": "Video", "titulo": "Transporte de agua y nutrientes en la planta", "autor": "Multimedia", "editorial": "Internet", "area": "Biolog\u00eda", "nivel": "1er A\u00f1o", "link": "https://drive.google.com/file/d/1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf/view", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf", "anio_publicacion": "2021", "descripcion": "hola", "duracion": "33:55"}, {"ID": "61980bcc", "tipo": "Web", "titulo": "Thinkercad", "autor": "Webmaster", "editorial": "Plataforma Digital", "area": "Inform\u00e1tica y Tecnolog\u00eda", "nivel": "5to A\u00f1o", "link": "https://www.tinkercad.com/", "link_portada": "/static/images/default-web.png", "anio_publicacion": "2011", "descripcion": "Pagina simuladora de Modelos 3D, Circuitos Electricos, Bloques de Codigo", "plataforma": "Simulador Virtual"}];
         </script>  
         <script src="../js/buscadorRepositorio.js"></script> 
         <script src="../js/nav.js"></script>
