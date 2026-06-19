@@ -48,17 +48,23 @@ class RecursoAcademico:
     def _generar_portada_automatica(link, tipo):
         """
         Determina la URL de la portada de forma automática y óptima 
-        según el enlace del recurso y su tipo.
+        según el enlace del recurso y su tipo. Supports multiple Drive URL formats.
         """
         link = str(link).strip()
         
-        # Caso 1: Recursos en Google Drive (PDFs de Tesis, Guías, Libros locales)
-        if 'drive.google.com' in link and '/d/' in link:
+        # Caso 1: Recursos en Google Drive (Soporta /d/ y open?id=)
+        if 'drive.google.com' in link:
+            file_id = None
             try:
-                file_id = link.split('/d/')[1].split('/')[0]
-                # API de Miniaturas de Google Drive: Extrae la primera página del PDF en 500px de ancho
-                return f'https://drive.google.com/thumbnail?sz=w500&id={file_id}'
-            except IndexError:
+                if '/d/' in link:
+                    file_id = link.split('/d/')[1].split('/')[0]
+                elif 'id=' in link:
+                    file_id = link.split('id=')[1].split('&')[0]
+                    
+                if file_id:
+                    # API de Miniaturas de Google Drive: Extrae la primera página en 500px de ancho
+                    return f'https://drive.google.com/thumbnail?sz=w500&id={file_id}'
+            except (IndexError, ValueError):
                 pass
         
         # Caso 2: Videos de YouTube
@@ -68,12 +74,15 @@ class RecursoAcademico:
                     video_id = link.split('v=')[1].split('&')[0]
                 else:
                     video_id = link.split('/')[-1].split('?')[0]
-                # Servidor de miniaturas oficial de YouTube (Resolución estándar de alta calidad)
+                # Servidor de miniaturas oficial de YouTube
                 return f'https://img.youtube.com/vi/{video_id}/hqdefault.jpg'
             except IndexError:
                 pass
 
         # Caso 3: Imagen por defecto según el tipo de archivo si no se cumple lo anterior
+        # Usamos .capitalize() o .strip() para asegurar que coincida con las claves
+        tipo_normalizado = str(tipo).strip().capitalize()
+        
         dict_por_defecto = {
             'Libro': '/static/images/default-book.png',
             'Tesis': '/static/images/default-tesis.png',
@@ -81,8 +90,8 @@ class RecursoAcademico:
             'Video': '/static/images/default-video.png',
             'Web': '/static/images/default-web.png'
         }
-        return dict_por_defecto.get(tipo, '/static/images/default-web.png')
-    
+        return dict_por_defecto.get(tipo_normalizado, '/static/images/default-web.png')
+
     @staticmethod
     def _convertir_drive_url(url):
         """Convierte enlaces de Google Drive a formato de imagen."""
