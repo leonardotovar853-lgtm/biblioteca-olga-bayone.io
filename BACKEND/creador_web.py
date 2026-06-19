@@ -190,7 +190,9 @@ def crear_web(biblioteca):
                                 <option value="Salud">Salud</option>
                                 <option value="Educación">Educación</option>
                                 <option value="Orientación Vocacional">Orientación Vocacional</option>
-                                <option value="Tecnología">Tecnología (Tesis)</option>
+                                <option value="Tecnología">Tecnología</option>
+                                <option value="Ciencias">Ciencias</option>
+                                <option value="Social">Social</option>
                             </optgroup>
                         </select>
                         <select id="filtro-tipo">
