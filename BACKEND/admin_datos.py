@@ -260,7 +260,7 @@ def limpieza_datos():
             tipo_recurso = str(fila.get('Tipo de Recurso', 'Libro')).strip().capitalize()
             
             # Si no hay portada, es N/A, o contiene un formato incorrecto (como un Base64 dañado)
-            if not portada_actual or portada_actual in ['N/A', 'n/a', 'NaN', 'nan', ''] or not portada_actual.startswith(('http://', 'https://')):
+            if not portada_actual or portada_actual in ['N/A', 'n/a', 'NaN', 'nan', ''] or not portada_actual.startswith(('http://', 'https://', 'data:image')):
                 # Invocamos la generación inteligente ANTES de subir el DataFrame
                 portada_nueva = RecursoAcademico._generar_portada_automatica(link_recurso, tipo_recurso)
                 portadas_actualizadas.append(portada_nueva)
