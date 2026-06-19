@@ -55,14 +55,23 @@
     text-align: left;
 }
 
-.autor-name {
+.libro-card h3 {
+    display: -webkit-box;        /* 🌟 Cambia a 3 si prefieres dar un poco más de espacio */
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 3em;                    /* 🌟 Esto mantiene la caja del título con una altura fija fija */
+    line-height: 1.5em;
+    margin-bottom: 10px;
+}
+.libro-card .autor-name {
     margin: 0 18px 6px;
     font-size: 0.95rem;
     color: #475569;
     text-align: left;
 }
 
-.año-public {
+.libro-card .año-public {
     margin: 0 18px 18px;
     font-size: 0.85rem;
     color: #64748b;
