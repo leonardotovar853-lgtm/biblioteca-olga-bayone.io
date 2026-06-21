@@ -43,7 +43,6 @@ def creador_objetos(df_limpio, biblioteca):
             
         elif tipo == 'guia':
             temas = fila.get('Temas Clave') or 'General'
-            # 🌟 Ajustado explícitamente al formato de tu modelos.py
             nuevo_recurso = GuiaEstudio(
                 titulo=titulo, autor=autor, temas=temas, area=area, nivel=nivel, link=link,
                 anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
@@ -51,7 +50,6 @@ def creador_objetos(df_limpio, biblioteca):
             
         elif tipo == 'video':
             duracion = fila.get('Duración') or '00:00'
-            # 🌟 Ajustado explícitamente al formato de tu modelos.py
             nuevo_recurso = VideoTutorial(
                 titulo=titulo, duracion=duracion, area=area, nivel=nivel, link=link,
                 anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
@@ -75,7 +73,7 @@ def creador_objetos(df_limpio, biblioteca):
         
 def limpieza_datos():
     """
-    Función principal que orquesta todo el proceso
+    Función principal que orquesta todo el proceso y protege las decisiones de Estado y Likes
     """
     try:
         print('🌐 Conectando con Google Sheets...')
@@ -105,12 +103,10 @@ def limpieza_datos():
                 
                 df = pd.DataFrame(datos)
                 
-                # Quitar columnas innecesarias
                 for col_basura in ['Marca temporal', 'Form_Responses', 'Timestamp']:
                     if col_basura in df.columns:
                         df = df.drop(columns=[col_basura])
                 
-                # Homologar nombres de columnas
                 columnas_nuevas = {}
                 for col in df.columns:
                     col_limpia = str(col).strip().lower()
@@ -152,14 +148,13 @@ def limpieza_datos():
                 
                 df = df.rename(columns=columnas_nuevas)
                 
-                # Consolidación del enlace del recurso o archivo local
                 if 'Archivo Local Drive' in df.columns:
                     if 'Enlace del recurso' in df.columns:
                         df['Enlace del recurso'] = df['Enlace del recurso'].replace('', None).combine_first(df['Archivo Local Drive'].replace('', None)).fillna('')
                     else:
                         df['Enlace del recurso'] = df['Archivo Local Drive']
                     df = df.drop(columns=['Archivo Local Drive'])
-                # Eliminar columnas duplicadas que puedan haber surgido por renombrados o formatos inconsistentes
+                    
                 df = df.loc[:, ~df.columns.duplicated()]
                 df['Tipo de Recurso'] = recurso_tipo
                 lista_df.append(df)
@@ -180,37 +175,16 @@ def limpieza_datos():
             'Enlace de Portada', 'Año de publicacion', 'Descripción', 'Temas Clave', 
             'Duración', 'Plataforma', 'Likes', 'Estado'
         ]
-        
         Df_final = Df_final.reindex(columns=columnas)
         
         # =========================================================================
-        # 🛠️ SECCIÓN MODIFICADA: REGLAS LÓGICAS PARA LA COLUMNA 'ESTADO'
+        # 🔄 NUEVA LÓGICA MEMORIA: RESCATAR ID, LIKES Y ESTADO HISTÓRICO
         # =========================================================================
-        print("📋 Aplicando lógica institucional de validación de Estados...")
-        
-        # 1. Reemplazar valores nulos, vacíos o N/A por 'Pendiente'
-        Df_final['Estado'] = Df_final['Estado'].fillna('').astype(str).str.strip()
-        Df_final.loc[Df_final['Estado'].isin(['', 'N/A', 'n/a', 'NaN', 'nan', 'None']), 'Estado'] = 'Pendiente'
-        
-        # 2. Borrar del DataFrame los recursos marcados como 'Rechazado'
-        cantidad_antes = len(Df_final)
-        Df_final = Df_final[Df_final['Estado'].str.lower() != 'rechazado']
-        cantidad_eliminados = cantidad_antes - len(Df_final)
-        
-        if cantidad_eliminados > 0:
-            print(f"🗑️ Se eliminaron {cantidad_eliminados} recursos marcados como 'Rechazado' de la BD.")
-            
-        # Nota: Los recursos con Estado 'Aprobado' se mantienen intactos automáticamente
-        # =========================================================================
-
-        # Rellenar el resto de las columnas generales con N/A
-        columnas_sin_estado = [c for c in Df_final.columns if c != 'Estado']
-        Df_final[columnas_sin_estado] = Df_final[columnas_sin_estado].fillna('N/A')
-        Df_final = Df_final.fillna('N/A')
-        Df_final['Año de publicacion'] = Df_final['Año de publicacion'].astype(str).replace(['N/A', 'n/a', 'NaN', 'nan'], 'Año desconocido')
-        
-        print("\n🔍 Buscando registros existentes en 'BD_General' para conservar IDs...")
+        print("\n🔍 Analizando 'BD_General' para conservar IDs, Estados y Likes...")
         dict_ids_viejos = {}
+        dict_estados_viejos = {}
+        dict_likes_viejos = {}
+        
         try:
             hoja_destino = sh.worksheet('BD_General')
             datos_generales = hoja_destino.get_all_records()
@@ -220,16 +194,26 @@ def limpieza_datos():
                     titulo_ext = str(fila_ext.get('Titulo', '')).strip().lower()
                     autor_ext = str(fila_ext.get('Autor', '')).strip().lower()
                     id_ext = str(fila_ext.get('ID', '')).strip()
+                    estado_ext = str(fila_ext.get('Estado', 'Pendiente')).strip()
+                    likes_ext = fila_ext.get('Likes', 0)
                     
-                    if titulo_ext and autor_ext and id_ext and '/' not in id_ext:
-                        dict_ids_viejos[(titulo_ext, autor_ext)] = id_ext
-                print(f"📋 Se rescataron {len(dict_ids_viejos)} IDs guardados previamente.")
+                    if titulo_ext and autor_ext:
+                        llave = (titulo_ext, autor_ext)
+                        if id_ext and '/' not in id_ext:
+                            dict_ids_viejos[llave] = id_ext
+                        if estado_ext:
+                            dict_estados_viejos[llave] = estado_ext
+                        dict_likes_viejos[llave] = likes_ext if likes_ext != '' else 0
+                        
+                print(f"📋 Rescatados del histórico: {len(dict_ids_viejos)} IDs | {len(dict_estados_viejos)} Estados | {len(dict_likes_viejos)} Datos de Likes.")
         except gspread.exceptions.WorksheetNotFound:
-            print("✨ No se encontró 'BD_General'. Se creará automáticamente al final.")
+            print("✨ No se encontró 'BD_General'. Se creará automáticamente.")
             hoja_destino = sh.add_worksheet(title="BD_General", rows="1000", cols="20")
 
-        print("🆔 Verificando identificadores estables de recursos...")
+        # Asignación inteligente cruzando datos históricos
         ids_finales = []
+        estados_finales = []
+        likes_finales = []
         nuevos_contados = 0
         
         for _, fila in Df_final.iterrows():
@@ -237,6 +221,7 @@ def limpieza_datos():
             autor_actual = str(fila.get('Autor', '')).strip().lower()
             llave_actual = (titulo_actual, autor_actual)
             
+            # 1. Conservar ID o crear uno estable
             id_formulario = str(fila.get('ID', '')).strip()
             if '/' in id_formulario and ':' in id_formulario:
                 id_formulario = ''
@@ -249,22 +234,52 @@ def limpieza_datos():
                 ids_finales.append(uuid.uuid4().hex[:8])
                 nuevos_contados += 1
                 
+            # 2. Conservar el Estado asignado en tu panel (o 'Pendiente' por defecto)
+            if llave_actual in dict_estados_viejos:
+                estados_finales.append(dict_estados_viejos[llave_actual])
+            else:
+                estados_finales.append('Pendiente')
+                
+            # 3. Conservar contador de Likes de los alumnos
+            if llave_actual in dict_likes_viejos:
+                likes_finales.append(dict_likes_viejos[llave_actual])
+            else:
+                likes_finales.append(0)
+                
         Df_final['ID'] = ids_finales
-        print(f"✅ Identificación lista. Conservados: {len(ids_finales) - nuevos_contados} | Nuevos generados: {nuevos_contados}")
+        Df_final['Estado'] = estados_finales
+        Df_final['Likes'] = likes_finales
+        # =========================================================================
 
+        # =========================================================================
+        # 🗑️ SECCIÓN REVISADA: PURGA ABSOLUTA DE ELEMENTOS RECHAZADOS
+        # =========================================================================
+        # Estandarizamos texto para que no falle por espacios o mayúsculas
+        Df_final['Estado'] = Df_final['Estado'].fillna('Pendiente').astype(str).str.strip()
+        Df_final.loc[Df_final['Estado'].isin(['', 'N/A', 'n/a', 'NaN', 'nan', 'None']), 'Estado'] = 'Pendiente'
+        
+        # Filtrar: Si lo rechazaste en el Panel, se saca del flujo para que no aparezca en la Web
+        cantidad_antes = len(Df_final)
+        Df_final = Df_final[Df_final['Estado'].str.lower() != 'rechazado']
+        cantidad_eliminados = cantidad_antes - len(Df_final)
+        
+        if cantidad_eliminados > 0:
+            print(f"🗑️ Se purgaron {cantidad_eliminados} recursos marcados como 'Rechazado' de la base de datos.")
+        # =========================================================================
+
+        # Rellenar el resto de las columnas generales con N/A de forma segura
+        columnas_sin_estado_likes = [c for c in Df_final.columns if c not in ['Estado', 'Likes']]
+        Df_final[columnas_sin_estado_likes] = Df_final[columnas_sin_estado_likes].fillna('N/A')
+        Df_final['Año de publicacion'] = Df_final['Año de publicacion'].astype(str).replace(['N/A', 'n/a', 'NaN', 'nan'], 'Año desconocido')
+        
         print("\n🧹 Iniciando limpieza de strings y caracteres repetidos...")
-        cols_para_limpiar = [c for c in Df_final.columns if 'Enlace' not in c and 'link' not in c.lower() and c != 'ID']
+        cols_para_limpiar = [c for c in Df_final.columns if 'Enlace' not in c and 'link' not in c.lower() and c not in ['ID', 'Estado', 'Likes']]
         for col in cols_para_limpiar:
             Df_final[col] = Df_final[col].astype(str).str.strip()
         
-        # Eliminar spam
-        filas_iniciales = len(Df_final)
+        # Eliminar spam interactivo de caracteres repetidos
         for col in cols_para_limpiar:
             Df_final = Df_final[~Df_final[col].str.contains(r'(.)\1{6,}', na=False, case=False)]
-        
-        filas_eliminadas = filas_iniciales - len(Df_final)
-        if filas_eliminadas > 0:
-            print(f"🧹 Filas eliminadas por spam/basura: {filas_eliminadas}")
         
         def es_url_valida(url):
             try:
@@ -272,28 +287,21 @@ def limpieza_datos():
                 return parsed.scheme in ['http', 'https'] and bool(parsed.netloc)
             except:
                 return False
-        # =========================================================================
-        # 🌟 NUEVA SECCIÓN: VERIFICACIÓN Y GENERACIÓN AUTOMÁTICA EN EL DATAFRAME
-        # =========================================================================
+
         print("🖼️ Verificando y generando portadas automáticas faltantes...")
         portadas_actualizadas = []
-
         for _, fila in Df_final.iterrows():
             link_recurso = str(fila.get('Enlace del recurso', '')).strip()
             portada_actual = str(fila.get('Enlace de Portada', '')).strip()
             tipo_recurso = str(fila.get('Tipo de Recurso', 'Libro')).strip().capitalize()
             
-            # Si no hay portada, es N/A, o contiene un formato incorrecto (como un Base64 dañado)
             if not portada_actual or portada_actual in ['N/A', 'n/a', 'NaN', 'nan', ''] or not portada_actual.startswith(('http://', 'https://', 'data:image')):
-                # Invocamos la generación inteligente ANTES de subir el DataFrame
                 portada_nueva = RecursoAcademico._generar_portada_automatica(link_recurso, tipo_recurso)
                 portadas_actualizadas.append(portada_nueva)
             else:
-                # Si el usuario metió una URL manual válida en el formulario, se conserva
                 portadas_actualizadas.append(portada_actual)
                 
         Df_final['Enlace de Portada'] = portadas_actualizadas
-        # =========================================================================
 
         print("🔍 Validando enlaces unificados de recursos...")
         Df_final = Df_final[Df_final['Enlace del recurso'].apply(es_url_valida)]
@@ -301,11 +309,10 @@ def limpieza_datos():
 
         if len(Df_final) > 0:
             print("\n☁️ Sincronizando y guardando datos en 'BD_General'...")
-            Df_final_subir = Df_final.head(1000).copy().fillna('N/A')
+            Df_final_subir = Df_final.head(1000).copy()
             datos_formateados = [Df_final_subir.columns.values.tolist()] + Df_final_subir.values.tolist()
             
             hoja_destino.clear()
-            # CORREGIDO: Argumentos en orden correcto para evitar el DeprecationWarning
             hoja_destino.update(values=datos_formateados, range_name='A1')
             print(f"✨ ¡Base de Datos general consolidada con {len(Df_final_subir)} filas!")
         else:
@@ -315,7 +322,6 @@ def limpieza_datos():
         biblioteca = Biblioteca('Biblioteca Olga Bayone')
         creador_objetos(Df_final, biblioteca)
         
-        # 🌟 REINCORPORADO: Resumen estadístico detallado de recursos en consola
         print("\n📊 RESUMEN DE CLASIFICACIÓN FINAL:")
         print(f"   • Total recursos en memoria: {len(biblioteca.lista_libros)}")
         print("-" * 40)
@@ -336,6 +342,6 @@ def limpieza_datos():
 
 if __name__ == '__main__':
     print("="*60)
-    print("🚀 INICIANDO PROCESO DE LIMPIEZA DE DATOS")
+    print("🚀 INICIANDO PROCESO DE LIMPIEZA DE DATOS CON MEMORIA DE ESTADOS")
     print("="*60)
     biblioteca = limpieza_datos()
