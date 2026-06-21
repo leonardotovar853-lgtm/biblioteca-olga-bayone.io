@@ -178,10 +178,34 @@ def limpieza_datos():
             'ID', 'Tipo de Recurso', 'Titulo', 'Autor', 'Editorial', 'Tutor', 'Asesor Metodologico',
             'Área de Conocimiento', 'Nivel de Educación', 'Enlace del recurso', 
             'Enlace de Portada', 'Año de publicacion', 'Descripción', 'Temas Clave', 
-            'Duración', 'Plataforma', 'Likes', 'Validación'
+            'Duración', 'Plataforma', 'Likes', 'Estado'
         ]
         
         Df_final = Df_final.reindex(columns=columnas)
+        
+        # =========================================================================
+        # 🛠️ SECCIÓN MODIFICADA: REGLAS LÓGICAS PARA LA COLUMNA 'ESTADO'
+        # =========================================================================
+        print("📋 Aplicando lógica institucional de validación de Estados...")
+        
+        # 1. Reemplazar valores nulos, vacíos o N/A por 'Pendiente'
+        Df_final['Estado'] = Df_final['Estado'].fillna('').astype(str).str.strip()
+        Df_final.loc[Df_final['Estado'].isin(['', 'N/A', 'n/a', 'NaN', 'nan', 'None']), 'Estado'] = 'Pendiente'
+        
+        # 2. Borrar del DataFrame los recursos marcados como 'Rechazado'
+        cantidad_antes = len(Df_final)
+        Df_final = Df_final[Df_final['Estado'].str.lower() != 'rechazado']
+        cantidad_eliminados = cantidad_antes - len(Df_final)
+        
+        if cantidad_eliminados > 0:
+            print(f"🗑️ Se eliminaron {cantidad_eliminados} recursos marcados como 'Rechazado' de la BD.")
+            
+        # Nota: Los recursos con Estado 'Aprobado' se mantienen intactos automáticamente
+        # =========================================================================
+
+        # Rellenar el resto de las columnas generales con N/A
+        columnas_sin_estado = [c for c in Df_final.columns if c != 'Estado']
+        Df_final[columnas_sin_estado] = Df_final[columnas_sin_estado].fillna('N/A')
         Df_final = Df_final.fillna('N/A')
         Df_final['Año de publicacion'] = Df_final['Año de publicacion'].astype(str).replace(['N/A', 'n/a', 'NaN', 'nan'], 'Año desconocido')
         
