@@ -331,7 +331,7 @@ class GuiaEstudio(RecursoAcademico):
             <h3>{titulo_safe}</h3>
             <p class="autor-name">Autor: {autor_safe}</p>
             <p class="año-public">Año: <b>{anio_safe}</b></p>
-            <p class="autor-name">Temas: {temas_safe}</p>
+            <p class="temas">Temas: {temas_safe}</p>
             
             <div class="card-footer">
                 <button class="btn-flip">Ver Descricion</button>
@@ -371,7 +371,8 @@ class VideoTutorial(RecursoAcademico):
             <img src="{portada}">
             <div class="badge-{self.tipo.lower()}">🎥 {tipo_safe}</div>
             <h3>{titulo_safe}</h3>
-            <p class="autor-name">Duración: {duracion_safe}</p>
+            <p class="autor-name">Autor: {self.autor}</p>
+            <p class="duracion">Duración: {duracion_safe}</p>
             <p class="año-public">Año: <b>{anio_safe}</b></p>
             
             <div class="card-footer">
