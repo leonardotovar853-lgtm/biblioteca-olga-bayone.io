@@ -31,13 +31,14 @@ def clasificar_tarjetas(biblioteca):
     tarjetas_repositorio = []
     
     for recurso in biblioteca.lista_libros:
-        tipo_normalizado = recurso.tipo.strip().lower()
-        html_targeta = recurso.generar_tarjeta_html()
-            
-        if tipo_normalizado == 'libro':
-                tarjetas_catalogo.append(html_targeta)
-        else:
-                tarjetas_repositorio.append(html_targeta)
+        if recurso.estado == 'Aprobado':
+            tipo_normalizado = recurso.tipo.strip().lower()
+            html_tarjeta = recurso.generar_tarjeta_html()
+                
+            if tipo_normalizado == 'libro':
+                    tarjetas_catalogo.append(html_tarjeta)
+            else:
+                    tarjetas_repositorio.append(html_tarjeta)
                 
     return tarjetas_catalogo, tarjetas_repositorio
 
@@ -386,6 +387,7 @@ def crear_web(biblioteca):
         # --- 3. ESCRITURA FINAL ---
         base_dir = r'C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\FRONTEND'
         os.makedirs(base_dir, exist_ok=True)
+        
         
         # Generar catálogo completo
         tarjetas_html_catalogo = ''.join(tarjetas_catalogo)

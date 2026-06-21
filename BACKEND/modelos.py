@@ -11,7 +11,7 @@ class RecursoAcademico:
     años_validos = range(1900, anio_actual + 1)
     nivel_validos = ['1er Año', '2do Año', '3er Año', '4to Año', '5to Año', 'General']
     
-    def __init__(self, titulo, autor, editorial, area, nivel, link, link_portada, tipo, anio_publicacion, descripcion, id_existente=None):
+    def __init__(self, titulo, autor, editorial, area, nivel, link, link_portada, tipo, anio_publicacion, descripcion, id_existente=None, estado='Pendiente'):
         # Inicialización de variables privadas con valores por defecto
         self._titulo = 'Sin titulo'  
         self._autor = 'Anónimo'
@@ -22,7 +22,8 @@ class RecursoAcademico:
         self._link_portada = ''
         self._anio_publicacion = 'Año desconocido'
         self._descripcion = 'Sin descripción'
-        
+        self._estado = estado
+
         if id_existente and str(id_existente).strip() not in ['', 'nan', 'None']:
             self._id = str(id_existente)
         else:
@@ -208,6 +209,15 @@ class RecursoAcademico:
     
     @property
     def id(self): return self._id
+    
+    # ✅ CORRECCIÓN: Añadido property y setter para 'estado'
+    @property
+    def estado(self): 
+        return self._estado
+
+    @estado.setter
+    def estado(self, valor): 
+        self._estado = str(valor).strip()
 
     def generar_tarjeta_html(self):
         raise NotImplementedError("Cada subclase debe implementar su propio diseño de tarjeta HTML")
@@ -216,13 +226,13 @@ class RecursoAcademico:
         return {
             'ID': self.id, 'tipo': self.tipo, 'titulo': self.titulo, 'autor': self.autor,
             'editorial': self.editorial, 'area': self.area, 'nivel': self.nivel, 'link': self.link, 
-            'link_portada': self.link_portada, 'anio_publicacion': self.anio_publicacion, 'descripcion': self.descripcion
+            'link_portada': self.link_portada, 'anio_publicacion': self.anio_publicacion, 'descripcion': self.descripcion, 'estado': self._estado
         }
-        
+
 class Libro(RecursoAcademico):
-    def __init__(self, titulo, autor, editorial, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None):
-        # ✅ Eliminadas las asignaciones redundantes posteriores, el constructor padre ya las ejecuta limpiamente
-        super().__init__(titulo, autor, editorial, area, nivel, link, link_portada, 'Libro', anio_publicacion, descripcion=descripcion, id_existente=id_existente)
+    def __init__(self, titulo, autor, editorial, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None, estado='Pendiente'):
+        # ✅ Ahora acepta 'estado' y lo pasa limpiamente a la clase base
+        super().__init__(titulo, autor, editorial, area, nivel, link, link_portada, 'Libro', anio_publicacion, descripcion=descripcion, id_existente=id_existente, estado=estado)
     
     def to_dict(self):
         d = super().to_dict()
@@ -256,10 +266,11 @@ class Libro(RecursoAcademico):
         """
                 
 class Tesis(RecursoAcademico):
-    def __init__(self, titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None):
-        super().__init__(titulo, autor, 'N/A', area, nivel, link, link_portada, 'Tesis', anio_publicacion, descripcion, id_existente)
-        self.tutor = tutor  # Mantenemos la referencia explícita local para claridad del modelo de Tesis
-        self.asesor_metodologico = asesor_metodologico  # Guardamos el asesor metodológico por separado
+    def __init__(self, titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None, estado='Pendiente'):
+        # ✅ Corrección aquí también para soportar el estado que venga del backend
+        super().__init__(titulo, autor, 'N/A', area, nivel, link, link_portada, 'Tesis', anio_publicacion, descripcion, id_existente, estado=estado)
+        self.tutor = tutor  
+        self.asesor_metodologico = asesor_metodologico  
         
     def to_dict(self):
         d = super().to_dict()
@@ -300,8 +311,9 @@ class Tesis(RecursoAcademico):
         """
                 
 class GuiaEstudio(RecursoAcademico):
-    def __init__(self, titulo, autor, temas, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, link_portada=''):
-        super().__init__(titulo, autor or 'Institucional', 'Material de Estudio', area, nivel, link, link_portada, 'Guia', anio_publicacion, descripcion, id_existente)
+    def __init__(self, titulo, autor, temas, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, link_portada='', estado='Pendiente'):
+        # ✅ Pasamos el parámetro estado
+        super().__init__(titulo, autor or 'Institucional', 'Material de Estudio', area, nivel, link, link_portada, 'Guia', anio_publicacion, descripcion, id_existente, estado=estado)
         self.temas = temas
         
     def to_dict(self):
@@ -310,7 +322,8 @@ class GuiaEstudio(RecursoAcademico):
             'tipo': 'Guia',
             'autor': self.autor,
             'temas_clave': self.temas,
-            'anio_publicacion': self.anio_publicacion
+            'anio_publicacion': self.anio_publicacion,
+            'estado': self._estado
         })
         return d
         
@@ -344,8 +357,9 @@ class GuiaEstudio(RecursoAcademico):
         """
         
 class VideoTutorial(RecursoAcademico):
-    def __init__(self, titulo, duracion, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Multimedia', link_portada=''):
-        super().__init__(titulo, autor, 'Internet', area, nivel, link, link_portada, 'Video', anio_publicacion, descripcion, id_existente)
+    def __init__(self, titulo, duracion, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Multimedia', link_portada='', estado='Pendiente'):
+        # ✅ Pasamos el parámetro estado
+        super().__init__(titulo, autor, 'Internet', area, nivel, link, link_portada, 'Video', anio_publicacion, descripcion, id_existente, estado=estado)
         self.duracion = duracion
         
     def to_dict(self):
@@ -353,7 +367,8 @@ class VideoTutorial(RecursoAcademico):
         d.update({
             'tipo': 'Video',
             'duracion': self.duracion,
-            'anio_publicacion': self.anio_publicacion
+            'anio_publicacion': self.anio_publicacion,
+            'estado': self._estado
         })
         return d
         
@@ -386,8 +401,9 @@ class VideoTutorial(RecursoAcademico):
         """
 
 class PaginasWeb(RecursoAcademico):
-    def __init__(self, titulo, plataforma, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Webmaster', link_portada=''):
-        super().__init__(titulo, autor, 'Plataforma Digital', area, nivel, link, link_portada, 'Web', anio_publicacion, descripcion, id_existente)
+    def __init__(self, titulo, plataforma, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Webmaster', link_portada='', estado='Pendiente'):
+        # ✅ Pasamos el parámetro estado
+        super().__init__(titulo, autor, 'Plataforma Digital', area, nivel, link, link_portada, 'Web', anio_publicacion, descripcion, id_existente, estado=estado)
         self.plataforma = plataforma
         
     def to_dict(self):
@@ -395,7 +411,8 @@ class PaginasWeb(RecursoAcademico):
         d.update({
             'tipo': 'Web',
             'plataforma': self.plataforma,
-            'anio_publicacion': self.anio_publicacion
+            'anio_publicacion': self.anio_publicacion,
+            'estado': self._estado
         })
         return d
         
@@ -473,6 +490,11 @@ class Biblioteca:
         except ValueError:
             pass
         return list(dict.fromkeys(similares))[:limite]
+    
+    def aprobado(self, recurso):
+        if recurso._estado == 'Aprobado':
+            return True
+        return False
     
     def exportar_a_lista_dict(self):
         """Exporta la lista de libros a una lista de diccionarios para JSON."""

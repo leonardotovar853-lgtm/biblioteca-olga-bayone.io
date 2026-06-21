@@ -10,8 +10,8 @@ from sistemas_likes import obtener_likes_actualizados
 def creador_objetos(df_limpio, biblioteca):
     """
     Convierte cada fila del DataFrame en un objeto RecursoAcademico.
-    CORREGIDO: Se usan argumentos por nombre (kwargs) para garantizar que 
-    el año y la portada caigan en sus variables correspondientes sin importar el orden del __init__.
+    CORREGIDO: Se extrae y se pasa el argumento 'estado' a los constructores 
+    para conservar las decisiones de tu panel de administración.
     """
     for _, fila in df_limpio.iterrows():
         tipo = str(fila.get('Tipo de Recurso', 'Libro')).strip().lower() 
@@ -24,13 +24,27 @@ def creador_objetos(df_limpio, biblioteca):
         link = fila.get('Enlace del recurso', '') 
         link_portada = str(fila.get('Enlace de Portada', '')).strip()
         descripcion = fila.get('Descripción', '')
-        anio = fila.get('Año de publicacion', 'Año desconocido') 
         
+        # 🔑 EXTRAER EL ESTADO HISTÓRICO / PROCESADO
+        estado = str(fila.get('Estado', 'Pendiente')).strip()
+        
+        # Sanitizar año para evitar problemas de tipos de datos (.0 flotantes)
+        anio_raw = fila.get('Año de publicacion', 'Año desconocido')
+        if pd.notna(anio_raw) and anio_raw != '':
+            try:
+                anio = str(int(float(str(anio_raw).strip())))
+            except (ValueError, TypeError):
+                anio = str(anio_raw).strip()
+        else:
+            anio = 'Año desconocido'
+        
+        # Instanciación pasando el parámetro 'estado' por keyword argument
         if tipo == 'libro':
             editorial = fila.get('Editorial', '')
             nuevo_recurso = Libro(
                 titulo, autor, editorial, area, nivel, link, link_portada, 
-                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente,
+                estado=estado  
             )
             
         elif tipo == 'tesis':
@@ -38,35 +52,40 @@ def creador_objetos(df_limpio, biblioteca):
             asesor_metodologico = fila.get('Asesor Metodologico') or 'Sin Asesor'
             nuevo_recurso = Tesis(
                 titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, 
-                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente,
+                estado=estado  
             )
             
         elif tipo == 'guia':
             temas = fila.get('Temas Clave') or 'General'
             nuevo_recurso = GuiaEstudio(
                 titulo=titulo, autor=autor, temas=temas, area=area, nivel=nivel, link=link,
-                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, 
+                link_portada=link_portada, estado=estado  
             )
             
         elif tipo == 'video':
             duracion = fila.get('Duración') or '00:00'
             nuevo_recurso = VideoTutorial(
                 titulo=titulo, duracion=duracion, area=area, nivel=nivel, link=link,
-                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, 
+                link_portada=link_portada, estado=estado  
             )
             
         elif tipo == 'web':
             plataforma = fila.get('Plataforma') or 'Internet'
             nuevo_recurso = PaginasWeb(
                 titulo=titulo, plataforma=plataforma, area=area, nivel=nivel, link=link,
-                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, link_portada=link_portada
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente, 
+                link_portada=link_portada, estado=estado  
             )
             
         else:
             editorial = fila.get('Editorial', 'N/A')
             nuevo_recurso = Libro(
                 titulo, autor, editorial, area, nivel, link, link_portada, 
-                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente
+                anio_publicacion=anio, descripcion=descripcion, id_existente=id_existente,
+                estado=estado  
             )
 
         biblioteca.agregar_recurso(nuevo_recurso)

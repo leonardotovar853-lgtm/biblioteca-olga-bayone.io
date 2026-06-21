@@ -97,21 +97,69 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
         if not fila_idx:
             return
         
-        if nuevo_estado == "Rechazado" and not messagebox.askyesno("Confirmar", "¿Estás seguro de rechazar este recurso?"):
+        if nuevo_estado == "Rechazado" and not messagebox.askyesno("Confirmar", "¿Estás seguro de rechazar y ELIMINAR permanentemente este recurso de los formularios?"):
             return
 
         try:
             if sheet:
-                # 💡 En tu nueva estructura compacta, la columna 'Estado' es la número 18 (Columna R)
+                # 1. Obtener los datos del elemento seleccionado en la interfaz
+                valores_interfaz = tree_pendientes.item(item_id, 'values')
+                tipo_recurso = valores_interfaz[0].strip().lower()  # 'libro', 'tesis', 'guia', 'video', 'web'
+                titulo_recurso = valores_interfaz[1].strip().lower()
+                autor_recurso = valores_interfaz[2].strip().lower()
+
+                # Diccionario para mapear el tipo de recurso con el nombre exacto de su hoja Formulario
+                mapa_formularios = {
+                    'libro': 'Form_Libros',
+                    'tesis': 'Form_Tesis',
+                    'guia': 'Form_Guias',
+                    'video': 'Form_Videos',
+                    'web': 'Form_Web'
+                }
+
+                # 2. SI EL RECURSO ES RECHAZADO, LO BUSCAMOS Y BORRAMOS EN SU HOJA ORIGEN
+                if nuevo_estado == "Rechazado" and tipo_recurso in mapa_formularios:
+                    nombre_hoja_origen = mapa_formularios[tipo_recurso]
+                    try:
+                        hoja_origen = sh.worksheet(nombre_hoja_origen)
+                        registros_origen = hoja_origen.get_all_records()
+                        
+                        fila_a_borrar = None
+                        # Recorremos la hoja origen buscando la coincidencia por Título y Autor
+                        for i, reg in enumerate(registros_origen):
+                            # Homologamos columnas a minúsculas y limpias de acentos/espacios si es necesario
+                            t_origen = str(reg.get('Título', reg.get('Titulo', ''))).strip().lower()
+                            a_origen = str(reg.get('Autor', reg.get('Autor(es)', ''))).strip().lower()
+                            
+                            if t_origen == titulo_recurso and a_origen == autor_recurso:
+                                # Las filas en Sheets son base 1, +1 por el encabezado, +1 por el índice 'i'
+                                fila_a_borrar = i + 2
+                                break
+                        
+                        if fila_a_borrar:
+                            hoja_origen.delete_rows(fila_a_borrar)
+                            print(f"🗑️ Fila {fila_a_borrar} eliminada con éxito de la hoja '{nombre_hoja_origen}'.")
+                        else:
+                            print(f"⚠️ No se encontró una coincidencia exacta en '{nombre_hoja_origen}' para borrar.")
+                            
+                    except gspread.exceptions.WorksheetNotFound:
+                        print(f"⚠️ No se pudo acceder a la hoja '{nombre_hoja_origen}' para borrar el registro crudo.")
+                    except Exception as e_origen:
+                        print(f"⚠️ Error intentando borrar en la hoja de origen: {e_origen}")
+
+                # 3. ACTUALIZACIÓN EN LA BD_GENERAL
+                # En tu nueva estructura compacta, la columna 'Estado' es la número 18 (Columna R)
                 COLUMNA_ESTADO = 18 
                 sheet.update_cell(fila_idx, COLUMNA_ESTADO, nuevo_estado)
+                
+                # Quitar de la interfaz visual
                 tree_pendientes.delete(item_id)
-                messagebox.showinfo("Éxito", f"Recurso marcado como: {nuevo_estado}")
+                messagebox.showinfo("Éxito", f"Recurso procesado como: {nuevo_estado}")
             else:
                 messagebox.showwarning("Modo Offline", "No hay conexión con la base de datos.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo actualizar los datos: {e}")
-
+            
     def exportar_reporte_csv():
         items = tree_pendientes.get_children()
         if not items:
