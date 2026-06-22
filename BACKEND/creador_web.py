@@ -176,9 +176,9 @@ def crear_web(biblioteca):
                     <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
                     <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
                     <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Libro</a></li>
+                    <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
+                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
                     <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                    <li><a class="op" href="sobre_nosotros.html"><i class="fa-solid fa-people-group"></i> Nosotros</a></li>
                 </ul>
             </div>
         </nav>
@@ -255,7 +255,7 @@ def crear_web(biblioteca):
                             <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
                             <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
                             <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
-                            <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Libro</a></li>
+                            <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
                             <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
                         </ul>
                     </div>
@@ -353,9 +353,9 @@ def crear_web(biblioteca):
                 <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
                 <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
                 <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Libro</a></li>
+                <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
+                <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
                 <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                <li><a class="op" href="sobre_nosotros.html"><i class="fa-solid fa-people-group"></i> Nosotros</a></li>
             </ul>
         </div>
     </nav>
