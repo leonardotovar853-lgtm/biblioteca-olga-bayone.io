@@ -510,4 +510,4 @@ class Biblioteca:
     
     def exportar_repositorio(self):
         """Exporta los recursos que no son libros a una lista de diccionarios."""
-        return [libro.to_dict() for libro in self.lista_libros if not isinstance(libro, Libro)]
+        return [libro.to_dict() for libro in self.lista_libros if not isinstance(libro, Libro) and not isinstance(libro, Tesis)]
