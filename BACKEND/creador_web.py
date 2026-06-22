@@ -87,9 +87,9 @@ def crear_web(biblioteca):
                     <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
                     <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
                     <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Libro</a></li>
+                    <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
+                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
                     <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                    <li><a class="op" href="sobre_nosotros.html"><i class="fa-solid fa-people-group"></i> Nosotros</a></li>
                 </ul>
             </div>
         </nav>
@@ -440,25 +440,25 @@ def crear_web(biblioteca):
                     </a>
                 </li>
                 <li>
-                    <a href="repositorio.html?tipo=Tesis" class="boton-area">
+                    <a href="repositorio.html" class="boton-area">
                         <span class="icono icono-tesis"></span>
                         <h3>Proyectos de Invesgación</h3>
                     </a>
                 </li>
                 <li>
-                    <a href="repositorio.html?tipo=Guia" class="boton-area">
+                    <a href="multimedia.html?tipo=Guia" class="boton-area">
                         <span class="icono icono-guia"></span>
                         <h3>Guías de Estudio</h3>
                     </a>
                 </li>
                 <li>
-                    <a href="repositorio.html?tipo=Video" class="boton-area">
+                    <a href="multimedia.html?tipo=Video" class="boton-area">
                         <span class="icono icono-video"></span>
                         <h3>Videos Educativos</h3>
                     </a>
                 </li>
                 <li>
-                    <a href="repositorio.html?tipo=Web" class="boton-area">
+                    <a href="multimedia.html?tipo=Web" class="boton-area">
                         <span class="icono icono-web"></span>
                         <h3>Recursos Web</h3>
                     </a>

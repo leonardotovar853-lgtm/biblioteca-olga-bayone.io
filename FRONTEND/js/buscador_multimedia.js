@@ -7,6 +7,28 @@ const inputBuscador = document.getElementById('buscador');
 const menuMateria = document.getElementById('filtro-area');
 const menuAnio = document.getElementById('filtro-año');
 const menuTipo = document.getElementById('filtro-tipo');
+const parametros = new URLSearchParams(window.location.search);
+const tipoDesdeBoton = parametros.get('tipo');
+const areaDesdeBoton = parametros.get('area');
+
+function inicializarFiltrosDesdeUrl() {
+    let filtroAplicado = false;
+
+    if (menuTipo && tipoDesdeBoton) {
+        menuTipo.value = tipoDesdeBoton;
+        filtroAplicado = true;
+    }
+
+    if (menuMateria && areaDesdeBoton) {
+        menuMateria.value = areaDesdeBoton;
+        filtroAplicado = true;
+    }
+
+    if (filtroAplicado) {
+        setTimeout(aplicarFiltros, 100);
+    }
+}
+
 
 // 2. Función Maestra de Filtrado (Lógica Booleana AND)
 function aplicarFiltros() {
