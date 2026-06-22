@@ -486,6 +486,36 @@ a {
     }
 
 @media (max-width: 700px) {
+    .nav-content {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1rem;
+        gap: 12px;
+    }
+
+    .logo-title {
+        flex: 0 1 auto;
+        max-width: none;
+        width: auto;
+        gap: 10px;
+    }
+
+    .title {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: flex;
+        margin-left: auto;
+        order: 2;
+    }
+
+    .menu-toggle .bar {
+        width: 26px;
+        height: 3px;
+    }
+
     .banner-info {
         padding: 22px 18px;
     }
