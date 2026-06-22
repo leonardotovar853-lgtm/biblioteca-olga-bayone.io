@@ -185,8 +185,8 @@ def crear_web(biblioteca):
         <main>
             <section class = 'banner-catalogo'>
                 <div class = 'contenido-banner'>
-                    <h2 class="titulo_seccion">Explora nuestra colección</h2>
-                    <p>Encuentra los libros en la Biblioteca Olga Bayone</p>
+                    <h2 class="titulo_seccion">Proyectos de Investigación</h2>
+                    <p>Encuentra los proyectos de investigación en la Biblioteca Olga Bayone</p>
                     <div class="search-container">
                         <input type="search" id="buscador" placeholder="Busca Proyectos de Investigación...">
                         <select id="filtro-area">
@@ -263,10 +263,10 @@ def crear_web(biblioteca):
                 <main>
                     <section class = 'banner-catalogo'>
                         <div class = 'contenido-banner'>
-                            <h2 class="titulo_seccion">Explora nuestra colección</h2>
-                            <p>Encuentra los archivos multimedia en la Biblioteca Olga Bayone</p>
+                            <h2 class="titulo_seccion">Proyectos de Investigación</h2>
+                            <p>Encuentra los guias, videos y paginas web educativas en la Biblioteca Olga Bayone</p>
                             <div class="search-container">
-                                <input type="search" id="buscador" placeholder="Busca tu archivo por título, autor o materia...">
+                                <input type="search" id="buscador" placeholder="Busca tu proyecto por título, autor o materia...">
                                 <select id="filtro-area">
                                     <optgroup label="ARCHIVOS POR MATERIA">
                                         <option value="all">Todas las categorías</option>
