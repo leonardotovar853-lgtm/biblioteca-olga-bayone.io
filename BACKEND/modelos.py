@@ -344,7 +344,6 @@ class GuiaEstudio(RecursoAcademico):
             <h3>{titulo_safe}</h3>
             <p class="autor-name">Autor: {autor_safe}</p>
             <p class="año-public">Año: <b>{anio_safe}</b></p>
-            <p class="temas">Temas: {temas_safe}</p>
             
             <div class="card-footer">
                 <button class="btn-flip">Ver Descricion</button>
