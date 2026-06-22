@@ -1,16 +1,393 @@
+/* ==========================================================================
+   SECCIÓN: Banner Principal (Identidad Institucional)
+   ========================================================================== */
 
 .banner-proyecto {
     width: 100%;
-    height: 450px;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.55)),url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000');
+    height: 400px; /* Reducido ligeramente para mejorar la proporción áurea en la pantalla */
+    
+    /* Degradado sutil para asegurar el contraste del texto blanco */
+    background-image: linear-gradient(rgba(0, 32, 96, 0.6), rgba(0, 0, 0, 0.75)), 
+                     url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000');
     background-size: cover;
-    align-content: center;
-    justify-content:center;
+    background-position: center;
+    background-attachment: fixed; /* Efecto Parallax elegante al hacer scroll (opcional) */
+    
+    /* Flexbox moderno para centrar vertical y horizontalmente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px; /* Evita que el texto toque los bordes en móviles */
 }
 
 .proyecto-content {
-    margin: auto;
-    width: 250px;
-    color: aliceblue;
-    
+    max-width: 800px; /* Cambiado de width fijo a max-width para que respire el título */
+    width: 100%;
+    color: #f0f5ff; /* Un blanco azulado más integrado con la paleta académica */
+    animation: fadeInUp 1s ease-out; /* Animación suave de carga */
+}
+
+/* Estilos internos para jerarquizar el contenido del Banner */
+.proyecto-content h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.proyecto-content p {
+    font-size: 1.2rem;
+    font-weight: 300;
+    opacity: 0.9;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Animación de entrada para la interfaz */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Secciones adicionales y animaciones
+   ========================================================================== */
+.contenedor-proyecto {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+}
+
+.badge-banner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 8px 18px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #f8fafb;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.seccion-institucional {
+    margin-top: 40px;
+}
+
+.intro-grid,
+.destacados-grid,
+.timeline-grid,
+.grid-seda {
+    display: grid;
+    gap: 24px;
+}
+
+.intro-grid {
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
+}
+
+.texto-intro {
+    background: rgba(255, 255, 255, 0.96);
+    padding: 32px;
+    border-radius: 24px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+}
+
+.texto-intro h3 {
+    font-size: 2rem;
+    margin-bottom: 18px;
+    color: #062d67;
+}
+
+.texto-intro p {
+    color: #344154;
+    line-height: 1.8;
+    margin-bottom: 22px;
+    font-size: 1rem;
+}
+
+.lista-beneficios {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-beneficios li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+    color: #1d2f5b;
+    font-weight: 500;
+}
+
+.lista-beneficios li i {
+    color: #0f74f0;
+    margin-top: 3px;
+}
+
+.imagen-intro img {
+    width: 100%;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.12);
+    min-height: 360px;
+}
+
+.destacados-grid {
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+}
+
+.tarjeta-institucional {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 24px;
+    padding: 28px 24px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(15, 61, 101, 0.08);
+}
+
+.tarjeta-institucional:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.14);
+    background: rgba(255, 255, 255, 1);
+}
+
+.icono-encabezado {
+    width: 62px;
+    height: 62px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 16px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #0f74f0 0%, #1d9bf0 100%);
+    color: #fff;
+    box-shadow: 0 14px 26px rgba(15, 61, 101, 0.18);
+}
+
+.tarjeta-institucional h3,
+.tarjeta-completa h3 {
+    font-size: 1.45rem;
+    margin-bottom: 14px;
+    color: #062d67;
+}
+
+.tarjeta-institucional p,
+.tarjeta-completa p {
+    color: #475569;
+    line-height: 1.75;
+    font-size: 0.98rem;
+}
+
+.blockquote-container .tarjeta-completa {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(242,247,255,0.96) 100%);
+    padding: 34px 30px;
+    border-radius: 28px;
+    border: 1px solid rgba(15, 61, 101, 0.08);
+}
+
+.subtitulo-seccion {
+    display: block;
+    margin-bottom: 18px;
+    color: #0d3f72;
+    font-weight: 600;
+}
+
+.lista-convivencia {
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-convivencia li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 0.98rem;
+    color: #334155;
+}
+
+.lista-convivencia li i {
+    color: #0f74f0;
+    margin-top: 4px;
+}
+
+.seccion-steps h3 {
+    margin-bottom: 26px;
+    color: #062d67;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.timeline-grid {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+}
+
+.paso-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 28px;
+    border: 1px solid rgba(15, 61, 101, 0.08);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.06);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.paso-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 45px rgba(0, 0, 0, 0.1);
+}
+
+.paso-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0f74f0, #1d9bf0);
+    color: #fff;
+    font-weight: 800;
+    margin-bottom: 18px;
+    font-size: 1rem;
+}
+
+.paso-card h4 {
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+    color: #0d3f72;
+}
+
+.destaque-seda {
+    position: relative;
+    background: rgba(15, 74, 136, 0.04);
+    padding-top: 36px;
+}
+
+.badge-seda {
+    display: inline-block;
+    position: absolute;
+    top: -14px;
+    left: 30px;
+    padding: 8px 16px;
+    background: #0f74f0;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    box-shadow: 0 14px 30px rgba(15, 61, 101, 0.18);
+}
+
+.grid-seda {
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    margin-top: 26px;
+}
+
+.item-seda {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 22px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 61, 101, 0.08);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.06);
+}
+
+.item-seda i {
+    display: inline-flex;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 116, 240, 0.12);
+    color: #0f74f0;
+    font-size: 1.25rem;
+}
+
+.item-seda p {
+    margin: 0;
+    color: #334155;
+    line-height: 1.72;
+}
+
+.animate-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.9s ease forwards;
+}
+
+.animate-card:nth-child(1) { animation-delay: 0.15s; }
+.animate-card:nth-child(2) { animation-delay: 0.25s; }
+.animate-card:nth-child(3) { animation-delay: 0.35s; }
+.animate-card:nth-child(4) { animation-delay: 0.45s; }
+.animate-card:nth-child(5) { animation-delay: 0.55s; }
+
+@media (max-width: 1080px) {
+    .destacados-grid,
+    .timeline-grid,
+    .grid-seda {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .intro-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .banner-proyecto {
+        height: 360px;
+        background-attachment: scroll;
+    }
+
+    .proyecto-content h2 {
+        font-size: 2.3rem;
+    }
+
+    .proyecto-content p {
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .contenedor-proyecto {
+        padding: 24px 16px 60px;
+    }
+
+    .texto-intro,
+    .tarjeta-institucional,
+    .tarjeta-completa,
+    .item-seda,
+    .paso-card {
+        padding: 22px;
+    }
+
+    .proyecto-content h2 {
+        font-size: 1.75rem;
+    }
+
+    .destacados-grid,
+    .timeline-grid,
+    .grid-seda {
+        grid-template-columns: 1fr;
+    }
+
+    .badge-seda {
+        left: 20px;
+    }
 }
