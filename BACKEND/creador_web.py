@@ -200,13 +200,6 @@ def crear_web(biblioteca):
                                 <option value="Social">Social</option>
                             </optgroup>
                         </select>
-                        <select id="filtro-tipo">
-                            <option value="all">Todos</option>
-                            <option value="Tesis">Tesis de Grado</option>
-                            <option value="Guia">Guías de Estudio</option>
-                            <option value="Video">Videos</option>
-                            <option value="Web">Recursos Web</option>
-                        </select>
                     </div>
                 </div>
             </section>
@@ -294,6 +287,12 @@ def crear_web(biblioteca):
                                     <option value="3er Año">3er Año</option>
                                     <option value="4to Año">4to Año</option>
                                     <option value="5to Año">5to Año</option>
+                                </select>
+                                <select id="filtro-tipo">
+                                    <option value="all">Todos</option>
+                                    <option value="Guia">Guías de Estudio</option>
+                                    <option value="Video">Videos</option>
+                                    <option value="Web">Recursos Web</option>
                                 </select>
                             </div>
                         </div>
