@@ -312,7 +312,7 @@ def crear_web(biblioteca):
                 <script>
                     const librosData = """ + json.dumps(multi_data) + """;
                 </script>
-                <script src="../js/buscador.js"></script> 
+                <script src="../js/buscador_multimedia.js"></script> 
                 <script src="../js/accesoArea.js"></script>   
                 <script src="../js/nav.js"></script>
                 <script src="../js/stars.js"></script>

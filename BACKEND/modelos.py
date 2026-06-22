@@ -386,7 +386,7 @@ class VideoTutorial(RecursoAcademico):
             <div class="badge-{self.tipo.lower()}">🎥 {tipo_safe}</div>
             <h3>{titulo_safe}</h3>
             <p class="autor-name">Autor: {self.autor}</p>
-            <p class="duracion">Duración: {duracion_safe}</p>
+            <p class="autor-name">Duración: {duracion_safe}</p>
             <p class="año-public">Año: <b>{anio_safe}</b></p>
             
             <div class="card-footer">
