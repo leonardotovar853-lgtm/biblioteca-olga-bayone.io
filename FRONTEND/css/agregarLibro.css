@@ -342,13 +342,39 @@
     }
 }
 
+@media (max-width: 820px) {
+    .hero-section {
+        border-radius: 24px;
+        padding: 44px 0 32px;
+    }
+
+    .hero-grid,
+    .cards-grid,
+    .steps-grid,
+    .registro-options {
+        grid-template-columns: 1fr;
+    }
+
+    .banner-content {
+        text-align: center;
+    }
+
+    .hero-image {
+        margin-top: 24px;
+    }
+
+    .hero-image img {
+        max-width: 100%;
+    }
+}
+
 @media (max-width: 620px) {
     .append-content {
         padding: 0 16px 60px;
     }
 
     .hero-section {
-        padding: 38px 0 28px;
+        padding: 34px 0 28px;
     }
 
     .banner-content h2 {
@@ -360,25 +386,43 @@
         font-size: 0.98rem;
     }
 
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
     .btn-primary,
     .btn-secondary {
         width: 100%;
         justify-content: center;
     }
+
+    .section-header {
+        padding: 0 8px;
+    }
+
+    .registro-content {
+        padding: 32px 22px;
+    }
 }
 
 @media (max-width: 480px) {
     .hero-section {
-        padding: 32px 0 24px;
+        padding: 28px 0 22px;
     }
 
     .banner-tag {
-        padding: 8px 16px;
-        font-size: 0.82rem;
+        padding: 8px 14px;
+        font-size: 0.78rem;
     }
 
     .banner-content h2 {
-        font-size: 1.5rem;
+        font-size: 1.45rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
     }
 
     .hero-actions {
@@ -388,7 +432,20 @@
     .feature-card,
     .step-card,
     .registro-option {
-        padding: 22px;
+        padding: 20px;
+    }
+
+    .registro-option {
+        gap: 12px;
+    }
+
+    .section-header {
+        max-width: 100%;
+        margin: 0 auto 20px;
+    }
+
+    .registro-content {
+        padding: 28px 18px;
     }
 }
 

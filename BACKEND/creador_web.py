@@ -74,8 +74,10 @@ def crear_web(biblioteca):
     <body>
         <nav id="menu" class="nav-menu">
             <div class="nav-content">
-                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                <h1 class="title">Biblioteca Olga Bayone</h1>
+                <div class="logo-title">
+                    <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                    <h1 class="title">Biblioteca Olga Bayone</h1>
+                </div>
 
                 <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
                     <span class="bar"></span>
@@ -163,8 +165,10 @@ def crear_web(biblioteca):
     <body>
         <nav id="menu" class="nav-menu">
             <div class="nav-content">
-                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                <h1 class="title">Biblioteca Olga Bayone</h1>
+                <div class="logo-title">
+                    <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                    <h1 class="title">Biblioteca Olga Bayone</h1>
+                </div>
 
                 <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
                     <span class="bar"></span>
@@ -241,8 +245,10 @@ def crear_web(biblioteca):
             <body>
                 <nav id="menu" class="nav-menu">
                     <div class="nav-content">
-                        <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                        <h1 class="title">Biblioteca Olga Bayone</h1>
+                        <div class="logo-title">
+                            <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                            <h1 class="title">Biblioteca Olga Bayone</h1>
+                        </div>
 
                         <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
                             <span class="bar"></span>

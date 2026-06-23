@@ -14,16 +14,18 @@
 <body>
     <nav id="menu" class="nav-menu">
         <div class="nav-content">
-            <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-            <h1 class="title">Biblioteca Olga Bayone</h1>
+            <div class="logo-title">
+                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                <h1 class="title">Biblioteca Olga Bayone</h1>
+            </div>
 
-            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
 
-            <ul class="options">
+            <ul class="options" id="main-navigation">
                 <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
                 <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
                 <li><a class="op" href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
