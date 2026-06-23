@@ -304,6 +304,47 @@
 .animate-card:nth-child(4) { animation-delay: 0.36s; }
 .animate-card:nth-child(5) { animation-delay: 0.44s; }
 
+.btn-pasar {
+    width: 52px;
+    height: 52px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 10px 22px rgba(59, 130, 246, 0.18);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    backdrop-filter: blur(4px);
+}
+
+.btn-pasar:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 18px 40px rgba(59, 130, 246, 0.22);
+}
+
+.btn-pasar:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-pasar:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.18);
+    outline-offset: 4px;
+}
+
+.btn-pasar i {
+    font-size: 1.05rem;
+    color: #fff;
+}
+
+@media (max-width: 620px) {
+    .btn-pasar {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+}
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -398,6 +439,70 @@
         justify-content: center;
     }
 
+
+/* Ajustes finos para móviles pequeños */
+@media (max-width: 480px) {
+    .append-content {
+        padding: 0 12px 48px;
+    }
+
+    .hero-section {
+        padding: 22px 0 18px;
+        border-radius: 16px;
+    }
+
+    .hero-grid {
+        gap: 16px;
+        grid-template-columns: 1fr;
+    }
+
+    .banner-tag {
+        padding: 6px 12px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+    }
+
+    .banner-content h2 {
+        font-size: 1.5rem;
+        line-height: 1.12;
+        margin-bottom: 12px;
+        max-width: none;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+        margin-bottom: 18px;
+        line-height: 1.6;
+        max-width: none;
+    }
+
+    .hero-image {
+        margin-top: 14px;
+    }
+
+    .hero-image img {
+        width: 100%;
+        max-width: 100%;
+        max-height: 220px;
+        border-radius: 16px;
+        box-shadow: none;
+        object-fit: cover;
+    }
+
+    .hero-actions {
+        gap: 12px;
+        flex-direction: column;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 12px 16px;
+        font-size: 0.98rem;
+    }
+
+    .cards-grid, .steps-grid, .registro-options {
+        gap: 18px;
+    }
+}
     .section-header {
         padding: 0 8px;
     }
@@ -446,6 +551,78 @@
 
     .registro-content {
         padding: 28px 18px;
+    }
+}
+
+/* ==========================================================================
+   ESTILOS PARA EL SLIDER DE PASOS EN MÓVILES (Menor a 768px)
+   ========================================================================== */
+@media (max-width: 767px) {
+    /* Fuerza a que los botones y la tarjeta se alineen en una fila perfecta */
+    .steps-grid {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    /* Ocultamos los pasos por defecto para que JS decida cuál mostrar */
+    .step-card {
+        display: none; 
+        width: 100%;
+        min-height: 240px; /* Evita que la altura salte si un texto es más largo */
+        flex: 1;
+        margin: 0 !important;
+        opacity: 0;
+    }
+
+    /* Clase activa que inyectará JS para mostrar el paso actual con animación */
+    .step-card.active-step {
+        display: block !important;
+        animation: stepFadeIn 0.4s ease-out forwards;
+    }
+
+    /* Hacemos visibles y estéticos los botones de las flechas */
+    .btn-pasar {
+        display: flex !important; /* Fuerza su aparición */
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        background: #3b46c4;
+        color: #ffffff;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(59, 70, 196, 0.25);
+        z-index: 10;
+        flex-shrink: 0; /* Evita que la flecha se aplaste */
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-pasar:active {
+        transform: scale(0.9);
+        background: #22287b;
+    }
+    
+    .btn-pasar i {
+        font-size: 16px;
+    }
+
+    /* Animación fluida de desvanecimiento y deslizamiento */
+    @keyframes stepFadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 }
 

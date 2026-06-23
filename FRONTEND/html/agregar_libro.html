@@ -78,6 +78,7 @@
                 <p>Elige el tipo de recurso, genera un enlace compartido y completa el formulario. En pocos minutos tu material estará listo para uso escolar.</p>
             </div>
             <div class="steps-grid">
+                <button class="btn-pasar"><i class="fa-solid fa-arrow-left"></i></button>
                 <article class="step-card animate-card">
                     <div class="step-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
                     <h4>Paso 1</h4>
@@ -93,6 +94,7 @@
                     <h4>Paso 3</h4>
                     <p>Completa el formulario de registro con los datos del recurso, descripción y el enlace compartido.</p>
                 </article>
+                <button class="btn-pasar"><i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </section>
 
@@ -131,5 +133,51 @@
         </section>
     </main>
     <script src="../js/nav.js"></script>
+    <script>
+        const botonesPasar = document.querySelectorAll('.btn-pasar');
+        const pasosCards = document.querySelectorAll('.step-card');
+
+        if (window.innerWidth < 768) {
+            let currentIndex = 0;
+
+            function showStep(index) {
+                pasosCards.forEach((card, i) => {
+                    if (i === index) {
+                        card.classList.add('active-step');
+                    } else {
+                        card.classList.remove('active-step');
+                    }
+                });
+            }
+
+            showStep(currentIndex);
+
+            botonesPasar.forEach((boton, btnIndex) => {
+                boton.addEventListener('click', () => {
+                    
+                    const esIzquierda = boton.querySelector('.fa-arrow-left');
+
+                    if (esIzquierda) {
+                        
+                        currentIndex = (currentIndex - 1 + pasosCards.length) % pasosCards.length;
+                    } else {
+                        
+                        currentIndex = (currentIndex + 1) % pasosCards.length;
+                    }
+                    
+                    showStep(currentIndex);
+                });
+            });
+
+        } else {
+            
+            pasosCards.forEach(card => {
+                card.style.display = 'block';
+            });
+            botonesPasar.forEach(boton => {
+                boton.style.display = 'none';
+            });
+        }
+    </script>
 </body>
 </html>
