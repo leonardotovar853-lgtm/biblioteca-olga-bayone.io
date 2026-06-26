@@ -85,7 +85,6 @@ async function registrarUsuarioBackend(idToken, usuarioDatos) {
 }
 
 function mostrarAlerta(mensaje, tipo = 'info', duracion) {
-    // Duración por defecto: más larga para 'success' porque a veces se cierra el modal
     const durPorDefecto = tipo === 'success' ? 7000 : 4500;
     const dur = typeof duracion === 'number' ? duracion : durPorDefecto;
 
@@ -129,6 +128,9 @@ function Registro() {
     const VentanaRegistro = document.createElement("div");
     VentanaRegistro.className = "ventana-registro";
     
+    // Lista local para manejar los intereses seleccionados de forma interactiva
+    let interesesSeleccionados = [];
+    
     VentanaRegistro.innerHTML = `
     <button class="btn-cerrar">×</button>
     <div id="contenedor-login">
@@ -158,17 +160,50 @@ function Registro() {
             <option value="5C">5to Año C</option>
             <option value="no_aplica">No Aplica (Docentes)</option>
         </select>
+        
+        <p style="font-size: 0.9rem; color: #64748b; margin-top: 15px; margin-bottom: 8px; font-weight: 600;">Áreas de Interés Literario:</p>
+        <div class="intereses-seleccion" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; margin-bottom: 20px;">
+            <div class="interes-chip" data-interes="Matemáticas" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Matemáticas</div>
+            <div class="interes-chip" data-interes="Tecnología" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Tecnología</div>
+            <div class="interes-chip" data-interes="Ciencia Ficción" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Ciencia Ficción</div>
+            <div class="interes-chip" data-interes="Fantasía" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Fantasía</div>
+            <div class="interes-chip" data-interes="Misterio" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Misterio</div>
+            <div class="interes-chip" data-interes="Aventura" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Aventura</div>
+            <div class="interes-chip" data-interes="Historia" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Historia</div>
+            <div class="interes-chip" data-interes="Romance" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">Romance</div>
+            <div class="interes-chip" data-interes="No Ficción" style="padding: 6px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 99px; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 600; color: #475569; transition: all 0.2s; user-select: none;">No Ficción</div>
+        </div>
+
         <button id="btn-enviar-registro" class="btn-iniciar-sesion">Finalizar Registro</button>
     </div>`;
 
     overlay.appendChild(VentanaRegistro);
     document.body.appendChild(overlay);
 
+    // Lógica de clic interactivo para cambiar estilos y guardar intereses en el arreglo local
+    VentanaRegistro.querySelectorAll('.interes-chip').forEach(chip => {
+        chip.onclick = () => {
+            const tema = chip.dataset.interes;
+            if (interesesSeleccionados.includes(tema)) {
+                // Si ya estaba seleccionado, se remueve del arreglo y vuelve a su estilo original
+                interesesSeleccionados = interesesSeleccionados.filter(i => i !== tema);
+                chip.style.background = "#f1f5f9";
+                chip.style.color = "#475569";
+                chip.style.borderColor = "#e2e8f0";
+            } else {
+                // Si no estaba, se agrega al arreglo y cambia a un color azul llamativo
+                interesesSeleccionados.push(tema);
+                chip.style.background = "#3b46c4"; 
+                chip.style.color = "#ffffff";
+                chip.style.borderColor = "#3b46c4";
+            }
+        };
+    });
+
     const divGoogle = VentanaRegistro.querySelector('#div-google');
     const divSeccionRegistro = VentanaRegistro.querySelector('#seccion-registro');
     const divLogin = VentanaRegistro.querySelector('#contenedor-login');
 
-    // Si ya hay un usuario autenticado por Firebase, mostramos el formulario de registro
     const currentUser = firebaseAuthInstance?.currentUser;
     if (currentUser) {
         if (divGoogle) divGoogle.style.display = 'none';
@@ -183,7 +218,6 @@ function Registro() {
         }).catch(() => {});
     }
 
-    // Al hacer clic en Continuar con Google
     VentanaRegistro.querySelector('#google-login-btn').onclick = async () => {
         if (window.location.protocol === 'file:') {
             mostrarAlerta('Debes abrir la página mediante HTTP local (por ejemplo http://localhost:8000), no con file://.', 'error');
@@ -223,7 +257,6 @@ function Registro() {
         }
     };
 
-    // Botón Finalizar Registro
     VentanaRegistro.querySelector('#btn-enviar-registro').onclick = async () => {
         const user = firebaseAuthInstance?.currentUser;
         if (!user) {
@@ -242,13 +275,16 @@ function Registro() {
 
         try {
             const idToken = window.currentFirebaseIdToken || await user.getIdToken(true);
+            
+            // Enviamos los datos al endpoint agregando el campo de intereses
             const respuesta = await registrarUsuarioBackend(idToken, {
                 cedula,
                 rol,
                 anio_seccion: anio,
                 name: user.displayName,
                 email: user.email,
-                picture: user.photoURL
+                picture: user.photoURL,
+                intereses: interesesSeleccionados // <-- Pasados correctamente al backend
             });
 
             if (respuesta.ok) {
@@ -266,14 +302,12 @@ function Registro() {
         }
     };
 
-    // Eventos de cierre del Modal
     VentanaRegistro.querySelector('.btn-cerrar').onclick = () => document.body.removeChild(overlay);
     overlay.onclick = (e) => {
         if (e.target === overlay) document.body.removeChild(overlay);
     };
 }
 
-// Activar el botón de la barra de navegación web
 const botonLogin = document.querySelector('.btn-registro');
 if (botonLogin) {
     botonLogin.onclick = (e) => {
