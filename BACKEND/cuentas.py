@@ -230,7 +230,13 @@ class Servidor:
     def correr(self):
         self.servidor.run(debug=True, port=5000)
 
+# Instanciamos la clase para configurar las rutas de la API
+servidor_biblioteca = Servidor()
+
+# EXCLUSIVO PARA RENDER: Gunicorn buscará esta variable en internet
+instancia_servidor = servidor_biblioteca.servidor
+
 if __name__ == "__main__":
-    mi_bot = Servidor()
-    print("🚀 Servidor Flask (Firebase NoSQL) escuchando en http://localhost:5000...")
-    mi_bot.correr()
+    # Esto se ejecutará SOLO cuando lo corras localmente en tu Dell
+    print("🚀 Servidor Flask (Local) escuchando en http://localhost:5000...")
+    servidor_biblioteca.correr()
