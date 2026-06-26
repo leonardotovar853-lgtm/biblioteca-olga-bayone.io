@@ -30,15 +30,15 @@ class Usuario:
         
     def to_dict(self):
         return {
-            'id': self._id,
-            'cedula': self._cedula,
-            'nombre': self._nombre,
-            'correo': self._correo,
-            'foto_url': self._foto_url,
-            'rol': self._rol,
-            'anio_seccion': self._anio_seccion,
-            'intereses': self._intereses,
-            'fecha_registro': self._fecha_registro
+            'id': self.id,
+            'cedula': self.cedula,
+            'nombre': self.nombre,
+            'correo': self.correo,
+            'foto_url': self.foto_url,
+            'rol': self.rol,
+            'anio_seccion': self.anio_seccion,
+            'intereses': self.intereses,
+            'fecha_registro': self.fecha_registro
         }
         
     @property
