@@ -66,7 +66,7 @@ async function signInWithGoogle() {
 }
 
 async function verificarUsuarioBackend(idToken) {
-    const respuesta = await fetch('http://127.0.0.1:5000/api/verificar-usuario', {
+    const respuesta = await fetch('https://biblioteca-olga-bayone-io.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken })
@@ -75,7 +75,7 @@ async function verificarUsuarioBackend(idToken) {
 }
 
 async function registrarUsuarioBackend(idToken, usuarioDatos) {
-    const respuesta = await fetch('http://127.0.0.1:5000/api/registro-usuario', {
+    const respuesta = await fetch('https://biblioteca-olga-bayone-io.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken, ...usuarioDatos })
