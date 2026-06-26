@@ -9,8 +9,11 @@ from firebase_admin import auth as firebase_auth, credentials, db as firebase_db
 
 # URL Oficial de tu base de datos Firebase sin barra diagonal al final
 FIREBASE_DB_URL = "https://biblioteca-olga-bayone-default-rtdb.firebaseio.com"
-FIREBASE_ADMIN_CREDENTIALS_PATH = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-FIREBASE_ADMIN_CREDENTIALS_JSON = os.environ.get("FIREBASE_ADMIN_CREDENTIALS")
+
+# Buscamos la carpeta DATA que está al mismo nivel que la carpeta BACKEND
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIREBASE_ADMIN_CREDENTIALS_PATH = os.path.join(BASE_DIR, "DATA", "biblioteca-olga-bayone-firebase-key.json")
+FIREBASE_ADMIN_CREDENTIALS_JSON = None
 
 class Usuario:
     def __init__(self, id_google, cedula, nombre, correo, foto_url, rol, anio_seccion, fecha_registro=None):
