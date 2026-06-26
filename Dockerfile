@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 10000
 
 # Comando para ejecutar la aplicación con Gunicorn apuntando a tu instancia de Flask
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "cuentas:instancia_servidor"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "BACKEND.cuentas:instancia_servidor"]
