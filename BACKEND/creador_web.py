@@ -478,7 +478,8 @@ def crear_web(biblioteca):
     <script>
         const librosData = """ + json.dumps(libros_data) + """;
     </script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="../js/Registro.js" defer></script>
     <script src="../js/recomendacionInicio.js"></script>
     <script src="../js/nav.js"></script>

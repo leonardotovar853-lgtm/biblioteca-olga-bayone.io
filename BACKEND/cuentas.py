@@ -1,27 +1,26 @@
-import requests
 import json
-import flask
 import os
-import gspread
-import pandas as pd
 import uuid
 from datetime import datetime
 from flask import request, jsonify, Flask
 from flask_cors import CORS
+import firebase_admin
+from firebase_admin import auth as firebase_auth, credentials, db as firebase_db
 
-GOOGLE_CLIENT_ID = "520347031267-ph0fosq8l2ngoinasnm4b914vnrbqk1k.apps.googleusercontent.com"
+# URL Oficial de tu base de datos Firebase sin barra diagonal al final
+FIREBASE_DB_URL = "https://biblioteca-olga-bayone-default-rtdb.firebaseio.com"
+FIREBASE_ADMIN_CREDENTIALS_PATH = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+FIREBASE_ADMIN_CREDENTIALS_JSON = os.environ.get("FIREBASE_ADMIN_CREDENTIALS")
 
 class Usuario:
     def __init__(self, id_google, cedula, nombre, correo, foto_url, rol, anio_seccion, fecha_registro=None):
-        # 1. Inicializamos las variables internas directamente con valores limpios
         self._id = str(id_google) if id_google else str(uuid.uuid4())
-        self._nombre = nombre.strip().title() if nombre else None  # .title() maneja Nombres y Apellidos
+        self._nombre = nombre.strip().title() if nombre else None
         self._correo = correo.strip().lower() if correo else None
         self._foto_url = foto_url
         self._intereses = []
         self._fecha_registro = fecha_registro or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # 2. Las variables que requieren validaciones estrictas las pasamos por sus setters
         self.cedula = cedula
         self.rol = rol
         self.anio_seccion = anio_seccion
@@ -38,28 +37,12 @@ class Usuario:
             'intereses': self._intereses,
             'fecha_registro': self._fecha_registro
         }
-
-    def a_lista(self):
-        intereses_texto = ", ".join(self._intereses) if self._intereses else ""
-        return [
-            self._id, 
-            self._cedula, 
-            self._nombre, 
-            self._correo, 
-            self._foto_url, 
-            self._rol, 
-            self._anio_seccion, 
-            intereses_texto, 
-            self._fecha_registro
-        ]
         
     @property
-    def id(self):
-        return self._id
+    def id(self): return self._id
 
     @property
-    def cedula(self):
-        return self._cedula
+    def cedula(self): return self._cedula
 
     @cedula.setter
     def cedula(self, value):    
@@ -73,32 +56,28 @@ class Usuario:
         self._cedula = int(cedula_str)
 
     @property
-    def nombre(self):
-        return self._nombre
+    def nombre(self): return self._nombre
          
     @property
-    def correo(self):
-        return self._correo
+    def correo(self): return self._correo
 
     @property
-    def foto_url(self):
-        return self._foto_url
+    def foto_url(self): return self._foto_url
 
     @property
-    def rol(self):
-        return self._rol
+    def rol(self): return self._rol
     
     @rol.setter
     def rol(self, value):
         roles_validos = ["admin", "estudiante", "profesor"]
         if value and str(value).lower().strip() in roles_validos:
+            self._role = str(value).lower().strip()
             self._rol = str(value).lower().strip()
         else:
             raise ValueError("Rol no válido. Debe ser 'admin', 'estudiante' o 'profesor'")   
         
     @property
-    def anio_seccion(self):
-        return self._anio_seccion
+    def anio_seccion(self): return self._anio_seccion
 
     @anio_seccion.setter
     def anio_seccion(self, value):
@@ -110,8 +89,7 @@ class Usuario:
             raise ValueError("Año/sección no válido o formato incorrecto.")
         
     @property
-    def intereses(self):
-        return self._intereses
+    def intereses(self): return self._intereses
 
     @intereses.setter
     def intereses(self, value):
@@ -124,78 +102,74 @@ class Usuario:
         raise ValueError("Los intereses deben ser una lista de strings válidos.")
 
     @property
-    def fecha_registro(self):
-        return self._fecha_registro
+    def fecha_registro(self): return self._fecha_registro
 
-
-# ... (Tu clase Usuario se mantiene exactamente IGUAL, está perfecta)
 
 class Servidor:
-    def __init__(self, ruta_credenciales, nombre_hoja):
-        self.ruta_credenciales = ruta_credenciales
-        self.nombre_hoja = nombre_hoja
-        self.gc = gspread.service_account(filename=self.ruta_credenciales)
-        self.sh = self.gc.open(self.nombre_hoja)
-        self.worksheet = self.sh.worksheet("Usuarios") 
-        
-        self.servidor = Flask(__name__) 
-        CORS(self.servidor) 
+    def __init__(self):
+        self.db_url = FIREBASE_DB_URL
+        self.firebase_app = self.init_firebase_admin()
+        self.servidor = Flask(__name__)
+        CORS(self.servidor)
         self.configurar_rutas()
+
+    def init_firebase_admin(self):
+        if firebase_admin._apps:
+            return firebase_admin.get_app()
+
+        if FIREBASE_ADMIN_CREDENTIALS_PATH and os.path.exists(FIREBASE_ADMIN_CREDENTIALS_PATH):
+            cred = credentials.Certificate(FIREBASE_ADMIN_CREDENTIALS_PATH)
+        elif FIREBASE_ADMIN_CREDENTIALS_JSON:
+            try:
+                cred = credentials.Certificate(json.loads(FIREBASE_ADMIN_CREDENTIALS_JSON))
+            except Exception as e:
+                raise RuntimeError(f"Credenciales de Firebase Admin no válidas: {str(e)}")
+        else:
+            raise RuntimeError(
+                "No se encontraron credenciales de Firebase Admin. "
+                "Configura GOOGLE_APPLICATION_CREDENTIALS o FIREBASE_ADMIN_CREDENTIALS."
+            )
+
+        return firebase_admin.initialize_app(cred, {
+            'databaseURL': self.db_url
+        })
 
     def agregar_usuario(self, usuario):
         if not isinstance(usuario, Usuario):
             raise ValueError("El objeto proporcionado no es una instancia de Usuario")
         
-        try:
-            # gspread requiere strings para buscar
-            celda = self.worksheet.find(str(usuario.id))
-            if celda:
-                raise ValueError("El usuario ya existe en la base de datos.")
-        except gspread.exceptions.CellNotFound:
-            pass 
+        usuario_existente = self.buscar_usuario_por_google_id(usuario.id)
+        if usuario_existente:
+            raise ValueError("El usuario ya existe en la base de datos.")
 
         try:
-            self.worksheet.append_row(usuario.a_lista())
+            ref = firebase_db.reference(f"usuarios/{usuario.id}")
+            ref.set(usuario.to_dict())
             return "Usuario agregado exitosamente"
         except Exception as e:
-            raise ValueError(f"Error al escribir en Google Sheets: {str(e)}")
+            raise ValueError(f"Error al escribir en Firebase: {str(e)}")
         
     def buscar_usuario_por_google_id(self, google_id):
         try:
-            id_str = str(google_id)
-            celda = self.worksheet.find(id_str)
-            if celda:
-                fila = celda.row
-                datos = self.worksheet.row_values(fila)
-                columnas = ['id', 'cedula', 'nombre', 'correo', 'foto_url', 'rol', 'anio_seccion', 'intereses', 'fecha_registro']
-                
-                # Asegurar que la longitud coincida por si faltan campos al final
-                while len(datos) < len(columnas):
-                    datos.append("")
-                    
-                row_dict = dict(zip(columnas, datos))
-                if row_dict.get('intereses'):
-                    row_dict['intereses'] = [i.strip() for i in row_dict['intereses'].split(',') if i.strip()]
-                return row_dict
-            return None
-        except gspread.exceptions.CellNotFound:
+            ref = firebase_db.reference(f"usuarios/{google_id}")
+            usuario = ref.get()
+            return usuario if usuario else None
+        except Exception:
             return None
 
-    def verificar_token_google(self, id_token):
+    def verificar_token_firebase(self, id_token):
         if not id_token:
-            raise ValueError("Token de Google no recibido")
+            raise ValueError("Token de Firebase no recibido")
 
-        token_info_url = "https://oauth2.googleapis.com/tokeninfo"
-        resp = requests.get(token_info_url, params={"id_token": id_token}, timeout=10)
-        if resp.status_code != 200:
-            raise ValueError("Token de Google no válido o expirado")
+        try:
+            payload = firebase_auth.verify_id_token(id_token)
+        except Exception as e:
+            raise ValueError(f"Token de Firebase no válido o expirado: {str(e)}")
 
-        payload = resp.json()
-        if payload.get('aud') != GOOGLE_CLIENT_ID:
-            raise ValueError("Token de Google no corresponde al cliente")
-        
-        # ⚠️ NOTA DE DESARROLLO: Cambié temporalmente esto para tus pruebas con cuentas @gmail.com
-        # Cuando lo entregues en el colegio, vuelve a cambiar '@gmail.com' por '@olgabayone.com'
+        proveedor = payload.get('firebase', {}).get('sign_in_provider')
+        if proveedor and proveedor != 'google.com':
+            raise ValueError("El inicio de sesión debe ser con Google")
+
         correo = payload.get('email', '')
         if not (correo.endswith('@olgabayone.com') or correo.endswith('@gmail.com')):
             raise ValueError("Solo se permiten cuentas institucionales autorizadas")
@@ -205,20 +179,17 @@ class Servidor:
     def configurar_rutas(self):
         @self.servidor.route('/')
         def inicio():
-            return "El servidor Biblioteca Olga Bayone está activo."
+            return "El servidor de la Biblioteca Olga Bayone conectado a Firebase está activo."
 
-        # CORRECCIÓN 1: Endpoint unificado de verificación y Login mediante TOKEN
         @self.servidor.route('/api/verificar-usuario', methods=['POST'])
         def verificar_usuario_endpoint():
             try:
                 data = request.get_json()
-                token = data.get('credential')
-                
-                # Desencriptamos el token directo en el backend de forma segura
-                payload = self.verificar_token_google(token)
-                google_id = payload.get('sub')
+                token = data.get('idToken')
+                payload = self.verificar_token_firebase(token)
+                firebase_uid = payload.get('uid')
 
-                usuario_existente = self.buscar_usuario_por_google_id(google_id)
+                usuario_existente = self.buscar_usuario_por_google_id(firebase_uid)
                 
                 if usuario_existente:
                     return jsonify({"existe": True, "usuario": usuario_existente}), 200
@@ -227,24 +198,21 @@ class Servidor:
             except Exception as e:
                 return jsonify({"error": str(e)}), 400
 
-        # CORRECCIÓN 2: Registro adaptado a las variables que envía el Javascript
         @self.servidor.route('/api/registro-usuario', methods=['POST'])
-        @self.servidor.route('/agregar_usuario', methods=['POST'])
         def registro_usuario_endpoint():
             try:
                 data = request.get_json()
-                token = data.get('credential')
-                payload = self.verificar_token_google(token)
+                token = data.get('idToken')
+                payload = self.verificar_token_firebase(token)
 
-                # Mapeo exacto de nombres (JS manda 'anio_seccion' -> Python lee 'anio_seccion')
                 usuario = Usuario(
-                    id_google=payload.get('sub'),
+                    id_google=payload.get('uid'),
                     cedula=data.get('cedula'),
-                    nombre=payload.get('name'), # Usamos el nombre verificado por Google
-                    correo=payload.get('email'),
-                    foto_url=payload.get('picture'),
+                    nombre=data.get('name') or payload.get('name'), 
+                    correo=data.get('email') or payload.get('email'),
+                    foto_url=data.get('picture') or payload.get('picture'),
                     rol=data.get('rol'),
-                    anio_seccion=data.get('anio_seccion'), # ¡Arreglado el choque de nombres!
+                    anio_seccion=data.get('anio_seccion'), 
                     fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 )
 
@@ -260,7 +228,6 @@ class Servidor:
         self.servidor.run(debug=True, port=5000)
 
 if __name__ == "__main__":
-    ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json" 
-    mi_bot = Servidor(ruta_credenciales, "Agregar Libro (Respuestas)")
-    print("🚀 Servidor Flask escuchando en http://localhost:5000...")
+    mi_bot = Servidor()
+    print("🚀 Servidor Flask (Firebase NoSQL) escuchando en http://localhost:5000...")
     mi_bot.correr()

@@ -1,89 +1,87 @@
-function initializeGoogleAuth() {
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAcxfbhDpx4L8FXLrIlPSvOPVZXtlGpkmQ",
+    authDomain: "biblioteca-olga-bayone.firebaseapp.com",
+    databaseURL: "https://biblioteca-olga-bayone-default-rtdb.firebaseio.com",
+    projectId: "biblioteca-olga-bayone",
+    storageBucket: "biblioteca-olga-bayone.firebasestorage.app",
+    messagingSenderId: "648373694244",
+    appId: "1:648373694244:web:2d2a855d79d1614c568db1"
+};
+
+let firebaseAuthInstance = null;
+
+function initializeFirebaseAuth() {
     if (window.location.protocol === 'file:') {
-        console.warn('Google Sign-In no se inicializará en file://. Usa un servidor local HTTP.');
+        console.warn('Firebase Auth no se inicializará en file://. Usa un servidor local HTTP.');
         return;
     }
 
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-        google.accounts.id.initialize({
-            client_id: "520347031267-ph0fosq8l2ngoinasnm4b914vnrbqk1k.apps.googleusercontent.com",
-            ux_mode: 'popup',
-            itp_support: true,
-            callback: async (response) => {
-                // Guardamos el token en memoria global para usarlo en el formulario final si es necesario
-                window.googleCredential = response.credential;
+    if (!window.firebase || !window.firebase.auth) {
+        console.error('Firebase SDK no está disponible. Revisa los scripts en tu HTML.');
+        return;
+    }
 
-                // Decodificación del JWT de Google
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
+    if (!firebase.apps.length) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+    }
 
-                const payload = JSON.parse(jsonPayload);
-                
-                // Guardamos los datos nativos de Google agregando el ID único ('sub')
-                window.datosGoogle = { 
-                    id: payload.sub, 
-                    given_name: payload.given_name,
-                    email: payload.email,
-                    picture: payload.picture,
-                    credential: response.credential
-                };
-
-                const divGoogle = document.querySelector('.ventana-registro #div-google');
-                const divLogin = document.querySelector('.ventana-registro #contenedor-login');
-                const divSeccionRegistro = document.querySelector('.ventana-registro #seccion-registro');
-
-                // PERMITIR GMAIL PARA PRUEBAS LOCALES (Remover @gmail.com cuando esté en producción)
-                if (payload.email.endsWith('@olgabayone.com') || payload.email.endsWith('@gmail.com')) {
-                    try {
-                        // CORRECCIÓN 1: Enviamos la credencial completa (Token) para validación segura en Python
-                        const loginRespuesta = await fetch('http://localhost:5000/api/verificar-usuario', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ credential: response.credential }) 
-                        });
-                        const loginData = await loginRespuesta.json();
-
-                        // Si el servidor responde que el usuario ya existe en Google Sheets
-                        if (loginRespuesta.ok && loginData.existe) {
-                            mostrarAlerta(`Bienvenido de vuelta, ${loginData.usuario.nombre}`, 'success');
-                            localStorage.setItem('bibliotecaUsuario', JSON.stringify(loginData.usuario));
-                            
-                            const overlayActual = document.querySelector('.modal-overlay');
-                            if (overlayActual) document.body.removeChild(overlayActual);
-                            window.location.reload();
-                            return;
-                        }
-                    } catch (error) {
-                        console.warn('No se pudo verificar el usuario automáticamente:', error);
-                    }
-
-                    // Si no existe, desplegamos el formulario escolar de la Olga Bayone
-                    if(divGoogle && divSeccionRegistro) {
-                        divGoogle.style.display = 'none';
-                        divSeccionRegistro.style.display = 'block';
-                        divSeccionRegistro.querySelector('h2').innerText = `Hola, ${payload.given_name}`;
-                    } else {
-                        // Si el modal aún no está abierto, guardamos el nombre para cuando se muestre
-                        window.pendingDatosGoogle = { given_name: payload.given_name };
-                    }
-                } else {
-                    mostrarAlerta("Acceso denegado: Usa tu cuenta institucional @olgabayone.com", 'error');
-                    if(divGoogle && divLogin) {
-                        divGoogle.style.display = 'none';
-                        divLogin.style.display = 'block';
-                    }
-                }
+    firebaseAuthInstance = firebase.auth();
+    firebaseAuthInstance.onAuthStateChanged(user => {
+        if (user) {
+            const usuarioGuardado = JSON.parse(localStorage.getItem('bibliotecaUsuario'));
+            if (!usuarioGuardado) {
+                localStorage.setItem('bibliotecaUsuario', JSON.stringify({
+                    id: user.uid,
+                    nombre: user.displayName,
+                    correo: user.email,
+                    foto_url: user.photoURL,
+                    rol: null,
+                    anio_seccion: null,
+                    intereses: [],
+                    fecha_registro: null
+                }));
             }
-        });
-    };
-    document.head.appendChild(script);
+        }
+    });
+}
+
+async function signInWithGoogle() {
+    if (!firebaseAuthInstance) {
+        mostrarAlerta('Firebase Auth no está inicializado.', 'error');
+        return null;
+    }
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    try {
+        const result = await firebaseAuthInstance.signInWithPopup(provider);
+        const user = result.user;
+        const idToken = await user.getIdToken();
+        return { user, idToken };
+    } catch (error) {
+        console.error('Error en Firebase Google Sign-In:', error);
+        throw new Error(error.message || 'No se pudo iniciar sesión con Google.');
+    }
+}
+
+async function verificarUsuarioBackend(idToken) {
+    const respuesta = await fetch('http://127.0.0.1:5000/api/verificar-usuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken })
+    });
+    return respuesta.json();
+}
+
+async function registrarUsuarioBackend(idToken, usuarioDatos) {
+    const respuesta = await fetch('http://127.0.0.1:5000/api/registro-usuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken, ...usuarioDatos })
+    });
+    const data = await respuesta.json();
+    return { ok: respuesta.ok, data };
 }
 
 function mostrarAlerta(mensaje, tipo = 'info', duracion) {
@@ -122,7 +120,7 @@ function mostrarAlerta(mensaje, tipo = 'info', duracion) {
 
 window.alert = (mensaje) => mostrarAlerta(String(mensaje), 'info');
 
-initializeGoogleAuth();
+initializeFirebaseAuth();
 
 function Registro() {
     const overlay = document.createElement("div");
@@ -166,53 +164,71 @@ function Registro() {
     overlay.appendChild(VentanaRegistro);
     document.body.appendChild(overlay);
 
-    // Si ya nos autenticaron antes de abrir el modal, sincronizamos la vista
-    if (window.datosGoogle || window.pendingDatosGoogle) {
-        const divGoogle = VentanaRegistro.querySelector('#div-google');
-        const divSeccionRegistro = VentanaRegistro.querySelector('#seccion-registro');
-        const contenedorLogin = VentanaRegistro.querySelector('#contenedor-login');
+    const divGoogle = VentanaRegistro.querySelector('#div-google');
+    const divSeccionRegistro = VentanaRegistro.querySelector('#seccion-registro');
+    const divLogin = VentanaRegistro.querySelector('#contenedor-login');
 
+    // Si ya hay un usuario autenticado por Firebase, mostramos el formulario de registro
+    const currentUser = firebaseAuthInstance?.currentUser;
+    if (currentUser) {
         if (divGoogle) divGoogle.style.display = 'none';
         if (divSeccionRegistro) {
             divSeccionRegistro.style.display = 'block';
-            const nombre = window.datosGoogle?.given_name || window.pendingDatosGoogle?.given_name || '';
             const h2 = divSeccionRegistro.querySelector('h2');
-            if (h2 && nombre) h2.innerText = `Hola, ${nombre}`;
+            if (h2) h2.innerText = `Hola, ${currentUser.displayName}`;
         }
-        if (contenedorLogin) contenedorLogin.style.display = 'none';
+        if (divLogin) divLogin.style.display = 'none';
+        currentUser.getIdToken().then(token => {
+            window.currentFirebaseIdToken = token;
+        }).catch(() => {});
     }
 
     // Al hacer clic en Continuar con Google
-    VentanaRegistro.querySelector('#google-login-btn').onclick = () => {
+    VentanaRegistro.querySelector('#google-login-btn').onclick = async () => {
         if (window.location.protocol === 'file:') {
             mostrarAlerta('Debes abrir la página mediante HTTP local (por ejemplo http://localhost:8000), no con file://.', 'error');
             return;
         }
 
-        VentanaRegistro.querySelector('#contenedor-login').style.display = 'none';
-        const divGoogle = VentanaRegistro.querySelector('#div-google');
+        divLogin.style.display = 'none';
         divGoogle.style.display = 'block';
 
         try {
-            if (!window.google?.accounts?.id) {
-                throw new Error('Google Identity Services no cargado');
+            const result = await signInWithGoogle();
+            if (!result) {
+                throw new Error('No se completó la autenticación de Google.');
             }
-            google.accounts.id.prompt();
-        } catch (error) {
-            console.error('Error al inicializar Google Sign-In:', error);
-            mostrarAlerta('No se pudo iniciar Google Sign-In. Asegúrate de estar usando http://localhost y de que la librería de Google esté cargada.', 'error');
+
+            const { user, idToken } = result;
+            const backend = await verificarUsuarioBackend(idToken);
+
+            if (backend.existe) {
+                mostrarAlerta(`Bienvenido de vuelta, ${backend.usuario.nombre}`, 'success');
+                localStorage.setItem('bibliotecaUsuario', JSON.stringify(backend.usuario));
+                document.body.removeChild(overlay);
+                window.location.reload();
+                return;
+            }
+
             divGoogle.style.display = 'none';
-            VentanaRegistro.querySelector('#contenedor-login').style.display = 'block';
+            divSeccionRegistro.style.display = 'block';
+            const h2 = divSeccionRegistro.querySelector('h2');
+            if (h2) h2.innerText = `Hola, ${user.displayName}`;
+            window.currentFirebaseIdToken = idToken;
+        } catch (error) {
+            console.error('Error al iniciar sesión con Google:', error);
+            divGoogle.style.display = 'none';
+            divLogin.style.display = 'block';
+            mostrarAlerta(error.message || 'No se pudo iniciar sesión con Google.', 'error');
         }
     };
 
     // Botón Finalizar Registro
     VentanaRegistro.querySelector('#btn-enviar-registro').onclick = async () => {
-        // CORRECCIÓN: Validamos con la credencial cruda en memoria global
-        if (!window.googleCredential) {
+        const user = firebaseAuthInstance?.currentUser;
+        if (!user) {
             mostrarAlerta('Debes iniciar sesión con Google antes de finalizar el registro.', 'error');
             return;
-
         }
 
         const cedula = VentanaRegistro.querySelector('#reg-cedula').value.trim();
@@ -220,42 +236,33 @@ function Registro() {
         const anio = VentanaRegistro.querySelector('#reg-anio').value;
 
         if (!cedula || !rol || !anio) {
-            mostrarAlerta("Por favor, rellena todos los campos antes de finalizar.", 'error');
+            mostrarAlerta('Por favor, rellena todos los campos antes de finalizar.', 'error');
             return;
         }
 
-        // CORRECCIÓN 2: Estructura recomendada enviando la credencial cruda para seguridad
-        // Nota: Si tu backend ya está diseñado para recibir datos sueltos sin validar el token,
-        // puedes dejar el objeto anterior, pero lo ideal por seguridad web es pasar 'credential'.
-        const datosUsuario = {
-            credential: window.googleCredential,
-            cedula: cedula,
-            rol: rol,
-            anio_seccion: anio
-        };
-
         try {
-            // CORRECCIÓN 3: Asegúrate de que este endpoint coincida con tu backend en Flask
-            const respuesta = await fetch('http://127.0.0.1:5000', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosUsuario)
+            const idToken = window.currentFirebaseIdToken || await user.getIdToken(true);
+            const respuesta = await registrarUsuarioBackend(idToken, {
+                cedula,
+                rol,
+                anio_seccion: anio,
+                name: user.displayName,
+                email: user.email,
+                picture: user.photoURL
             });
 
-            const resultado = await respuesta.json();
-
             if (respuesta.ok) {
-                mostrarAlerta(`¡Registro exitoso! Perfil creado correctamente.`, 'success');
-                // Guardamos el usuario retornado por Python para persistencia en frontend
-                localStorage.setItem('bibliotecaUsuario', JSON.stringify(resultado.usuario));
+                mostrarAlerta('¡Registro exitoso! Perfil creado correctamente.', 'success');
+                localStorage.setItem('bibliotecaUsuario', JSON.stringify(respuesta.data.usuario));
                 document.body.removeChild(overlay);
                 window.location.reload();
-            } else {
-                mostrarAlerta(`Error en el sistema: ${resultado.error || resultado.mensaje}`, 'error');
+                return;
             }
+
+            mostrarAlerta(`Error en el sistema: ${respuesta.data.error || respuesta.data.mensaje}`, 'error');
         } catch (error) {
-            console.error("Error al conectar con el backend:", error);
-            mostrarAlerta("Hubo un problema de red al procesar tu cuenta.", 'error');
+            console.error('Error al conectar con el backend:', error);
+            mostrarAlerta('Hubo un problema de red al procesar tu cuenta.', 'error');
         }
     };
 
