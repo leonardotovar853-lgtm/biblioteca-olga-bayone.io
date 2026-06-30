@@ -382,7 +382,7 @@ def crear_web(biblioteca):
             </div>
         </section>
         <section class="recommend-section" id="recomendaciones">
-            <h2>Coleciones Destacadas</h2>
+            <h2>Colecciones Destacadas</h2>
             <p>Descubre nuestras recomendaciones personalizadas basadas en tus intereses y búsquedas recientes.</p>
             <div class="grid-recomendaciones">
 
@@ -448,7 +448,7 @@ def crear_web(biblioteca):
                 <li>
                     <a href="repositorio.html" class="boton-area">
                         <span class="icono icono-tesis"></span>
-                        <h3>Proyectos de Invesgación</h3>
+                        <h3>Proyectos de Investigación</h3>
                     </a>
                 </li>
                 <li>

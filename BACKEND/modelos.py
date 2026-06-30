@@ -256,7 +256,7 @@ class Libro(RecursoAcademico):
                         <p class="año-public"><b>{anio_safe}</b></p>
                         
                         <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
+                            <button class="btn-flip">Ver Descripción</button>
                             <a href="{self.link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
                             <button class="btn-like" onclick="darLike('{self.id}')">
                                 ❤️ <span id="count-{self.id}">0</span>
@@ -301,7 +301,7 @@ class Tesis(RecursoAcademico):
                         <p class="año-public">Tutor: {tutor_safe} | Asesor metodológico: {asesor_safe} | <b>{anio_safe}</b></p>
                         
                         <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
+                            <button class="btn-flip">Ver Descripción</button>
                             <a href="{self.link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
                             <button class="btn-like" onclick="darLike('{self.id}')">
                                 ❤️ <span id="count-{self.id}">0</span>
@@ -346,7 +346,7 @@ class GuiaEstudio(RecursoAcademico):
                         <p class="año-public">Año: <b>{anio_safe}</b></p>
                         
                         <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
+                            <button class="btn-flip">Ver Descripción</button>
                             <a href="{self.link}" target="_blank" class="btn-leer">Descargar PDF</a>
                             <button class="btn-like" onclick="darLike('{self.id}')">
                                 ❤️ <span id="count-{self.id}">0</span>
@@ -390,7 +390,7 @@ class VideoTutorial(RecursoAcademico):
                         <p class="año-public">Año: <b>{anio_safe}</b></p>
                         
                         <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
+                            <button class="btn-flip">Ver Descripción</button>
                             <a href="{self.link}" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
                             <button class="btn-like" onclick="darLike('{self.id}')">
                                 ❤️ <span id="count-{self.id}">0</span>
@@ -433,7 +433,7 @@ class PaginasWeb(RecursoAcademico):
                         <p class="año-public">Año: <b>{anio_safe}</b></p>
                         
                         <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
+                            <button class="btn-flip">Ver Descripción</button>
                             <a href="{self.link}" target="_blank" class="btn-leer" style="background-color: #0076d6; color: white;">Visitar Sitio</a>
                             <button class="btn-like" onclick="darLike('{self.id}')">
                                 ❤️ <span id="count-{self.id}">0</span>
