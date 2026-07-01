@@ -96,15 +96,17 @@ def limpieza_datos():
     Función principal que orquesta todo el proceso y protege las decisiones de Estado y Likes
     """
     try:
-        print('🌐 Conectando con Google Sheets...')
-        
-        # Leer credenciales desde variable de entorno (Render) o desde archivo local
-        credenciales_json = os.environ.get("GSPREAD_CREDENTIALS")
-        if credenciales_json:
-            gc = gspread.service_account_from_dict(json.loads(credenciales_json))
-        else:
-            ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json"
-            gc = gspread.service_account(filename=ruta_credenciales)
+        try:
+            # Leer credenciales desde variable de entorno (Render) o desde archivo local
+            credenciales_json = os.environ.get("GSPREAD_CREDENTIALS")
+            if credenciales_json:
+                gc = gspread.service_account_from_dict(json.loads(credenciales_json))
+            else:
+                ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json"
+                gc = gspread.service_account(filename=ruta_credenciales)
+        except Exception as e:
+            print(f"Error conectando a Google Sheets: {e}")
+            return None
         sh = gc.open("Agregar Libro (Respuestas)")
         
         forms = {

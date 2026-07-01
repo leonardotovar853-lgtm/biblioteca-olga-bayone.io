@@ -40,10 +40,12 @@ def cargar_biblioteca():
         print(f"Error al cargar la biblioteca: {e}")
         biblioteca_global = None # Asegurar que esté nulo en caso de error
 
-# --- Inicialización de Firebase Admin --- (Solo una vez al iniciar la app)
-# Asegúrate de que las credenciales de Firebase estén configuradas correctamente.
-# Se usará la función init_firebase_admin_if_needed de cuentas.py
-init_firebase_admin_if_needed()
+# --- Inicialización de Firebase Admin ---
+try:
+    init_firebase_admin_if_needed()
+    print("✅ Firebase inicializado correctamente")
+except Exception as e:
+    print(f"⚠️ Firebase no se pudo inicializar (la autenticación no estará disponible): {e}")
 
 # Cargar la biblioteca al iniciar la aplicación
 cargar_biblioteca()
