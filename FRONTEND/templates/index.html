@@ -32,55 +32,55 @@
             <h2>Busca en Nuestras Areas Disponibles</h2>
             <ul class="list-area">
                 <li>
-                    <a href="{{ url_for('catalogo', area='Matemática') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Matemática" class="boton-area">
                         <span class="icono icono-matematica"></span> 
                         <h3>Matemáticas</h3>
                     </a>
                 </li>
                 
                 <li>
-                    <a href="{{ url_for('catalogo', area='Castellano y Literatura') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Castellano y Literatura" class="boton-area">
                         <span class="icono icono-castellano"></span>
                         <h3>Castellano y Literatura</h3>
                     </a>
                 </li>
                 
                 <li>
-                    <a href="{{ url_for('catalogo', area='Ciencias Naturales (Física, Química y Biología general)') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Ciencias Naturales (Física, Química y Biología general)" class="boton-area">
                         <span class="icono icono-naturales"></span>
                         <h3>Ciencias Naturales</h3>
                     </a>
                 </li>
                 
                 <li>
-                    <a href="{{ url_for('catalogo', area='Ciencias Sociales') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Ciencias Sociales" class="boton-area">
                         <span class="icono icono-sociales"></span>
                         <h3>Ciencias Sociales</h3>
                     </a>
                 </li>
                 
                 <li>
-                    <a href="{{ url_for('catalogo', area='Historia') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Historia" class="boton-area">
                         <span class="icono icono-historia"></span>
                         <h3>Historia</h3>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ url_for('catalogo', area='Informática y Tecnologia') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Informática y Tecnologia" class="boton-area">
                         <span class="icono icono-informatica"></span>
                         <h3>Informática y Tecnología</h3>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ url_for('catalogo', area='Arte y Patrimonio') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Arte y Patrimonio" class="boton-area">
                         <span class="icono icono-arte"></span>
                         <h3>Arte y Patrimonio</h3>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('catalogo', area='Ingles y otras lenguas') }}" class="boton-area">
+                    <a href="{{ url_for('catalogo') }}?area=Ingles y otras lenguas" class="boton-area">
                         <span class="icono icono-ingles"></span>
                         <h3>Ingles y otras Lenguas</h3>
                     </a>
@@ -92,19 +92,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('multimedia', tipo='Guia') }}" class="boton-area">
+                    <a href="{{ url_for('multimedia') }}?tipo=Guia" class="boton-area">
                         <span class="icono icono-guia"></span>
                         <h3>Guías de Estudio</h3>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('multimedia', tipo='Video') }}" class="boton-area">
+                    <a href="{{ url_for('multimedia') }}?tipo=Video" class="boton-area">
                         <span class="icono icono-video"></span>
                         <h3>Videos Educativos</h3>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('multimedia', tipo='Web') }}" class="boton-area">
+                    <a href="{{ url_for('multimedia') }}?tipo=Web" class="boton-area">
                         <span class="icono icono-web"></span>
                         <h3>Recursos Web</h3>
                     </a>
@@ -120,6 +120,6 @@
     <script src="{{ url_for('static', filename='js/Registro.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/recomendacionInicio.js') }}"></script>
     <script>
-        const librosData = {{ json_data | tojson | safe }};
+        const librosData = JSON.parse('{{ json_data | safe }}');
     </script>
 {% endblock %}

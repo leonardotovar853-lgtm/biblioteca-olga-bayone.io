@@ -2,8 +2,7 @@ import json
 import os
 import uuid
 from datetime import datetime
-# Importamos todo lo necesario de Flask arriba, incluyendo render_template
-from flask import request, jsonify, Flask, render_template
+from flask import request, jsonify, Blueprint
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import auth as firebase_auth, credentials, db as firebase_db
@@ -15,6 +14,28 @@ FIREBASE_DB_URL = "https://biblioteca-olga-bayone-default-rtdb.firebaseio.com"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIREBASE_ADMIN_CREDENTIALS_PATH = os.path.join(BASE_DIR, "DATA", "biblioteca-olga-bayone-firebase-key.json")
 FIREBASE_ADMIN_CREDENTIALS_JSON = None
+
+# ==========================================================================
+# INICIALIZACIÓN DE FIREBASE ADMIN (Se manejará en app.py o un módulo config)
+# Para que el Blueprint funcione, esta lógica debe estar fuera de una clase de Flask
+# ==========================================================================
+def init_firebase_admin_if_needed():
+    if not firebase_admin._apps:
+        if FIREBASE_ADMIN_CREDENTIALS_PATH and os.path.exists(FIREBASE_ADMIN_CREDENTIALS_PATH):
+            cred = credentials.Certificate(FIREBASE_ADMIN_CREDENTIALS_PATH)
+        elif FIREBASE_ADMIN_CREDENTIALS_JSON:
+            try:
+                cred = credentials.Certificate(json.loads(FIREBASE_ADMIN_CREDENTIALS_JSON))
+            except Exception as e:
+                raise RuntimeError(f"Credenciales de Firebase Admin no válidas: {str(e)}")
+        else:
+            raise RuntimeError(
+                "No se encontraron credenciales de Firebase Admin. "
+                "Configura GOOGLE_APPLICATION_CREDENTIALS o FIREBASE_ADMIN_CREDENTIALS."
+            )
+        firebase_admin.initialize_app(cred, {'databaseURL': FIREBASE_DB_URL})
+    return firebase_admin.get_app()
+
 
 class Usuario:
     def __init__(self, id_google, cedula, nombre, correo, foto_url, rol, anio_seccion, fecha_registro=None):
@@ -107,151 +128,106 @@ class Usuario:
     @property
     def fecha_registro(self): return self._fecha_registro
 
+# Instancia de Blueprint para las rutas de autenticación
+cuentas_bp = Blueprint('cuentas_api', __name__)
 
-class Servidor:
-    def __init__(self):
-        self.db_url = FIREBASE_DB_URL
-        self.firebase_app = self.init_firebase_admin()
+# Aplicamos CORS al Blueprint
+CORS(cuentas_bp)
+
+# --- Funciones auxiliares para el Blueprint ---
+# Estas funciones ahora operan sobre la app de Firebase ya inicializada
+def _agregar_usuario(usuario):
+    if not isinstance(usuario, Usuario):
+        raise ValueError("El objeto proporcionado no es una instancia de Usuario")
+    
+    # Aseguramos que Firebase esté inicializado
+    init_firebase_admin_if_needed()
+    
+    usuario_existente = _buscar_usuario_por_google_id(usuario.id)
+    if usuario_existente:
+        raise ValueError("El usuario ya existe en la base de datos.")
+
+    try:
+        ref = firebase_db.reference(f"usuarios/{usuario.id}")
+        ref.set(usuario.to_dict())
+        return "Usuario agregado exitosamente"
+    except Exception as e:
+        raise ValueError(f"Error al escribir en Firebase: {str(e)}")
+    
+def _buscar_usuario_por_google_id(google_id):
+    try:
+        # Aseguramos que Firebase esté inicializado
+        init_firebase_admin_if_needed()
+        ref = firebase_db.reference(f"usuarios/{google_id}")
+        usuario = ref.get()
+        return usuario if usuario else None
+    except Exception:
+        return None
+
+def _verificar_token_firebase(id_token):
+    if not id_token:
+        raise ValueError("Token de Firebase no recibido")
+    
+    # Aseguramos que Firebase esté inicializado
+    init_firebase_admin_if_needed()
+
+    try:
+        payload = firebase_auth.verify_id_token(id_token)
+    except Exception as e:
+        raise ValueError(f"Token de Firebase no válido o expirado: {str(e)}")
+
+    proveedor = payload.get('firebase', {}).get('sign_in_provider')
+    if proveedor and proveedor != 'google.com':
+        raise ValueError("El inicio de sesión debe ser con Google")
+
+    correo = payload.get('email', '')
+    if not (correo.endswith('@olgabayone.com') or correo.endswith('@gmail.com')):
+        raise ValueError("Solo se permiten cuentas institucionales autorizadas")
+
+    return payload
+
+# --- Rutas de la API de autenticación (dentro del Blueprint) ---
+@cuentas_bp.route('/verificar-usuario', methods=['POST'])
+def verificar_usuario_endpoint():
+    try:
+        data = request.get_json()
+        token = data.get('idToken')
+        payload = _verificar_token_firebase(token)
+        firebase_uid = payload.get('uid')
+
+        usuario_existente = _buscar_usuario_por_google_id(firebase_uid)
         
-        # Apuntamos correctamente a la carpeta FRONTEND para los estilos CSS e imágenes
-        self.servidor = Flask(__name__, static_folder="../FRONTEND", static_url_path="/static")
-        CORS(self.servidor)
-        self.configurar_rutas()
-
-    def init_firebase_admin(self):
-        if firebase_admin._apps:
-            return firebase_admin.get_app()
-
-        if FIREBASE_ADMIN_CREDENTIALS_PATH and os.path.exists(FIREBASE_ADMIN_CREDENTIALS_PATH):
-            cred = credentials.Certificate(FIREBASE_ADMIN_CREDENTIALS_PATH)
-        elif FIREBASE_ADMIN_CREDENTIALS_JSON:
-            try:
-                cred = credentials.Certificate(json.loads(FIREBASE_ADMIN_CREDENTIALS_JSON))
-            except Exception as e:
-                raise RuntimeError(f"Credenciales de Firebase Admin no válidas: {str(e)}")
-        else:
-            raise RuntimeError(
-                "No se encontraron credenciales de Firebase Admin. "
-                "Configura GOOGLE_APPLICATION_CREDENTIALS o FIREBASE_ADMIN_CREDENTIALS."
-            )
-
-        return firebase_admin.initialize_app(cred, {
-            'databaseURL': self.db_url
-        })
-
-    def agregar_usuario(self, usuario):
-        if not isinstance(usuario, Usuario):
-            raise ValueError("El objeto proporcionado no es una instancia de Usuario")
-        
-        usuario_existente = self.buscar_usuario_por_google_id(usuario.id)
         if usuario_existente:
-            raise ValueError("El usuario ya existe en la base de datos.")
+            return jsonify({"existe": True, "usuario": usuario_existente}), 200
+        else:
+            return jsonify({"existe": False, "mensaje": "Usuario nuevo, requiere registro"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
-        try:
-            ref = firebase_db.reference(f"usuarios/{usuario.id}")
-            ref.set(usuario.to_dict())
-            return "Usuario agregado exitosamente"
-        except Exception as e:
-            raise ValueError(f"Error al escribir en Firebase: {str(e)}")
-        
-    def buscar_usuario_por_google_id(self, google_id):
-        try:
-            ref = firebase_db.reference(f"usuarios/{google_id}")
-            usuario = ref.get()
-            return usuario if usuario else None
-        except Exception:
-            return None
+@cuentas_bp.route('/registro-usuario', methods=['POST'])
+def registro_usuario_endpoint():
+    try:
+        data = request.get_json()
+        token = data.get('idToken')
+        payload = _verificar_token_firebase(token)
 
-    def verificar_token_firebase(self, id_token):
-        if not id_token:
-            raise ValueError("Token de Firebase no recibido")
+        usuario = Usuario(
+            id_google=payload.get('uid'),
+            cedula=data.get('cedula'),
+            nombre=data.get('name') or payload.get('name'), 
+            correo=data.get('email') or payload.get('email'),
+            foto_url=data.get('picture') or payload.get('picture'),
+            rol=data.get('rol'),
+            anio_seccion=data.get('anio_seccion'), 
+            fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
 
-        try:
-            payload = firebase_auth.verify_id_token(id_token)
-        except Exception as e:
-            raise ValueError(f"Token de Firebase no válido o expirado: {str(e)}")
+        if data.get('intereses'):
+            usuario.intereses = data.get('intereses')
 
-        proveedor = payload.get('firebase', {}).get('sign_in_provider')
-        if proveedor and proveedor != 'google.com':
-            raise ValueError("El inicio de sesión debe ser con Google")
+        _agregar_usuario(usuario)
+        return jsonify({"mensaje": "Usuario registrado con éxito", "usuario": usuario.to_dict()}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
-        correo = payload.get('email', '')
-        if not (correo.endswith('@olgabayone.com') or correo.endswith('@gmail.com')):
-            raise ValueError("Solo se permiten cuentas institucionales autorizadas")
-
-        return payload
-
-    def configurar_rutas(self):
-            # 1. RUTA PRINCIPAL: Catálogo dinámico para Alumnos (Filtra por Aprobados)
-            @self.servidor.route('/')
-            def inicio():
-                try:
-                    ref = firebase_db.reference("libros")
-                    libros_data = ref.get() or {}
-                    
-                    libros_aprobados = []
-                    for id_libro, info in libros_data.items():
-                        if isinstance(info, dict) and info.get('estado') == 'Aprobado':
-                            info['id'] = id_libro
-                            libros_aprobados.append(info)
-                    
-                    return render_template("catalogo.html", libros=libros_aprobados)
-                except Exception as e:
-                    return f"Error al cargar el catálogo: {str(e)}", 500
-
-            # 2. RUTA DEL ADMINISTRADOR: Panel de Control para subir PDFs
-            @self.servidor.route('/admin-panel')
-            def panel_administrador():
-                return render_template("Panel_control.html")
-
-            # --- TUS RUTAS DE API ACTUALES (Intactas) ---
-            @self.servidor.route('/api/verificar-usuario', methods=['POST'])
-            def verificar_usuario_endpoint():
-                try:
-                    data = request.get_json()
-                    token = data.get('idToken')
-                    payload = self.verificar_token_firebase(token)
-                    firebase_uid = payload.get('uid')
-                    usuario_existente = self.buscar_usuario_por_google_id(firebase_uid)
-                    if usuario_existente:
-                        return jsonify({"existe": True, "usuario": usuario_existente}), 200
-                    else:
-                        return jsonify({"existe": False, "mensaje": "Usuario nuevo, requiere registro"}), 200
-                except Exception as e:
-                    return jsonify({"error": str(e)}), 400
-
-            @self.servidor.route('/api/registro-usuario', methods=['POST'])
-            def registro_usuario_endpoint():
-                try:
-                    data = request.get_json()
-                    token = data.get('idToken')
-                    payload = self.verificar_token_firebase(token)
-                    usuario = Usuario(
-                        id_google=payload.get('uid'),
-                        cedula=data.get('cedula'),
-                        nombre=data.get('name') or payload.get('name'), 
-                        correo=data.get('email') or payload.get('email'),
-                        foto_url=data.get('picture') or payload.get('picture'),
-                        rol=data.get('rol'),
-                        anio_seccion=data.get('anio_seccion'), 
-                        fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    )
-                    if data.get('intereses'):
-                        usuario.intereses = data.get('intereses')
-                    self.agregar_usuario(usuario)
-                    return jsonify({"mensaje": "Usuario registrado con éxito", "usuario": usuario.to_dict()}), 200
-                except Exception as e:
-                    return jsonify({"error": str(e)}), 400
-            
-    def correr(self):
-        self.servidor.run(debug=True, port=5000)
-
-# Instanciamos la clase para configurar las rutas
-servidor_biblioteca = Servidor()
-
-# EXCLUSIVO PARA RENDER
-instancia_servidor = servidor_biblioteca.servidor
-
-if __name__ == "__main__":
-    print("🚀 Servidor Flask (Local) escuchando en http://localhost:5000...")
-    servidor_biblioteca.correr()
+# La instancia de Flask y la ejecución ya no están aquí, se registran en app.py

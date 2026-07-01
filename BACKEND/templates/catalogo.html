@@ -48,10 +48,10 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="../js/buscador.js"></script> 
-    <script src="../js/accesoArea.js"></script>   
-    <script src="../js/flipCard.js"></script>
+    <script src="{{ url_for('static', filename='js/buscador.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/accesoArea.js') }}"></script>   
+    <script src="{{ url_for('static', filename='js/flipCard.js') }}"></script>
     <script>
-        const librosData = JSON.parse('{{ json_data | safe }}');
+        const librosData = {{ json_data | tojson | safe }};
     </script>
 {% endblock %}

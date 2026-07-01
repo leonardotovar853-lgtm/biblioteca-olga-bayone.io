@@ -8,7 +8,7 @@
             <h1 class="hero-title">Biblioteca Olga Bayone: Un Legado Digital</h1>
             <p class="hero-subtitle">Explorando la historia, misión y visión detrás de nuestro proyecto educativo.</p>
             <div class="hero-actions">
-                <a href="catalogo.html" class="btn-primario">Explorar Catálogo</a>
+                <a href="{{ url_for('catalogo') }}" class="btn-primario">Explorar Catálogo</a>
                 <a href="#historia" class="btn-secundario">Nuestra Historia</a>
             </div>
         </div>
@@ -26,7 +26,7 @@
                 <p>Nuestro compromiso es fomentar la investigación, la lectura crítica y el aprendizaje autónomo, preparando a las futuras generaciones para los desafíos del mundo digital.</p>
             </div>
             <div class="historia-image">
-                <img src="../imagen_biblioteca.jpeg" alt="Biblioteca Olga Bayone histórica" loading="lazy">
+                <img src="{{ url_for('static', filename='imagen_biblioteca.jpeg') }}" alt="Biblioteca Olga Bayone histórica" loading="lazy">
             </div>
         </div>
     </section>
@@ -46,11 +46,11 @@
             <i class="fa-solid fa-heart"></i>
             <h3>Valores</h3>
             <ul>
-                <li>**Acceso:** Educación para todos, sin barreras.</li>
-                <li>**Innovación:** Adaptación constante a las nuevas tecnologías.</li>
-                <li>**Calidad:** Contenido relevante y verificado.</li>
-                <li>**Comunidad:** Fomento del intercambio de conocimiento.</li>
-                <li>**Integridad:** Respeto por la propiedad intelectual.</li>
+                <li>Acceso: Educación para todos, sin barreras.</li>
+                <li>Innovación: Adaptación constante a las nuevas tecnologías.</li>
+                <li>Calidad: Contenido relevante y verificado.</li>
+                <li>Comunidad: Fomento del intercambio de conocimiento.</li>
+                <li>Integridad: Respeto por la propiedad intelectual.</li>
             </ul>
         </div>
     </section>
@@ -62,7 +62,7 @@
         </div>
         <div class="equipo-grid">
             <div class="miembro-card">
-                <img src="../imagen_info.jpeg" alt="Miembro del equipo" loading="lazy">
+                <img src="{{ url_for('static', filename='imagen_info.jpeg') }}" alt="Miembro del equipo" loading="lazy">
                 <h3>Leonardo Tovar</h3>
                 <p>Desarrollador Full Stack</p>
                 <div class="social-links">
@@ -70,11 +70,9 @@
                     <a href="https://www.linkedin.com/in/leonardo-tovar-a9075727b/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
                 </div>
             </div>
-            <!-- Puedes añadir más miembros del equipo aquí -->
         </div>
     </section>
 {% endblock %}
 
 {% block scripts %}
-    <!-- Scripts específicos de sobre_proyecto.html si los hay -->
 {% endblock %}

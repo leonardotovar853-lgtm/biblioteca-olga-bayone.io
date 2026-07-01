@@ -2,13 +2,22 @@ from flask import Flask, render_template, jsonify, request
 import os
 import json
 from admin_datos import limpieza_datos
+from cuentas import cuentas_bp, init_firebase_admin_if_needed # Importamos el Blueprint y la inicialización de Firebase
+import firebase_admin # Aseguramos que firebase_admin esté importado aquí
 
+# Obtener la ruta base del proyecto para configurar carpetas estáticas y de plantillas
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Configuración de la aplicación Flask
 app = Flask(__name__, 
-            template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'),
-            static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'FRONTEND'))
+            template_folder=os.path.join(BASE_DIR, 'BACKEND', 'templates'), # Plantillas ahora están en BACKEND/templates
+            static_folder=os.path.join(BASE_DIR, 'FRONTEND'), # La carpeta FRONTEND completa es estática
+            static_url_path='/FRONTEND') # Acceso a archivos estáticos vía /FRONTEND
+
+# Registramos el Blueprint de cuentas_bp
+app.register_blueprint(cuentas_bp, url_prefix='/api/cuentas') # Prefijo para las rutas de auth
 
 # Variable global para almacenar la biblioteca cargada
-# En un entorno de producción real, esto podría ser un caché más sofisticado o un sistema de base de datos
 biblioteca_global = None
 
 def cargar_biblioteca():
@@ -27,6 +36,11 @@ def cargar_biblioteca():
         print(f"Error al cargar la biblioteca: {e}")
         biblioteca_global = None # Asegurar que esté nulo en caso de error
 
+# --- Inicialización de Firebase Admin --- (Solo una vez al iniciar la app)
+# Asegúrate de que las credenciales de Firebase estén configuradas correctamente.
+# Se usará la función init_firebase_admin_if_needed de cuentas.py
+init_firebase_admin_if_needed()
+
 # Cargar la biblioteca al iniciar la aplicación
 cargar_biblioteca()
 
@@ -39,7 +53,7 @@ def recargar_datos_api():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- Rutas de las páginas web ---
+# --- Rutas de las páginas web (sirven las plantillas Jinja2) ---
 @app.route('/')
 def index():
     recursos_aprobados = []
@@ -93,8 +107,6 @@ def sobre_proyecto():
 @app.route('/agregar_libro')
 def agregar_libro():
     return render_template('agregar_libro.html')
-
-# --- Servir archivos estáticos --- (Se hace automáticamente con static_folder configurado)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

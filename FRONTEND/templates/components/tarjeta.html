@@ -1,14 +1,6 @@
 {% macro render_tarjeta(recurso) %}
     <div class='libro-card' data-category='{{ recurso.area }}' data-type='{{ recurso.tipo }}' data-year='{{ recurso.nivel }}' libro-id='{{ recurso.id }}'>
-        <img src="{% if recurso.link_portada %}{{ recurso.link_portada }}{% else %}
-            {% if recurso.tipo == 'Libro' %}{{ url_for('static', filename='libro_default.png') }}
-            {% elif recurso.tipo == 'Tesis' %}{{ url_for('static', filename='tesis_default.png') }}
-            {% elif recurso.tipo == 'Guia' %}{{ url_for('static', filename='Guia_deafut.png') }} {# Asumiendo que Guia_deafut.png es la imagen por defecto para Guia #}
-            {% elif recurso.tipo == 'Video' %}{{ url_for('static', filename='video_default.png') }}
-            {% elif recurso.tipo == 'Web' %}{{ url_for('static', filename='web_default.png') }}
-            {% else %}{{ url_for('static', filename='web_default.png') }} {# Fallback general #}
-            {% endif %}
-        {% endif %}" alt="Portada de {{ recurso.titulo }}" loading="lazy">
+        <img src="{{ recurso.link_portada }}" alt="Portada de {{ recurso.titulo }}" loading="lazy">
         <div class="badge-{{ recurso.tipo|lower }}">
             {% if recurso.tipo == 'Guia' %}📄
             {% elif recurso.tipo == 'Video' %}🎥

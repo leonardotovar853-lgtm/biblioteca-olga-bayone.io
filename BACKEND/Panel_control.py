@@ -1,4 +1,3 @@
-from creador_web import ejecucion_final
 import tkinter as tk 
 from tkinter import messagebox, ttk, filedialog
 import webbrowser
@@ -6,6 +5,10 @@ import os
 import csv
 from datetime import datetime
 import gspread
+import requests # Importamos la librería requests para hacer llamadas HTTP
+
+# URL base de tu aplicación Flask (asegúrate de que coincida con donde se ejecuta tu app.py)
+FLASK_APP_URL = "http://localhost:5000"
 
 # ==========================================
 # CONEXIÓN GLOBAL CON TU BD GENERAL (gspread)
@@ -26,7 +29,7 @@ except Exception as e:
 
 def abrir_panel():  # Función Para Abrir el Panel de Control
     root = tk.Tk()
-    root.geometry("950x700")  # 💡 Aumentado el ancho para acomodar las nuevas columnas
+    root.geometry("950x700")
     root.config(background='#f1f5f9')
     root.title('Panel de Control - Biblioteca Digital Olga Bayone')
     root.resizable(True, True)
@@ -48,22 +51,36 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
         root.update() 
         
         try:
-            resultado = ejecucion_final()
+            # Hacemos una llamada a la API de Flask para recargar los datos de la biblioteca
+            response = requests.post(f"{FLASK_APP_URL}/api/recargar_datos")
+            response.raise_for_status() # Lanza una excepción para errores HTTP (4xx o 5xx)
             
-            if resultado == True: 
-                messagebox.showinfo(title="✅ Éxito", message='Web actualizada correctamente')
-                estado.config(text="✅ Web actualizada correctamente", fg="#059669")
+            resultado = response.json()
+            
+            if resultado.get("status") == "success": 
+                messagebox.showinfo(title="✅ Éxito", message='Datos de la web actualizados correctamente.')
+                estado.config(text="✅ Datos actualizados correctamente", fg="#059669")
                 barra_progreso.stop()
                 barra_progreso['value'] = 100
-                cargar_datos_pendientes() 
+                cargar_datos_pendientes() # Recargamos la bandeja por si hay nuevos pendientes
             else:
-                messagebox.showerror(title="❌ Error", message='No se pudo actualizar. Revisa tu conexión a internet.')
+                messagebox.showerror(title="❌ Error", message=f'No se pudo actualizar: {resultado.get("message", "Error desconocido")}')
                 estado.config(text='❌ Error de conexión', fg='red')
                 barra_progreso.stop()
                 barra_progreso['value'] = 0
                 
+        except requests.exceptions.ConnectionError:
+            messagebox.showerror(title="❌ Error de Conexión", message='No se pudo conectar con el servidor Flask. Asegúrate de que esté corriendo.')
+            estado.config(text='❌ Servidor Flask no disponible', fg='red')
+            barra_progreso.stop()
+            barra_progreso['value'] = 0
+        except requests.exceptions.RequestException as e:
+            messagebox.showerror(title="❌ Error HTTP", message=f'Error al comunicarse con la API: {e}')
+            estado.config(text='❌ Error en la API', fg='red')
+            barra_progreso.stop()
+            barra_progreso['value'] = 0
         except Exception as e:
-            messagebox.showerror(title="❌ Error", message=f'Error: {str(e)[:100]}')
+            messagebox.showerror(title="❌ Error", message=f'Error inesperado: {str(e)[:100]}')
             estado.config(text='❌ Error en el proceso', fg='red')
             barra_progreso.stop()
             barra_progreso['value'] = 0
@@ -72,14 +89,10 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
             btn_abrir_web.config(state='normal')
     
     def abrir_web():
-        ruta = r'C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\FRONTEND\index.html'
-        if os.path.exists(ruta):
-            webbrowser.open(f'file://{ruta}')
-            messagebox.showinfo(title="🌐 Navegador", message='Web abierta correctamente')
-            estado.config(text="🌐 Web abierta en el navegador", fg="#2563eb")
-        else:
-            messagebox.showerror(title="❌ Error", message='No se encontró el archivo index.html')
-            estado.config(text='❌ No se encontró la web', fg='red')
+        # Ahora abrimos la URL del servidor Flask
+        webbrowser.open(FLASK_APP_URL)
+        messagebox.showinfo(title="🌐 Navegador", message=f'Web abierta correctamente en {FLASK_APP_URL}')
+        estado.config(text=f"🌐 Web abierta en {FLASK_APP_URL}", fg="#2563eb")
 
     def obtener_fila_seleccionada():
         seleccion = tree_pendientes.selection()
@@ -104,9 +117,9 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
             if sheet:
                 # 1. Obtener los datos del elemento seleccionado en la interfaz
                 valores_interfaz = tree_pendientes.item(item_id, 'values')
-                tipo_recurso = valores_interfaz[0].strip().lower()  # 'libro', 'tesis', 'guia', 'video', 'web'
-                titulo_recurso = valores_interfaz[1].strip().lower()
-                autor_recurso = valores_interfaz[2].strip().lower()
+                tipo_recurso = str(valores_interfaz[0]).strip().lower()  # 'libro', 'tesis', 'guia', 'video', 'web'
+                titulo_recurso = str(valores_interfaz[1]).strip().lower()
+                autor_recurso = str(valores_interfaz[2]).strip().lower()
 
                 # Diccionario para mapear el tipo de recurso con el nombre exacto de su hoja Formulario
                 mapa_formularios = {
@@ -121,19 +134,17 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
                 if nuevo_estado == "Rechazado" and tipo_recurso in mapa_formularios:
                     nombre_hoja_origen = mapa_formularios[tipo_recurso]
                     try:
-                        hoja_origen = sh.worksheet(nombre_hoja_origen)
+                        hoja_origen = gc.open("Agregar Libro (Respuestas)").worksheet(nombre_hoja_origen)
                         registros_origen = hoja_origen.get_all_records()
                         
                         fila_a_borrar = None
                         # Recorremos la hoja origen buscando la coincidencia por Título y Autor
                         for i, reg in enumerate(registros_origen):
-                            # Homologamos columnas a minúsculas y limpias de acentos/espacios si es necesario
                             t_origen = str(reg.get('Título', reg.get('Titulo', ''))).strip().lower()
                             a_origen = str(reg.get('Autor', reg.get('Autor(es)', ''))).strip().lower()
                             
                             if t_origen == titulo_recurso and a_origen == autor_recurso:
-                                # Las filas en Sheets son base 1, +1 por el encabezado, +1 por el índice 'i'
-                                fila_a_borrar = i + 2
+                                fila_a_borrar = i + 2 # Filas en Sheets son base 1, +1 por el encabezado, +1 por el índice 'i'
                                 break
                         
                         if fila_a_borrar:
@@ -148,13 +159,16 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
                         print(f"⚠️ Error intentando borrar en la hoja de origen: {e_origen}")
 
                 # 3. ACTUALIZACIÓN EN LA BD_GENERAL
-                # En tu nueva estructura compacta, la columna 'Estado' es la número 18 (Columna R)
                 COLUMNA_ESTADO = 18 
                 sheet.update_cell(fila_idx, COLUMNA_ESTADO, nuevo_estado)
                 
                 # Quitar de la interfaz visual
                 tree_pendientes.delete(item_id)
                 messagebox.showinfo("Éxito", f"Recurso procesado como: {nuevo_estado}")
+                
+                # *** IMPORTANTE: Después de aprobar/rechazar, recargar la web para que los cambios se reflejen ***
+                actualizar_web() 
+
             else:
                 messagebox.showwarning("Modo Offline", "No hay conexión con la base de datos.")
         except Exception as e:
@@ -177,7 +191,6 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
             try:
                 with open(ruta_archivo, mode='w', newline='', encoding='utf-8') as archivo_csv:
                     escritor = csv.writer(archivo_csv)
-                    # 💡 Encabezados del CSV actualizados
                     escritor.writerow(["Tipo", "Título", "Autor", "Área de Conocimiento", "Nivel", "Año", "Enlace"])
                     
                     for item in items:
@@ -202,7 +215,6 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
                     estado_recurso = str(fila.get('Estado', '')).strip()
                     
                     if estado_recurso == 'Pendiente' or estado_recurso == '':
-                        # 💡 Extracción de las nuevas columnas mapeadas
                         tipo_limpio = str(fila.get('Tipo de Recurso', 'Libro')).strip().capitalize()
                         titulo_limpio = str(fila.get('Titulo', '')).strip().title()
                         autor_limpio = str(fila.get('Autor', 'N/A')).strip().title()

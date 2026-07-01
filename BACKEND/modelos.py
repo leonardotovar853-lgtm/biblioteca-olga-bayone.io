@@ -85,13 +85,13 @@ class RecursoAcademico:
         tipo_normalizado = str(tipo).strip().capitalize()
         
         dict_por_defecto = {
-            'Libro': '../libro_default.png',
-            'Tesis': '../tesis_default.png',
-            'Guia': '../guia_default.png',
-            'Video': '../video_default.png',
-            'Web': '../web_default.png'
+            'Libro': '/static/images/libro_default.png',
+            'Tesis': '/static/images/tesis_default.png',
+            'Guia': '/static/images/Guia_deafut.png',
+            'Video': '/static/images/video_default.png',
+            'Web': '/static/images/web_default.png'
         }
-        return dict_por_defecto.get(tipo_normalizado, '../web_default.png')
+        return dict_por_defecto.get(tipo_normalizado, '/static/images/web_default.png')
 
     @staticmethod
     def _convertir_drive_url(url):

@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% from "components/tarjeta.html" import render_tarjeta %}
 
-{% block title %}Archivos Multimedia{% endblock %}
+{% block title %}Catálogo de Libros{% endblock %}
 
 {% block content %}
     <section class = 'banner-catalogo'>
         <div class = 'contenido-banner'>
-            <h2 class="titulo_seccion">Encuentra los archivos Multimedia</h2>
-            <p>Encuentra los guias, videos y paginas web educativas en la Biblioteca Olga Bayone</p>
+            <h2 class="titulo_seccion">Explora nuestra colección</h2>
+            <p>Encuentra los libros en la Biblioteca Olga Bayone</p>
             <div class="search-container">
-                <input type="search" id="buscador" placeholder="Busca tu proyecto por título, autor o materia...">
+                <input type="search" id="buscador" placeholder="Busca tu libro por título, autor o materia...">
                 <select id="filtro-area">
-                    <optgroup label="ARCHIVOS POR MATERIA">
+                    <optgroup label="LIBROS POR MATERIA">
                         <option value="all">Todas las categorías</option>
                         <option value="Matemática">Matemáticas</option>
                         <option value="Castellano y Literatura">Castellano</option>
@@ -31,12 +31,6 @@
                     <option value="4to Año">4to Año</option>
                     <option value="5to Año">5to Año</option>
                 </select>
-                <select id="filtro-tipo">
-                    <option value="all">Todos</option>
-                    <option value="Guia">Guías de Estudio</option>
-                    <option value="Video">Videos</option>
-                    <option value="Web">Recursos Web</option>
-                </select>
             </div>
         </div>
     </section>
@@ -54,10 +48,10 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/buscador_multimedia.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/buscador.js') }}"></script> 
     <script src="{{ url_for('static', filename='js/accesoArea.js') }}"></script>   
     <script src="{{ url_for('static', filename='js/flipCard.js') }}"></script>
     <script>
-        const librosData = {{ json_data | tojson | safe }};
+        const librosData = JSON.parse('{{ json_data | safe }}');
     </script>
 {% endblock %}
