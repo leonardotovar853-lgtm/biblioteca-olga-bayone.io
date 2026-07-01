@@ -1,11 +1,15 @@
-from flask import Flask, render_template, jsonify, request
+import sys
 import os
+
+# Añadir esta carpeta (BACKEND/) al path para que los imports funcionen en Render
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from flask import Flask, render_template, jsonify, request
 import json
 from admin_datos import limpieza_datos
-from cuentas import cuentas_bp, init_firebase_admin_if_needed # Importamos el Blueprint y la inicialización de Firebase
-import firebase_admin # Aseguramos que firebase_admin esté importado aquí
+from cuentas import cuentas_bp, init_firebase_admin_if_needed
+import firebase_admin
 
-# Obtener la ruta base del proyecto para configurar carpetas estáticas y de plantillas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configuración de la aplicación Flask
