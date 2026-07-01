@@ -13,7 +13,9 @@ FIREBASE_DB_URL = "https://biblioteca-olga-bayone-default-rtdb.firebaseio.com"
 # Buscamos la carpeta DATA que está al mismo nivel que la carpeta BACKEND
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIREBASE_ADMIN_CREDENTIALS_PATH = os.path.join(BASE_DIR, "DATA", "biblioteca-olga-bayone-firebase-key.json")
-FIREBASE_ADMIN_CREDENTIALS_JSON = None
+
+# Leer credenciales desde variable de entorno (Render) o desde archivo local
+FIREBASE_ADMIN_CREDENTIALS_JSON = os.environ.get("FIREBASE_ADMIN_CREDENTIALS")
 
 # ==========================================================================
 # INICIALIZACIÓN DE FIREBASE ADMIN (Se manejará en app.py o un módulo config)

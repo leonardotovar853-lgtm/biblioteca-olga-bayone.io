@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 import gspread
 from urllib.parse import urlparse
 from modelos import RecursoAcademico, Biblioteca, Libro, Tesis, GuiaEstudio, VideoTutorial, PaginasWeb
@@ -97,8 +98,13 @@ def limpieza_datos():
     try:
         print('🌐 Conectando con Google Sheets...')
         
-        ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json"
-        gc = gspread.service_account(filename=ruta_credenciales)
+        # Leer credenciales desde variable de entorno (Render) o desde archivo local
+        credenciales_json = os.environ.get("GSPREAD_CREDENTIALS")
+        if credenciales_json:
+            gc = gspread.service_account_from_dict(json.loads(credenciales_json))
+        else:
+            ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json"
+            gc = gspread.service_account(filename=ruta_credenciales)
         sh = gc.open("Agregar Libro (Respuestas)")
         
         forms = {
