@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Sobre el Proyecto{% endblock %}
+
+{% block content %}
+    <section class="hero-sobre-proyecto">
+        <div class="hero-content">
+            <h1 class="hero-title">Biblioteca Olga Bayone: Un Legado Digital</h1>
+            <p class="hero-subtitle">Explorando la historia, misión y visión detrás de nuestro proyecto educativo.</p>
+            <div class="hero-actions">
+                <a href="catalogo.html" class="btn-primario">Explorar Catálogo</a>
+                <a href="#historia" class="btn-secundario">Nuestra Historia</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="historia" class="section-historia">
+        <div class="section-header">
+            <h2>Nuestra Historia y Compromiso</h2>
+            <p>Desde sus inicios, la Biblioteca Olga Bayone ha sido un pilar fundamental en la educación de nuestros estudiantes.</p>
+        </div>
+        <div class="historia-grid">
+            <div class="historia-text">
+                <h3>Fundación y Visión</h3>
+                <p>La Biblioteca Digital Olga Bayone nace de la necesidad de modernizar el acceso al conocimiento y trascender las barreras físicas. Inspirados por la visión de una educación inclusiva y de vanguardia, nos propusimos crear un espacio virtual donde cada estudiante, docente y miembro de la comunidad pueda acceder a recursos educativos de calidad, en cualquier momento y lugar.</p>
+                <p>Nuestro compromiso es fomentar la investigación, la lectura crítica y el aprendizaje autónomo, preparando a las futuras generaciones para los desafíos del mundo digital.</p>
+            </div>
+            <div class="historia-image">
+                <img src="../imagen_biblioteca.jpeg" alt="Biblioteca Olga Bayone histórica" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <section class="section-mision-vision">
+        <div class="mv-card">
+            <i class="fa-solid fa-gem"></i>
+            <h3>Misión</h3>
+            <p>Proveer acceso abierto y equitativo a una vasta colección de recursos educativos digitales, promoviendo el desarrollo intelectual y la formación integral de nuestra comunidad educativa.</p>
+        </div>
+        <div class="mv-card">
+            <i class="fa-solid fa-eye"></i>
+            <h3>Visión</h3>
+            <p>Consolidarnos como el referente digital de conocimiento y aprendizaje, impulsando la innovación pedagógica y la excelencia académica en la región.</p>
+        </div>
+        <div class="mv-card">
+            <i class="fa-solid fa-heart"></i>
+            <h3>Valores</h3>
+            <ul>
+                <li>**Acceso:** Educación para todos, sin barreras.</li>
+                <li>**Innovación:** Adaptación constante a las nuevas tecnologías.</li>
+                <li>**Calidad:** Contenido relevante y verificado.</li>
+                <li>**Comunidad:** Fomento del intercambio de conocimiento.</li>
+                <li>**Integridad:** Respeto por la propiedad intelectual.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section-equipo">
+        <div class="section-header">
+            <h2>Nuestro Equipo</h2>
+            <p>Conoce a las mentes y manos detrás de este proyecto.</p>
+        </div>
+        <div class="equipo-grid">
+            <div class="miembro-card">
+                <img src="../imagen_info.jpeg" alt="Miembro del equipo" loading="lazy">
+                <h3>Leonardo Tovar</h3>
+                <p>Desarrollador Full Stack</p>
+                <div class="social-links">
+                    <a href="https://github.com/leotovar16" target="_blank"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/leonardo-tovar-a9075727b/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+            <!-- Puedes añadir más miembros del equipo aquí -->
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Scripts específicos de sobre_proyecto.html si los hay -->
+{% endblock %}

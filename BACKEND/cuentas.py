@@ -2,7 +2,8 @@ import json
 import os
 import uuid
 from datetime import datetime
-from flask import request, jsonify, Flask
+# Importamos todo lo necesario de Flask arriba, incluyendo render_template
+from flask import request, jsonify, Flask, render_template
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import auth as firebase_auth, credentials, db as firebase_db
@@ -74,7 +75,6 @@ class Usuario:
     def rol(self, value):
         roles_validos = ["admin", "estudiante", "profesor"]
         if value and str(value).lower().strip() in roles_validos:
-            self._role = str(value).lower().strip()
             self._rol = str(value).lower().strip()
         else:
             raise ValueError("Rol no válido. Debe ser 'admin', 'estudiante' o 'profesor'")   
@@ -112,7 +112,9 @@ class Servidor:
     def __init__(self):
         self.db_url = FIREBASE_DB_URL
         self.firebase_app = self.init_firebase_admin()
-        self.servidor = Flask(__name__)
+        
+        # Apuntamos correctamente a la carpeta FRONTEND para los estilos CSS e imágenes
+        self.servidor = Flask(__name__, static_folder="../FRONTEND", static_url_path="/static")
         CORS(self.servidor)
         self.configurar_rutas()
 
@@ -180,63 +182,76 @@ class Servidor:
         return payload
 
     def configurar_rutas(self):
-        @self.servidor.route('/')
-        def inicio():
-            return "El servidor de la Biblioteca Olga Bayone conectado a Firebase está activo."
+            # 1. RUTA PRINCIPAL: Catálogo dinámico para Alumnos (Filtra por Aprobados)
+            @self.servidor.route('/')
+            def inicio():
+                try:
+                    ref = firebase_db.reference("libros")
+                    libros_data = ref.get() or {}
+                    
+                    libros_aprobados = []
+                    for id_libro, info in libros_data.items():
+                        if isinstance(info, dict) and info.get('estado') == 'Aprobado':
+                            info['id'] = id_libro
+                            libros_aprobados.append(info)
+                    
+                    return render_template("catalogo.html", libros=libros_aprobados)
+                except Exception as e:
+                    return f"Error al cargar el catálogo: {str(e)}", 500
 
-        @self.servidor.route('/api/verificar-usuario', methods=['POST'])
-        def verificar_usuario_endpoint():
-            try:
-                data = request.get_json()
-                token = data.get('idToken')
-                payload = self.verificar_token_firebase(token)
-                firebase_uid = payload.get('uid')
+            # 2. RUTA DEL ADMINISTRADOR: Panel de Control para subir PDFs
+            @self.servidor.route('/admin-panel')
+            def panel_administrador():
+                return render_template("Panel_control.html")
 
-                usuario_existente = self.buscar_usuario_por_google_id(firebase_uid)
-                
-                if usuario_existente:
-                    return jsonify({"existe": True, "usuario": usuario_existente}), 200
-                else:
-                    return jsonify({"existe": False, "mensaje": "Usuario nuevo, requiere registro"}), 200
-            except Exception as e:
-                return jsonify({"error": str(e)}), 400
+            # --- TUS RUTAS DE API ACTUALES (Intactas) ---
+            @self.servidor.route('/api/verificar-usuario', methods=['POST'])
+            def verificar_usuario_endpoint():
+                try:
+                    data = request.get_json()
+                    token = data.get('idToken')
+                    payload = self.verificar_token_firebase(token)
+                    firebase_uid = payload.get('uid')
+                    usuario_existente = self.buscar_usuario_por_google_id(firebase_uid)
+                    if usuario_existente:
+                        return jsonify({"existe": True, "usuario": usuario_existente}), 200
+                    else:
+                        return jsonify({"existe": False, "mensaje": "Usuario nuevo, requiere registro"}), 200
+                except Exception as e:
+                    return jsonify({"error": str(e)}), 400
 
-        @self.servidor.route('/api/registro-usuario', methods=['POST'])
-        def registro_usuario_endpoint():
-            try:
-                data = request.get_json()
-                token = data.get('idToken')
-                payload = self.verificar_token_firebase(token)
-
-                usuario = Usuario(
-                    id_google=payload.get('uid'),
-                    cedula=data.get('cedula'),
-                    nombre=data.get('name') or payload.get('name'), 
-                    correo=data.get('email') or payload.get('email'),
-                    foto_url=data.get('picture') or payload.get('picture'),
-                    rol=data.get('rol'),
-                    anio_seccion=data.get('anio_seccion'), 
-                    fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                )
-
-                if data.get('intereses'):
-                    usuario.intereses = data.get('intereses')
-
-                self.agregar_usuario(usuario)
-                return jsonify({"mensaje": "Usuario registrado con éxito", "usuario": usuario.to_dict()}), 200
-            except Exception as e:
-                return jsonify({"error": str(e)}), 400
-
+            @self.servidor.route('/api/registro-usuario', methods=['POST'])
+            def registro_usuario_endpoint():
+                try:
+                    data = request.get_json()
+                    token = data.get('idToken')
+                    payload = self.verificar_token_firebase(token)
+                    usuario = Usuario(
+                        id_google=payload.get('uid'),
+                        cedula=data.get('cedula'),
+                        nombre=data.get('name') or payload.get('name'), 
+                        correo=data.get('email') or payload.get('email'),
+                        foto_url=data.get('picture') or payload.get('picture'),
+                        rol=data.get('rol'),
+                        anio_seccion=data.get('anio_seccion'), 
+                        fecha_registro=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    )
+                    if data.get('intereses'):
+                        usuario.intereses = data.get('intereses')
+                    self.agregar_usuario(usuario)
+                    return jsonify({"mensaje": "Usuario registrado con éxito", "usuario": usuario.to_dict()}), 200
+                except Exception as e:
+                    return jsonify({"error": str(e)}), 400
+            
     def correr(self):
         self.servidor.run(debug=True, port=5000)
 
-# Instanciamos la clase para configurar las rutas de la API
+# Instanciamos la clase para configurar las rutas
 servidor_biblioteca = Servidor()
 
-# EXCLUSIVO PARA RENDER: Gunicorn buscará esta variable en internet
+# EXCLUSIVO PARA RENDER
 instancia_servidor = servidor_biblioteca.servidor
 
 if __name__ == "__main__":
-    # Esto se ejecutará SOLO cuando lo corras localmente en tu Dell
     print("🚀 Servidor Flask (Local) escuchando en http://localhost:5000...")
     servidor_biblioteca.correr()

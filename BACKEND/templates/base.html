@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Biblioteca Olga Bayone{% endblock %}</title>
+    <link rel="icon" href="../logo_olga_bayone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-...INICIAR_INTEGRIDAD...==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/banners.css">
+    <link rel="stylesheet" href="../css/libros.css">
+    <link rel="stylesheet" href="../css/accesoArea.css">
+    <link rel="stylesheet" href="../css/catalogo.css">
+    <link rel="stylesheet" href="../css/agregarLibro.css">
+    <link rel="stylesheet" href="../css/sobre_proyecto.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav id="menu" class="nav-menu">
+        <div class="nav-content">
+            <div class="logo-title">
+                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                <h1 class="title">Biblioteca Olga Bayone</h1>
+            </div>
+
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+
+            <ul class="options">
+                <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
+                <li><a class="op" href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
+                <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
+                <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
+                <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <footer>
+        <p>&copy; 2026 Leonardo Tovar. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="../js/nav.js"></script>
+    <script src="../js/stars.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

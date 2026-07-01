@@ -85,13 +85,13 @@ class RecursoAcademico:
         tipo_normalizado = str(tipo).strip().capitalize()
         
         dict_por_defecto = {
-            'Libro': '..\libro_default.png',
-            'Tesis': '..\tesis_default.png',
-            'Guia': '..\guia_default.png',
-            'Video': '..\video_default.png',
-            'Web': '..\web_default.png'
+            'Libro': '../libro_default.png',
+            'Tesis': '../tesis_default.png',
+            'Guia': '../guia_default.png',
+            'Video': '../video_default.png',
+            'Web': '../web_default.png'
         }
-        return dict_por_defecto.get(tipo_normalizado, '..\web_default.png')
+        return dict_por_defecto.get(tipo_normalizado, '../web_default.png')
 
     @staticmethod
     def _convertir_drive_url(url):
@@ -239,31 +239,7 @@ class Libro(RecursoAcademico):
         d.update({'tipo': 'Libro', 'autor': self.autor, 'editorial': self.editorial, 'anio_publicacion': self.anio_publicacion})
         return d
         
-    def generar_tarjeta_html(self):
-        area_safe = self.area.replace("'", "&#39;")
-        tipo_safe = self.tipo.replace("'", "&#39;")
-        titulo_safe = self.titulo.replace("'", "&#39;")
-        autor_safe = self.autor.replace("'", "&#39;")
-        editorial_safe = self.editorial.replace("'", "&#39;")
-        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
-        
-        return f"""
-                    <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
-                        <img src="{self.link_portada}">
-                        <div class="badge-{self.tipo.lower()}">{tipo_safe}</div>
-                        <h3>{titulo_safe}</h3>
-                        <p class="autor-name">{autor_safe} | {editorial_safe}</p>
-                        <p class="año-public"><b>{anio_safe}</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descripción</button>
-                            <a href="{self.link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
-                            <button class="btn-like" onclick="darLike('{self.id}')">
-                                ❤️ <span id="count-{self.id}">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    """
+
                 
 class Tesis(RecursoAcademico):
     def __init__(self, titulo, autor, tutor, asesor_metodologico, area, nivel, link, link_portada, anio_publicacion, descripcion, id_existente=None, estado='Pendiente'):
@@ -283,32 +259,7 @@ class Tesis(RecursoAcademico):
         })
         return d
         
-    def generar_tarjeta_html(self):
-        area_safe = self.area.replace("'", "&#39;")
-        tipo_safe = self.tipo.replace("'", "&#39;")
-        titulo_safe = self.titulo.replace("'", "&#39;")
-        autor_safe = self.autor.replace("'", "&#39;")
-        tutor_safe = self.tutor.replace("'", "&#39;")
-        asesor_safe = self.asesor_metodologico.replace("'", "&#39;")
-        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
-        
-        return f"""
-                    <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
-                        <img src="{self.link_portada}">
-                        <div class="badge-{self.tipo.lower()}">{tipo_safe}</div>
-                        <h3>{titulo_safe}</h3>
-                        <p class="autor-name">Autores: {autor_safe}</p>
-                        <p class="año-public">Tutor: {tutor_safe} | Asesor metodológico: {asesor_safe} | <b>{anio_safe}</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descripción</button>
-                            <a href="{self.link}" target="_blank" class="btn-leer">Leer {tipo_safe}</a>
-                            <button class="btn-like" onclick="darLike('{self.id}')">
-                                ❤️ <span id="count-{self.id}">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    """
+
                 
 class GuiaEstudio(RecursoAcademico):
     def __init__(self, titulo, autor, temas, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, link_portada='', estado='Pendiente'):
@@ -327,33 +278,7 @@ class GuiaEstudio(RecursoAcademico):
         })
         return d
         
-    def generar_tarjeta_html(self):
-        area_safe = self.area.replace("'", "&#39;")
-        tipo_safe = self.tipo.replace("'", "&#39;")
-        titulo_safe = self.titulo.replace("'", "&#39;")
-        autor_safe = self.autor.replace("'", "&#39;")
-        temas_safe = self.temas.replace("'", "&#39;")
-        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
-        
-        portada = self.link_portada if self.link_portada else "/static/images/default-pdf.png"
-        
-        return f"""
-                    <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
-                        <img src="{portada}">
-                        <div class="badge-{self.tipo.lower()}">📄 {tipo_safe}</div>
-                        <h3>{titulo_safe}</h3>
-                        <p class="autor-name">Autor: {autor_safe}</p>
-                        <p class="año-public">Año: <b>{anio_safe}</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descripción</button>
-                            <a href="{self.link}" target="_blank" class="btn-leer">Descargar PDF</a>
-                            <button class="btn-like" onclick="darLike('{self.id}')">
-                                ❤️ <span id="count-{self.id}">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    """
+
         
 class VideoTutorial(RecursoAcademico):
     def __init__(self, titulo, duracion, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Multimedia', link_portada='', estado='Pendiente'):
@@ -371,33 +296,7 @@ class VideoTutorial(RecursoAcademico):
         })
         return d
         
-    def generar_tarjeta_html(self):
-        area_safe = self.area.replace("'", "&#39;")
-        tipo_safe = self.tipo.replace("'", "&#39;")
-        titulo_safe = self.titulo.replace("'", "&#39;")
-        duracion_safe = self.duracion.replace("'", "&#39;")
-        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
-        
-        portada = self.link_portada if self.link_portada else "/static/images/default-video.png"
-        
-        return f"""
-                    <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
-                        <img src="{portada}">
-                        <div class="badge-{self.tipo.lower()}">🎥 {tipo_safe}</div>
-                        <h3>{titulo_safe}</h3>
-                        <p class="autor-name">Autor: {self.autor}</p>
-                        <p class="autor-name">Duración: {duracion_safe}</p>
-                        <p class="año-public">Año: <b>{anio_safe}</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descripción</button>
-                            <a href="{self.link}" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
-                            <button class="btn-like" onclick="darLike('{self.id}')">
-                                ❤️ <span id="count-{self.id}">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    """
+
 
 class PaginasWeb(RecursoAcademico):
     def __init__(self, titulo, plataforma, area, nivel, link, anio_publicacion='Año desconocido', descripcion='Sin descripción', id_existente=None, autor='Webmaster', link_portada='', estado='Pendiente'):
@@ -414,34 +313,7 @@ class PaginasWeb(RecursoAcademico):
             'estado': self._estado
         })
         return d
-        
-    def generar_tarjeta_html(self):
-        area_safe = self.area.replace("'", "&#39;")
-        tipo_safe = self.tipo.replace("'", "&#39;")
-        titulo_safe = self.titulo.replace("'", "&#39;")
-        plataforma_safe = self.plataforma.replace("'", "&#39;")
-        anio_safe = str(self.anio_publicacion).replace("'", "&#39;")
-        
-        portada = self.link_portada if self.link_portada else "/static/images/default-web.png"
-        
-        return f"""
-                    <div class='libro-card' data-category='{area_safe}' data-type='{self.tipo}' data-year='{self.nivel}' libro-id='{self.id}'>
-                        <img src="{portada}">
-                        <div class="badge-{self.tipo.lower()}">🌐 {tipo_safe}</div>
-                        <h3>{titulo_safe}</h3>
-                        <p class="autor-name">Plataforma: {plataforma_safe}</p>
-                        <p class="año-public">Año: <b>{anio_safe}</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descripción</button>
-                            <a href="{self.link}" target="_blank" class="btn-leer" style="background-color: #0076d6; color: white;">Visitar Sitio</a>
-                            <button class="btn-like" onclick="darLike('{self.id}')">
-                                ❤️ <span id="count-{self.id}">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    """
-                
+                     
 class Biblioteca:
     def __init__(self, nombre):
         self.nombre = nombre

@@ -1,244 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivos Multimedia</title>
+    <link rel="icon" href="../logo_olga_bayone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-...INICIAR_INTEGRIDAD...==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/banners.css">
+    <link rel="stylesheet" href="../css/libros.css">
+    <link rel="stylesheet" href="../css/accesoArea.css">
+    <link rel="stylesheet" href="../css/catalogo.css">
+    <link rel="stylesheet" href="../css/agregarLibro.css">
+    <link rel="stylesheet" href="../css/sobre_proyecto.css">
+    
+</head>
+<body>
+    <nav id="menu" class="nav-menu">
+        <div class="nav-content">
+            <div class="logo-title">
+                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
+                <h1 class="title">Biblioteca Olga Bayone</h1>
+            </div>
 
-        <!DOCTYPE html>
-        <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Archivos Multimedia</title>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-                <link rel="stylesheet" href="../css/estilos.css">
-                <link rel="stylesheet" href="../css/catalogo.css">
-                <link rel="stylesheet" href="../css/banners.css">
-                <link rel="stylesheet" href="../css/libros.css">
-                <link rel="stylesheet" href="../css/accesoArea.css">
-                <link rel="icon" href="../logo_olga_bayone.png">
-            </head>
-            <body>
-                <nav id="menu" class="nav-menu">
-                    <div class="nav-content">
-                        <div class="logo-title">
-                            <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                            <h1 class="title">Biblioteca Olga Bayone</h1>
-                        </div>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
 
-                        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                        </button>
+            <ul class="options">
+                <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
+                <li><a class="op" href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
+                <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
+                <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
+                <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
+            </ul>
+        </div>
+    </nav>
 
-                        <ul class="options">
-                            <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
-                            <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
-                            <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                            <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
-                            <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
-                            <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                        </ul>
-                    </div>
-                </nav>
-                <main>
-                    <section class = 'banner-catalogo'>
-                        <div class = 'contenido-banner'>
-                            <h2 class="titulo_seccion">Encuentra los archivos Multimedia</h2>
-                            <p>Encuentra los guias, videos y paginas web educativas en la Biblioteca Olga Bayone</p>
-                            <div class="search-container">
-                                <input type="search" id="buscador" placeholder="Busca tu proyecto por título, autor o materia...">
-                                <select id="filtro-area">
-                                    <optgroup label="ARCHIVOS POR MATERIA">
-                                        <option value="all">Todas las categorías</option>
-                                        <option value="Matemática">Matemáticas</option>
-                                        <option value="Castellano y Literatura">Castellano</option>
-                                        <option value="Ciencias Naturales (Física, Química y Biología general)">Ciencias Naturales</option>
-                                        <option value="Ciencias Sociales">Ciencias Sociales</option>
-                                        <option value="Historia">Historia</option>
-                                        <option value="Informática y Tecnologia">Informática y Tecnologia</option>
-                                        <option value="Ingles y otras lenguas">Ingles y otras Lenguas</option>
-                                        <option value="Arte y Patrimonio">Arte y Patrimonio</option>
-                                    </optgroup>
-                                </select>
-                                <select id="filtro-año">
-                                    <option value="all">Todos</option>
-                                    <option value="1er Año">1er Año</option>
-                                    <option value="2do Año">2do Año</option>
-                                    <option value="3er Año">3er Año</option>
-                                    <option value="4to Año">4to Año</option>
-                                    <option value="5to Año">5to Año</option>
-                                </select>
-                                <select id="filtro-tipo">
-                                    <option value="all">Todos</option>
-                                    <option value="Guia">Guías de Estudio</option>
-                                    <option value="Video">Videos</option>
-                                    <option value="Web">Recursos Web</option>
-                                </select>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="book-content">
-                        <div class="grid-libros">
-                        
-                    <div class='libro-card' data-category='Matemáticas' data-type='Guia' data-year='3er Año' libro-id='28f08655'>
-                        <img src="https://drive.google.com/thumbnail?sz=w500&id=1UFE80dpWn6EXkg096-0mETAE1FmaKyts">
-                        <div class="badge-guia">📄 Guia</div>
-                        <h3>Potencia R - Ejercicios Propuestos</h3>
-                        <p class="autor-name">Autor: Pedro Quintero</p>
-                        <p class="año-public">Año: <b>2023</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://drive.google.com/file/d/1UFE80dpWn6EXkg096-0mETAE1FmaKyts/view?usp=sharing" target="_blank" class="btn-leer">Descargar PDF</a>
-                            <button class="btn-like" onclick="darLike('28f08655')">
-                                ❤️ <span id="count-28f08655">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Matemáticas' data-type='Guia' data-year='5to Año' libro-id='51f8cdc8'>
-                        <img src="https://drive.google.com/thumbnail?sz=w500&id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf">
-                        <div class="badge-guia">📄 Guia</div>
-                        <h3>Clase 5 Matrices - Operaciones</h3>
-                        <p class="autor-name">Autor: Pedro Quintero</p>
-                        <p class="año-public">Año: <b>2022</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://drive.google.com/open?id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf" target="_blank" class="btn-leer">Descargar PDF</a>
-                            <button class="btn-like" onclick="darLike('51f8cdc8')">
-                                ❤️ <span id="count-51f8cdc8">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Ingles y otras lenguas' data-type='Guia' data-year='General' libro-id='57c48e69'>
-                        <img src="https://drive.google.com/thumbnail?sz=w500&id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA">
-                        <div class="badge-guia">📄 Guia</div>
-                        <h3>List Phrasal verbs</h3>
-                        <p class="autor-name">Autor: Mileidy Castillo</p>
-                        <p class="año-public">Año: <b>2024</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://drive.google.com/open?id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA" target="_blank" class="btn-leer">Descargar PDF</a>
-                            <button class="btn-like" onclick="darLike('57c48e69')">
-                                ❤️ <span id="count-57c48e69">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Historia' data-type='Guia' data-year='2do Año' libro-id='c543bb32'>
-                        <img src="https://drive.google.com/thumbnail?sz=w500&id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3">
-                        <div class="badge-guia">📄 Guia</div>
-                        <h3>Alejandro Magno Resumen</h3>
-                        <p class="autor-name">Autor: Anónimo</p>
-                        <p class="año-public">Año: <b>2022</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://drive.google.com/open?id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3" target="_blank" class="btn-leer">Descargar PDF</a>
-                            <button class="btn-like" onclick="darLike('c543bb32')">
-                                ❤️ <span id="count-c543bb32">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Biología' data-type='Video' data-year='1er Año' libro-id='f81228b3'>
-                        <img src="https://drive.google.com/thumbnail?sz=w500&id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf">
-                        <div class="badge-video">🎥 Video</div>
-                        <h3>Transporte de agua y nutrientes en la planta</h3>
-                        <p class="autor-name">Autor: Multimedia</p>
-                        <p class="autor-name">Duración: 33:55</p>
-                        <p class="año-public">Año: <b>2021</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://drive.google.com/file/d/1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf/view" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
-                            <button class="btn-like" onclick="darLike('f81228b3')">
-                                ❤️ <span id="count-f81228b3">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Física' data-type='Video' data-year='General' libro-id='21ee7e91'>
-                        <img src="https://img.youtube.com/vi/YijfA07slss/hqdefault.jpg">
-                        <div class="badge-video">🎥 Video</div>
-                        <h3>Ondas electromagnéticas y espectro electromagnético</h3>
-                        <p class="autor-name">Autor: Multimedia</p>
-                        <p class="autor-name">Duración: 11:43</p>
-                        <p class="año-public">Año: <b>2016</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://www.youtube.com/watch?v=YijfA07slss" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
-                            <button class="btn-like" onclick="darLike('21ee7e91')">
-                                ❤️ <span id="count-21ee7e91">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Matemáticas' data-type='Video' data-year='3er Año' libro-id='78d16eae'>
-                        <img src="https://img.youtube.com/vi/dJ18ERwjNb4/hqdefault.jpg">
-                        <div class="badge-video">🎥 Video</div>
-                        <h3>Sistemas de ecuaciones | Solución Método Gráfico | Ejemplo 2</h3>
-                        <p class="autor-name">Autor: Multimedia</p>
-                        <p class="autor-name">Duración: 12:07</p>
-                        <p class="año-public">Año: <b>2018</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://www.youtube.com/watch?v=dJ18ERwjNb4&list=PLeySRPnY35dErygDdRDp1912SPALoaBmZ&index=3" target="_blank" class="btn-leer" style="background-color: #ff0000; color: white;">Ver Video</a>
-                            <button class="btn-like" onclick="darLike('78d16eae')">
-                                ❤️ <span id="count-78d16eae">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Informática y Tecnología' data-type='Web' data-year='5to Año' libro-id='61980bcc'>
-                        <img src="/static/images/default-web.png">
-                        <div class="badge-web">🌐 Web</div>
-                        <h3>Thinkercad</h3>
-                        <p class="autor-name">Plataforma: Simulador Virtual</p>
-                        <p class="año-public">Año: <b>2011</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://www.tinkercad.com/" target="_blank" class="btn-leer" style="background-color: #0076d6; color: white;">Visitar Sitio</a>
-                            <button class="btn-like" onclick="darLike('61980bcc')">
-                                ❤️ <span id="count-61980bcc">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class='libro-card' data-category='Castellano y Literatura' data-type='Web' data-year='General' libro-id='bda2d3f1'>
-                        <img src="/static/images/default-web.png">
-                        <div class="badge-web">🌐 Web</div>
-                        <h3>Mini Biblioteca</h3>
-                        <p class="autor-name">Plataforma: Enciclopedia</p>
-                        <p class="año-public">Año: <b>2026</b></p>
-                        
-                        <div class="card-footer">
-                            <button class="btn-flip">Ver Descricion</button>
-                            <a href="https://www.notion.so/Cat-logo-digital-2bb4ec3deba38029a2cbc7bb65ddd8c0?source=copy_link&indexHtmlPath=index-web-es-LA-f87068a4f3d7fa0c&cookie_sync_completed=true" target="_blank" class="btn-leer" style="background-color: #0076d6; color: white;">Visitar Sitio</a>
-                            <button class="btn-like" onclick="darLike('bda2d3f1')">
-                                ❤️ <span id="count-bda2d3f1">0</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                        </div>
-                    </section>
-                    <section id="recomendaciones" style="display:none;">
-                        <h2>Recomendaciones Relacionadas</h2>
-                        <div class="grid-libros" id="grid-recomendaciones"></div>
-                    </section>
-                </main>   
-                <script>
-                    const librosData = [{"ID": "28f08655", "tipo": "Guia", "titulo": "Potencia R - Ejercicios Propuestos", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "3er A\u00f1o", "link": "https://drive.google.com/file/d/1UFE80dpWn6EXkg096-0mETAE1FmaKyts/view?usp=sharing", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1UFE80dpWn6EXkg096-0mETAE1FmaKyts", "anio_publicacion": "2023", "descripcion": "Guia de ejercicios de matem\u00e1tica la amo profe que administra esto....", "estado": "Aprobado", "temas_clave": "Potencia y Algebra"}, {"ID": "51f8cdc8", "tipo": "Guia", "titulo": "Clase 5 Matrices - Operaciones", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "5to A\u00f1o", "link": "https://drive.google.com/open?id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf", "anio_publicacion": "2022", "descripcion": "Guia de operaciones con matrices", "estado": "Aprobado", "temas_clave": "Matrices y Vectores en R2 y R3"}, {"ID": "57c48e69", "tipo": "Guia", "titulo": "List Phrasal verbs", "autor": "Mileidy Castillo", "editorial": "Material de Estudio", "area": "Ingles y otras lenguas", "nivel": "General", "link": "https://drive.google.com/open?id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA", "anio_publicacion": "2024", "descripcion": "Lista de verbos fraseales", "estado": "Aprobado", "temas_clave": "Phrasal Verbs"}, {"ID": "c543bb32", "tipo": "Guia", "titulo": "Alejandro Magno Resumen", "autor": "An\u00f3nimo", "editorial": "Material de Estudio", "area": "Historia", "nivel": "2do A\u00f1o", "link": "https://drive.google.com/open?id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3", "anio_publicacion": "2022", "descripcion": "Breve Resumen sobre la vida de Alejandro Magno", "estado": "Aprobado", "temas_clave": "Alejandro Magno, Imperio Griego, Grecia Antigua"}, {"ID": "f81228b3", "tipo": "Video", "titulo": "Transporte de agua y nutrientes en la planta", "autor": "Multimedia", "editorial": "Internet", "area": "Biolog\u00eda", "nivel": "1er A\u00f1o", "link": "https://drive.google.com/file/d/1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf/view", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf", "anio_publicacion": "2021", "descripcion": "hola", "estado": "Aprobado", "duracion": "33:55"}, {"ID": "21ee7e91", "tipo": "Video", "titulo": "Ondas electromagn\u00e9ticas y espectro electromagn\u00e9tico", "autor": "Multimedia", "editorial": "Internet", "area": "F\u00edsica", "nivel": "General", "link": "https://www.youtube.com/watch?v=YijfA07slss", "link_portada": "https://img.youtube.com/vi/YijfA07slss/hqdefault.jpg", "anio_publicacion": "2016", "descripcion": "Video educativo referente al eletromagnetismo", "estado": "Aprobado", "duracion": "11:43"}, {"ID": "78d16eae", "tipo": "Video", "titulo": "Sistemas de ecuaciones | Soluci\u00f3n M\u00e9todo Gr\u00e1fico | Ejemplo 2", "autor": "Multimedia", "editorial": "Internet", "area": "Matem\u00e1ticas", "nivel": "3er A\u00f1o", "link": "https://www.youtube.com/watch?v=dJ18ERwjNb4&list=PLeySRPnY35dErygDdRDp1912SPALoaBmZ&index=3", "link_portada": "https://img.youtube.com/vi/dJ18ERwjNb4/hqdefault.jpg", "anio_publicacion": "2018", "descripcion": "Segundo ejemplo de soluci\u00f3n de sistemas de ecuaciones lineales de 2x2 por el m\u00e9todo gr\u00e1fico, encontrando puntos de las rectas usando una tabla de valores. Dentro del curso de Sistemas de ecuaciones 2x2.", "estado": "Aprobado", "duracion": "12:07"}, {"ID": "61980bcc", "tipo": "Web", "titulo": "Thinkercad", "autor": "Webmaster", "editorial": "Plataforma Digital", "area": "Inform\u00e1tica y Tecnolog\u00eda", "nivel": "5to A\u00f1o", "link": "https://www.tinkercad.com/", "link_portada": "", "anio_publicacion": "2011", "descripcion": "Pagina simuladora de Modelos 3D, Circuitos Electricos, Bloques de Codigo", "estado": "Aprobado", "plataforma": "Simulador Virtual"}, {"ID": "bda2d3f1", "tipo": "Web", "titulo": "Mini Biblioteca", "autor": "Webmaster", "editorial": "Plataforma Digital", "area": "Castellano y Literatura", "nivel": "General", "link": "https://www.notion.so/Cat-logo-digital-2bb4ec3deba38029a2cbc7bb65ddd8c0?source=copy_link&indexHtmlPath=index-web-es-LA-f87068a4f3d7fa0c&cookie_sync_completed=true", "link_portada": "", "anio_publicacion": "2026", "descripcion": "Mini Biblioteca de la tesis Creaci\u00f3n de club de Lectura, esta enfocada a estudiantes lectores.", "estado": "Aprobado", "plataforma": "Enciclopedia"}];
-                </script>
-                <script src="../js/buscador_multimedia.js"></script> 
-                <script src="../js/accesoArea.js"></script>   
-                <script src="../js/nav.js"></script>
-                <script src="../js/stars.js"></script>
-                <script src="../js/flipCard.js"></script>
-            </body>
-        </html>
+    <main>
+    <section class = 'banner-catalogo'>
+        <div class = 'contenido-banner'>
+            <h2 class="titulo_seccion">Encuentra los archivos Multimedia</h2>
+            <p>Encuentra los guias, videos y paginas web educativas en la Biblioteca Olga Bayone</p>
+            <div class="search-container">
+                <input type="search" id="buscador" placeholder="Busca tu proyecto por título, autor o materia...">
+                <select id="filtro-area">
+                    <optgroup label="ARCHIVOS POR MATERIA">
+                        <option value="all">Todas las categorías</option>
+                        <option value="Matemática">Matemáticas</option>
+                        <option value="Castellano y Literatura">Castellano</option>
+                        <option value="Ciencias Naturales (Física, Química y Biología general)">Ciencias Naturales</option>
+                        <option value="Ciencias Sociales">Ciencias Sociales</option>
+                        <option value="Historia">Historia</option>
+                        <option value="Informática y Tecnologia">Informática y Tecnologia</option>
+                        <option value="Ingles y otras lenguas">Ingles y otras Lenguas</option>
+                        <option value="Arte y Patrimonio">Arte y Patrimonio</option>
+                    </optgroup>
+                </select>
+                <select id="filtro-año">
+                    <option value="all">Todos</option>
+                    <option value="1er Año">1er Año</option>
+                    <option value="2do Año">2do Año</option>
+                    <option value="3er Año">3er Año</option>
+                    <option value="4to Año">4to Año</option>
+                    <option value="5to Año">5to Año</option>
+                </select>
+                <select id="filtro-tipo">
+                    <option value="all">Todos</option>
+                    <option value="Guia">Guías de Estudio</option>
+                    <option value="Video">Videos</option>
+                    <option value="Web">Recursos Web</option>
+                </select>
+            </div>
+        </div>
+    </section>
+    <section class="book-content">
+        <div class="grid-libros">
+            
+                
+    <div class='libro-card' data-category='Matemáticas' data-type='Guia' data-year='3er Año' libro-id='28f08655'>
+        <img src="https://drive.google.com/thumbnail?sz=w500&amp;id=1UFE80dpWn6EXkg096-0mETAE1FmaKyts" alt="Portada de Potencia R - Ejercicios Propuestos" loading="lazy">
+        <div class="badge-guia">
+            📄
+            
+            Guia
+        </div>
+        <h3>Potencia R - Ejercicios Propuestos</h3>
+
         
+            <p class="autor-name">Autor: Pedro Quintero</p>
+            <p class="año-public">Año: <b>2023</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://drive.google.com/file/d/1UFE80dpWn6EXkg096-0mETAE1FmaKyts/view?usp=sharing" target="_blank" class="btn-leer"
+                
+            >
+                Descargar PDF
+                
+            </a>
+            <button class="btn-like" onclick="darLike('28f08655')">
+                ❤️ <span id="count-28f08655">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Matemáticas' data-type='Guia' data-year='5to Año' libro-id='51f8cdc8'>
+        <img src="https://drive.google.com/thumbnail?sz=w500&amp;id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf" alt="Portada de Clase 5 Matrices - Operaciones" loading="lazy">
+        <div class="badge-guia">
+            📄
+            
+            Guia
+        </div>
+        <h3>Clase 5 Matrices - Operaciones</h3>
+
+        
+            <p class="autor-name">Autor: Pedro Quintero</p>
+            <p class="año-public">Año: <b>2022</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://drive.google.com/open?id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf" target="_blank" class="btn-leer"
+                
+            >
+                Descargar PDF
+                
+            </a>
+            <button class="btn-like" onclick="darLike('51f8cdc8')">
+                ❤️ <span id="count-51f8cdc8">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Ingles y otras lenguas' data-type='Guia' data-year='General' libro-id='57c48e69'>
+        <img src="https://drive.google.com/thumbnail?sz=w500&amp;id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA" alt="Portada de List Phrasal verbs" loading="lazy">
+        <div class="badge-guia">
+            📄
+            
+            Guia
+        </div>
+        <h3>List Phrasal verbs</h3>
+
+        
+            <p class="autor-name">Autor: Mileidy Castillo</p>
+            <p class="año-public">Año: <b>2024</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://drive.google.com/open?id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA" target="_blank" class="btn-leer"
+                
+            >
+                Descargar PDF
+                
+            </a>
+            <button class="btn-like" onclick="darLike('57c48e69')">
+                ❤️ <span id="count-57c48e69">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Historia' data-type='Guia' data-year='2do Año' libro-id='c543bb32'>
+        <img src="https://drive.google.com/thumbnail?sz=w500&amp;id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3" alt="Portada de Alejandro Magno Resumen" loading="lazy">
+        <div class="badge-guia">
+            📄
+            
+            Guia
+        </div>
+        <h3>Alejandro Magno Resumen</h3>
+
+        
+            <p class="autor-name">Autor: Anónimo</p>
+            <p class="año-public">Año: <b>2022</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://drive.google.com/open?id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3" target="_blank" class="btn-leer"
+                
+            >
+                Descargar PDF
+                
+            </a>
+            <button class="btn-like" onclick="darLike('c543bb32')">
+                ❤️ <span id="count-c543bb32">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Biología' data-type='Video' data-year='1er Año' libro-id='f81228b3'>
+        <img src="https://drive.google.com/thumbnail?sz=w500&amp;id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf" alt="Portada de Transporte de agua y nutrientes en la planta" loading="lazy">
+        <div class="badge-video">
+            🎥
+            
+            Video
+        </div>
+        <h3>Transporte de agua y nutrientes en la planta</h3>
+
+        
+            <p class="autor-name">Autor: Multimedia</p>
+            <p class="autor-name">Duración: 33:55</p>
+            <p class="año-public">Año: <b>2021</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://drive.google.com/file/d/1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf/view" target="_blank" class="btn-leer"
+                 style="background-color: #ff0000; color: white;"
+                
+            >
+                Ver Video
+                
+            </a>
+            <button class="btn-like" onclick="darLike('f81228b3')">
+                ❤️ <span id="count-f81228b3">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Física' data-type='Video' data-year='General' libro-id='21ee7e91'>
+        <img src="https://img.youtube.com/vi/YijfA07slss/hqdefault.jpg" alt="Portada de Ondas electromagnéticas y espectro electromagnético" loading="lazy">
+        <div class="badge-video">
+            🎥
+            
+            Video
+        </div>
+        <h3>Ondas electromagnéticas y espectro electromagnético</h3>
+
+        
+            <p class="autor-name">Autor: Multimedia</p>
+            <p class="autor-name">Duración: 11:43</p>
+            <p class="año-public">Año: <b>2016</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://www.youtube.com/watch?v=YijfA07slss" target="_blank" class="btn-leer"
+                 style="background-color: #ff0000; color: white;"
+                
+            >
+                Ver Video
+                
+            </a>
+            <button class="btn-like" onclick="darLike('21ee7e91')">
+                ❤️ <span id="count-21ee7e91">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Matemáticas' data-type='Video' data-year='3er Año' libro-id='78d16eae'>
+        <img src="https://img.youtube.com/vi/dJ18ERwjNb4/hqdefault.jpg" alt="Portada de Sistemas de ecuaciones | Solución Método Gráfico | Ejemplo 2" loading="lazy">
+        <div class="badge-video">
+            🎥
+            
+            Video
+        </div>
+        <h3>Sistemas de ecuaciones | Solución Método Gráfico | Ejemplo 2</h3>
+
+        
+            <p class="autor-name">Autor: Multimedia</p>
+            <p class="autor-name">Duración: 12:07</p>
+            <p class="año-public">Año: <b>2018</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://www.youtube.com/watch?v=dJ18ERwjNb4&amp;list=PLeySRPnY35dErygDdRDp1912SPALoaBmZ&amp;index=3" target="_blank" class="btn-leer"
+                 style="background-color: #ff0000; color: white;"
+                
+            >
+                Ver Video
+                
+            </a>
+            <button class="btn-like" onclick="darLike('78d16eae')">
+                ❤️ <span id="count-78d16eae">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Informática y Tecnología' data-type='Web' data-year='5to Año' libro-id='61980bcc'>
+        <img src="" alt="Portada de Thinkercad" loading="lazy">
+        <div class="badge-web">
+            🌐
+            
+            Web
+        </div>
+        <h3>Thinkercad</h3>
+
+        
+            <p class="autor-name">Plataforma: Simulador Virtual</p>
+            <p class="año-public">Año: <b>2011</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://www.tinkercad.com/" target="_blank" class="btn-leer"
+                 style="background-color: #0076d6; color: white;"
+                
+            >
+                Visitar Sitio
+                
+            </a>
+            <button class="btn-like" onclick="darLike('61980bcc')">
+                ❤️ <span id="count-61980bcc">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+                
+    <div class='libro-card' data-category='Castellano y Literatura' data-type='Web' data-year='General' libro-id='bda2d3f1'>
+        <img src="" alt="Portada de Mini Biblioteca" loading="lazy">
+        <div class="badge-web">
+            🌐
+            
+            Web
+        </div>
+        <h3>Mini Biblioteca</h3>
+
+        
+            <p class="autor-name">Plataforma: Enciclopedia</p>
+            <p class="año-public">Año: <b>2026</b></p>
+        
+        
+        <div class="card-footer">
+            <button class="btn-flip">Ver Descripción</button>
+            <a href="https://www.notion.so/Cat-logo-digital-2bb4ec3deba38029a2cbc7bb65ddd8c0?source=copy_link&amp;indexHtmlPath=index-web-es-LA-f87068a4f3d7fa0c&amp;cookie_sync_completed=true" target="_blank" class="btn-leer"
+                 style="background-color: #0076d6; color: white;"
+                
+            >
+                Visitar Sitio
+                
+            </a>
+            <button class="btn-like" onclick="darLike('bda2d3f1')">
+                ❤️ <span id="count-bda2d3f1">0</span>
+            </button>
+        </div>
+    </div>
+
+            
+        </div>
+    </section>
+    <section id="recomendaciones" style="display:none;">
+        <h2>Recomendaciones Relacionadas</h2>
+        <div class="grid-libros" id="grid-recomendaciones"></div>
+    </section>
+</main>
+
+    <footer>
+        <p>&copy; 2026 Leonardo Tovar. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="../js/nav.js"></script>
+    <script src="../js/stars.js"></script>
+    
+    <script src="../js/buscador_multimedia.js"></script> 
+    <script src="../js/accesoArea.js"></script>   
+    <script src="../js/flipCard.js"></script>
+    <script>
+        const librosData = JSON.parse('[{"ID": "28f08655", "tipo": "Guia", "titulo": "Potencia R - Ejercicios Propuestos", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "3er A\u00f1o", "link": "https://drive.google.com/file/d/1UFE80dpWn6EXkg096-0mETAE1FmaKyts/view?usp=sharing", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1UFE80dpWn6EXkg096-0mETAE1FmaKyts", "anio_publicacion": "2023", "descripcion": "Guia de ejercicios de matem\u00e1tica la amo profe que administra esto....", "estado": "Aprobado", "temas_clave": "Potencia y Algebra"}, {"ID": "51f8cdc8", "tipo": "Guia", "titulo": "Clase 5 Matrices - Operaciones", "autor": "Pedro Quintero", "editorial": "Material de Estudio", "area": "Matem\u00e1ticas", "nivel": "5to A\u00f1o", "link": "https://drive.google.com/open?id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1q93o9Z24O3x2REMEqQYc6A-c32FIIPvf", "anio_publicacion": "2022", "descripcion": "Guia de operaciones con matrices", "estado": "Aprobado", "temas_clave": "Matrices y Vectores en R2 y R3"}, {"ID": "57c48e69", "tipo": "Guia", "titulo": "List Phrasal verbs", "autor": "Mileidy Castillo", "editorial": "Material de Estudio", "area": "Ingles y otras lenguas", "nivel": "General", "link": "https://drive.google.com/open?id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1roSMPR4R1YtCuVt3xi3mzSHRqqWq1OKA", "anio_publicacion": "2024", "descripcion": "Lista de verbos fraseales", "estado": "Aprobado", "temas_clave": "Phrasal Verbs"}, {"ID": "c543bb32", "tipo": "Guia", "titulo": "Alejandro Magno Resumen", "autor": "An\u00f3nimo", "editorial": "Material de Estudio", "area": "Historia", "nivel": "2do A\u00f1o", "link": "https://drive.google.com/open?id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1RUOGRu648BCuWX0aCWNO2v1wQ0xvvyz3", "anio_publicacion": "2022", "descripcion": "Breve Resumen sobre la vida de Alejandro Magno", "estado": "Aprobado", "temas_clave": "Alejandro Magno, Imperio Griego, Grecia Antigua"}, {"ID": "f81228b3", "tipo": "Video", "titulo": "Transporte de agua y nutrientes en la planta", "autor": "Multimedia", "editorial": "Internet", "area": "Biolog\u00eda", "nivel": "1er A\u00f1o", "link": "https://drive.google.com/file/d/1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf/view", "link_portada": "https://drive.google.com/thumbnail?sz=w500&id=1kAI3c520Iq9DRaVoDHfpIB6wkk7bNyFf", "anio_publicacion": "2021", "descripcion": "hola", "estado": "Aprobado", "duracion": "33:55"}, {"ID": "21ee7e91", "tipo": "Video", "titulo": "Ondas electromagn\u00e9ticas y espectro electromagn\u00e9tico", "autor": "Multimedia", "editorial": "Internet", "area": "F\u00edsica", "nivel": "General", "link": "https://www.youtube.com/watch?v=YijfA07slss", "link_portada": "https://img.youtube.com/vi/YijfA07slss/hqdefault.jpg", "anio_publicacion": "2016", "descripcion": "Video educativo referente al eletromagnetismo", "estado": "Aprobado", "duracion": "11:43"}, {"ID": "78d16eae", "tipo": "Video", "titulo": "Sistemas de ecuaciones | Soluci\u00f3n M\u00e9todo Gr\u00e1fico | Ejemplo 2", "autor": "Multimedia", "editorial": "Internet", "area": "Matem\u00e1ticas", "nivel": "3er A\u00f1o", "link": "https://www.youtube.com/watch?v=dJ18ERwjNb4&list=PLeySRPnY35dErygDdRDp1912SPALoaBmZ&index=3", "link_portada": "https://img.youtube.com/vi/dJ18ERwjNb4/hqdefault.jpg", "anio_publicacion": "2018", "descripcion": "Segundo ejemplo de soluci\u00f3n de sistemas de ecuaciones lineales de 2x2 por el m\u00e9todo gr\u00e1fico, encontrando puntos de las rectas usando una tabla de valores. Dentro del curso de Sistemas de ecuaciones 2x2.", "estado": "Aprobado", "duracion": "12:07"}, {"ID": "61980bcc", "tipo": "Web", "titulo": "Thinkercad", "autor": "Webmaster", "editorial": "Plataforma Digital", "area": "Inform\u00e1tica y Tecnolog\u00eda", "nivel": "5to A\u00f1o", "link": "https://www.tinkercad.com/", "link_portada": "", "anio_publicacion": "2011", "descripcion": "Pagina simuladora de Modelos 3D, Circuitos Electricos, Bloques de Codigo", "estado": "Aprobado", "plataforma": "Simulador Virtual"}, {"ID": "bda2d3f1", "tipo": "Web", "titulo": "Mini Biblioteca", "autor": "Webmaster", "editorial": "Plataforma Digital", "area": "Castellano y Literatura", "nivel": "General", "link": "https://www.notion.so/Cat-logo-digital-2bb4ec3deba38029a2cbc7bb65ddd8c0?source=copy_link&indexHtmlPath=index-web-es-LA-f87068a4f3d7fa0c&cookie_sync_completed=true", "link_portada": "", "anio_publicacion": "2026", "descripcion": "Mini Biblioteca de la tesis Creaci\u00f3n de club de Lectura, esta enfocada a estudiantes lectores.", "estado": "Aprobado", "plataforma": "Enciclopedia"}]');
+    </script>
+
+</body>
+</html>

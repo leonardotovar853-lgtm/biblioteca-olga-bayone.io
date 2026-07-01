@@ -2,551 +2,142 @@ from admin_datos import limpieza_datos
 import os
 import json
 import subprocess
+from jinja2 import Environment, FileSystemLoader
+
+# Ruta absoluta al repositorio de Git (para Windows)
+RUTA_REPOSITORIO = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL"
 
 def subir_cambios_a_github():
+    """
+    Sube los cambios generados a GitHub automáticamente.
+    """
     try:
         print("Iniciando subida automática a GitHub...")
         
-        # Definimos la ruta absoluta exacta de tu repositorio de Git
-        ruta_repositorio = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL"
+        # 1. Ejecuta 'git add .'
+        subprocess.run(["git", "add", "."], check=True, cwd=RUTA_REPOSITORIO)
         
-        # 1. Ejecuta 'git add .' dentro de la carpeta correcta usando cwd
-        subprocess.run(["git", "add", "."], check=True, cwd=ruta_repositorio)
+        # 2. Hace el commit automático
+        subprocess.run(["git", "commit", "-m", "Actualización automática de libros desde el Panel de Control con Jinja2"], check=True, cwd=RUTA_REPOSITORIO)
         
-        # 2. Hace el commit automático indicando la actualización de datos
-        subprocess.run(["git", "commit", "-m", "Actualización automática de libros desde el Panel de Control"], check=True, cwd=ruta_repositorio)
+        # 3. Sube los cambios a main
+        subprocess.run(["git", "push", "origin", "main", "-o", "secret-scanning=bypass"], check=True, cwd=RUTA_REPOSITORIO)
         
-        # 3. Sube los cambios a main aplicando el bypass de seguridad
-        subprocess.run(["git", "push", "origin", "main", "-o", "secret-scanning=bypass"], check=True, cwd=ruta_repositorio)
-        
-        print("¡Web actualizada con éxito en internet!")
+        print("¡Web actualizada con éxito en GitHub!")
         return True
     except subprocess.CalledProcessError as e:
         print(f"Error al subir a GitHub: {e}")
         return False
 
-def clasificar_tarjetas(biblioteca):
-    
-    tarjetas_catalogo = []
-    tarjetas_tesis = []
-    tarjetas_multimedia = []
-    
-    for recurso in biblioteca.lista_libros:
-        if recurso.estado == 'Aprobado':
-            tipo_normalizado = recurso.tipo.strip().lower()
-            html_tarjeta = recurso.generar_tarjeta_html()
-                
-            if tipo_normalizado == 'libro':
-                    tarjetas_catalogo.append(html_tarjeta)
-            elif tipo_normalizado == 'tesis':
-                    tarjetas_tesis.append(html_tarjeta)
-            else:
-                    tarjetas_multimedia.append(html_tarjeta)
-
-    return tarjetas_catalogo, tarjetas_tesis, tarjetas_multimedia
-
-
 def crear_web(biblioteca):
+    """
+    Genera los archivos HTML estáticos utilizando plantillas Jinja2.
+    """
     try:
-        # --- 1. CLASIFICACIÓN DE TARJETAS ---
-        tarjetas_catalogo, tarjetas_tesis, tarjetas_multimedia = clasificar_tarjetas(biblioteca)
+        # Rutas absolutas para plantillas y salida
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        ruta_templates = os.path.join(base_dir, 'templates')
+        ruta_salida_frontend = os.path.join(RUTA_REPOSITORIO, 'FRONTEND', 'html')
         
-        libros_data = biblioteca.exportar_libros()
-        tesis_data = biblioteca.exportar_tesis()
-        multi_data = biblioteca.exportar_repositorio()
+        # Crear directorio de salida si no existe
+        os.makedirs(ruta_salida_frontend, exist_ok=True)
+
+        # Inicializar Jinja2 Environment
+        loader = FileSystemLoader(ruta_templates)
+        env = Environment(loader=loader, autoescape=True)
+
+        # Filtrar recursos aprobados por tipo
+        recursos_aprobados = [r for r in biblioteca.lista_libros if r.estado == 'Aprobado']
         
-        # --- 2. PLANTILLAS HTML ---
-        html_inicio_catalogo = """
-<!DOCTYPE html>
-<html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Catálogo de Libros</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet" href="../css/estilos.css">
-        <link rel="stylesheet" href="../css/catalogo.css">
-        <link rel="stylesheet" href="../css/banners.css">
-        <link rel="stylesheet" href="../css/libros.css">
-        <link rel="stylesheet" href="../css/accesoArea.css">
-        <link rel="icon" href="../logo_olga_bayone.png">
-    </head>
-    <body>
-        <nav id="menu" class="nav-menu">
-            <div class="nav-content">
-                <div class="logo-title">
-                    <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                    <h1 class="title">Biblioteca Olga Bayone</h1>
-                </div>
+        libros_aprobados = [r for r in recursos_aprobados if r.tipo == 'Libro']
+        tesis_aprobadas = [r for r in recursos_aprobados if r.tipo == 'Tesis']
+        multimedia_aprobada = [r for r in recursos_aprobados if r.tipo in ['Guia', 'Video', 'Web']]
 
-                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </button>
-
-                <ul class="options">
-                    <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
-                    <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
-                    <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                    <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
-                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
-                    <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                </ul>
-            </div>
-        </nav>
-        <main>
-            <section class = 'banner-catalogo'>
-                <div class = 'contenido-banner'>
-                    <h2 class="titulo_seccion">Explora nuestra colección</h2>
-                    <p>Encuentra los libros en la Biblioteca Olga Bayone</p>
-                    <div class="search-container">
-                        <input type="search" id="buscador" placeholder="Busca tu libro por título, autor o materia...">
-                        <select id="filtro-area">
-                            <optgroup label="LIBROS POR MATERIA">
-                                <option value="all">Todas las categorías</option>
-                                <option value="Matemática">Matemáticas</option>
-                                <option value="Castellano y Literatura">Castellano</option>
-                                <option value="Ciencias Naturales (Física, Química y Biología general)">Ciencias Naturales</option>
-                                <option value="Ciencias Sociales">Ciencias Sociales</option>
-                                <option value="Historia">Historia</option>
-                                <option value="Informática y Tecnologia">Informática y Tecnologia</option>
-                                <option value="Ingles y otras lenguas">Ingles y otras Lenguas</option>
-                                <option value="Arte y Patrimonio">Arte y Patrimonio</option>
-                            </optgroup>
-                        </select>
-                        <select id="filtro-año">
-                            <option value="all">Todos</option>
-                            <option value="1er Año">1er Año</option>
-                            <option value="2do Año">2do Año</option>
-                            <option value="3er Año">3er Año</option>
-                            <option value="4to Año">4to Año</option>
-                            <option value="5to Año">5to Año</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
-            <section class="book-content">
-                <div class="grid-libros">"""
-                
-        html_fin_catalogo = """
-            </section>
-            <section id="recomendaciones" style="display:none;">
-                <h2>Recomendaciones Relacionadas</h2>
-                <div class="grid-libros" id="grid-recomendaciones"></div>
-            </section>
-        </main>   
-        <script>
-            const librosData = """ + json.dumps(libros_data) + """;
-        </script>
-        <script src="../js/buscador.js"></script> 
-        <script src="../js/accesoArea.js"></script>   
-        <script src="../js/nav.js"></script>
-        <script src="../js/stars.js"></script>
-        <script src="../js/flipCard.js"></script>
-    </body>
-</html>"""
+        # Datos JSON para los buscadores JS (solo recursos aprobados)
+        libros_data_json = json.dumps(biblioteca.exportar_libros()) # Todos los libros (no tesis)
+        tesis_data_json = json.dumps(biblioteca.exportar_tesis())   # Solo tesis
+        multimedia_data_json = json.dumps(biblioteca.exportar_repositorio()) # Solo multimedia
         
-        html_inicio_repositorio = """
-<!DOCTYPE html>
-<html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Repositorio</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet" href="../css/estilos.css">
-        <link rel="stylesheet" href="../css/catalogo.css">
-        <link rel="stylesheet" href="../css/banners.css">
-        <link rel="stylesheet" href="../css/libros.css">
-        <link rel="stylesheet" href="../css/accesoArea.css">
-        <link rel="icon" href="../logo_olga_bayone.png">
-    </head>
-    <body>
-        <nav id="menu" class="nav-menu">
-            <div class="nav-content">
-                <div class="logo-title">
-                    <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                    <h1 class="title">Biblioteca Olga Bayone</h1>
-                </div>
+        # Renderizar y escribir catalogo.html
+        template_catalogo = env.get_template('catalogo.html')
+        html_catalogo = template_catalogo.render(
+            recursos=libros_aprobados,
+            json_data=libros_data_json # Se pasa como string JSON para inyección directa
+        )
+        with open(os.path.join(ruta_salida_frontend, 'catalogo.html'), 'w', encoding='utf-8') as f:
+            f.write(html_catalogo)
+        print(f"✅ Archivo generado: {os.path.join(ruta_salida_frontend, 'catalogo.html')}")
 
-                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </button>
+        # Renderizar y escribir repositorio.html
+        template_repositorio = env.get_template('repositorio.html')
+        html_repositorio = template_repositorio.render(
+            recursos=tesis_aprobadas,
+            json_data=tesis_data_json
+        )
+        with open(os.path.join(ruta_salida_frontend, 'repositorio.html'), 'w', encoding='utf-8') as f:
+            f.write(html_repositorio)
+        print(f"✅ Archivo generado: {os.path.join(ruta_salida_frontend, 'repositorio.html')}")
 
-                <ul class="options">
-                    <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
-                    <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
-                    <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                    <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
-                    <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
-                    <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                </ul>
-            </div>
-        </nav>
-        <main>
-            <section class = 'banner-catalogo'>
-                <div class = 'contenido-banner'>
-                    <h2 class="titulo_seccion">Proyectos de Investigación</h2>
-                    <p>Encuentra los proyectos de investigación en la Biblioteca Olga Bayone</p>
-                    <div class="search-container">
-                        <input type="search" id="buscador" placeholder="Busca Proyectos de Investigación...">
-                        <select id="filtro-area">
-                            <optgroup label="REPOSITORIO DE TESIS">
-                                <option value="all">Todas las categorías</option>
-                                <option value="Salud">Salud</option>
-                                <option value="Educación">Educación</option>
-                                <option value="Orientación Vocacional">Orientación Vocacional</option>
-                                <option value="Tecnología">Tecnología</option>
-                                <option value="Ciencias">Ciencias</option>
-                                <option value="Social">Social</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>
-            </section>
-            <section class="book-content">
-                <div class="grid-libros">"""
-        
-        html_fin_repositorio = """
-                </div>
-            </section>
-            <section id="recomendaciones" style="display:none;">
-                <h2>Recomendaciones Relacionadas</h2>
-                <div class="grid-libros" id="grid-recomendaciones"></div>
-            </section>
-        </main>
-        <script>
-            const librosData = """ + json.dumps(tesis_data) + """;
-        </script>  
-        <script src="../js/buscadorRepositorio.js"></script> 
-        <script src="../js/nav.js"></script>
-        <script src="../js/stars.js"></script>
-    </body>
-</html>"""
+        # Renderizar y escribir multimedia.html
+        template_multimedia = env.get_template('multimedia.html')
+        html_multimedia = template_multimedia.render(
+            recursos=multimedia_aprobada,
+            json_data=multimedia_data_json
+        )
+        with open(os.path.join(ruta_salida_frontend, 'multimedia.html'), 'w', encoding='utf-8') as f:
+            f.write(html_multimedia)
+        print(f"✅ Archivo generado: {os.path.join(ruta_salida_frontend, 'multimedia.html')}")
 
-        html_inicio_multimedia = """
-        <!DOCTYPE html>
-        <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Archivos Multimedia</title>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-                <link rel="stylesheet" href="../css/estilos.css">
-                <link rel="stylesheet" href="../css/catalogo.css">
-                <link rel="stylesheet" href="../css/banners.css">
-                <link rel="stylesheet" href="../css/libros.css">
-                <link rel="stylesheet" href="../css/accesoArea.css">
-                <link rel="icon" href="../logo_olga_bayone.png">
-            </head>
-            <body>
-                <nav id="menu" class="nav-menu">
-                    <div class="nav-content">
-                        <div class="logo-title">
-                            <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                            <h1 class="title">Biblioteca Olga Bayone</h1>
-                        </div>
+        # Renderizar y escribir index.html (primeros 4 libros para recomendaciones)
+        template_index = env.get_template('index.html')
+        recomendaciones_index = libros_aprobados[:4] # Tomar los primeros 4 libros como recomendación
+        html_index = template_index.render(
+            recursos_recomendados=recomendaciones_index,
+            json_data=libros_data_json # Se usa la misma data para JS en el inicio si es necesario
+        )
+        with open(os.path.join(ruta_salida_frontend, 'index.html'), 'w', encoding='utf-8') as f:
+            f.write(html_index)
+        print(f"✅ Archivo generado: {os.path.join(ruta_salida_frontend, 'index.html')}")
 
-                        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                        </button>
+        # Renderizar páginas estáticas que heredan de base.html (sin datos dinámicos complejos, solo la estructura)
+        template_sobre_proyecto = env.get_template('sobre_proyecto.html')
+        html_sobre_proyecto = template_sobre_proyecto.render()
+        with open(os.path.join(ruta_salida_frontend, 'sobre_proyecto.html'), 'w', encoding='utf-8') as f:
+            f.write(html_sobre_proyecto)
+        print(f"✅ Archivo generado: {os.path.join(ruta_salida_frontend, 'sobre_proyecto.html')}")
 
-                        <ul class="options">
-                            <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
-                            <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
-                            <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                            <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
-                            <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
-                            <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-                        </ul>
-                    </div>
-                </nav>
-                <main>
-                    <section class = 'banner-catalogo'>
-                        <div class = 'contenido-banner'>
-                            <h2 class="titulo_seccion">Encuentra los archivos Multimedia</h2>
-                            <p>Encuentra los guias, videos y paginas web educativas en la Biblioteca Olga Bayone</p>
-                            <div class="search-container">
-                                <input type="search" id="buscador" placeholder="Busca tu proyecto por título, autor o materia...">
-                                <select id="filtro-area">
-                                    <optgroup label="ARCHIVOS POR MATERIA">
-                                        <option value="all">Todas las categorías</option>
-                                        <option value="Matemática">Matemáticas</option>
-                                        <option value="Castellano y Literatura">Castellano</option>
-                                        <option value="Ciencias Naturales (Física, Química y Biología general)">Ciencias Naturales</option>
-                                        <option value="Ciencias Sociales">Ciencias Sociales</option>
-                                        <option value="Historia">Historia</option>
-                                        <option value="Informática y Tecnologia">Informática y Tecnologia</option>
-                                        <option value="Ingles y otras lenguas">Ingles y otras Lenguas</option>
-                                        <option value="Arte y Patrimonio">Arte y Patrimonio</option>
-                                    </optgroup>
-                                </select>
-                                <select id="filtro-año">
-                                    <option value="all">Todos</option>
-                                    <option value="1er Año">1er Año</option>
-                                    <option value="2do Año">2do Año</option>
-                                    <option value="3er Año">3er Año</option>
-                                    <option value="4to Año">4to Año</option>
-                                    <option value="5to Año">5to Año</option>
-                                </select>
-                                <select id="filtro-tipo">
-                                    <option value="all">Todos</option>
-                                    <option value="Guia">Guías de Estudio</option>
-                                    <option value="Video">Videos</option>
-                                    <option value="Web">Recursos Web</option>
-                                </select>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="book-content">
-                        <div class="grid-libros">
-                        """
-                            
-        html_fin_multimedia = """
-                        </div>
-                    </section>
-                    <section id="recomendaciones" style="display:none;">
-                        <h2>Recomendaciones Relacionadas</h2>
-                        <div class="grid-libros" id="grid-recomendaciones"></div>
-                    </section>
-                </main>   
-                <script>
-                    const librosData = """ + json.dumps(multi_data) + """;
-                </script>
-                <script src="../js/buscador_multimedia.js"></script> 
-                <script src="../js/accesoArea.js"></script>   
-                <script src="../js/nav.js"></script>
-                <script src="../js/stars.js"></script>
-                <script src="../js/flipCard.js"></script>
-            </body>
-        </html>
-        """
-        html_recomendaciones = """
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Biblioteca Olga Bayone</title>
-    <link rel="icon" href="../logo_olga_bayone.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="../css/estilos.css">
-    <link rel="stylesheet" href="../css/banners.css">
-    <link rel="stylesheet" href="../css/libros.css">
-    <link rel="stylesheet" href="../css/accesoArea.css">
-    <link rel="stylesheet" href="../css/catalogo.css">
-</head>
-<body>
-    <nav id = "menu" class="nav-menu">
-        <div class="nav-content">
-            <div class="logo-title">
-                <img class="logo_olga" src="../logo_olga_bayone.png" alt="logo_olga_bayone">
-                <h1 class="title">Biblioteca Olga Bayone</h1>
-            </div>
+        template_agregar_libro = env.get_template('agregar_libro.html')
+        html_agregar_libro = template_agregar_libro.render()
+        with open(os.path.join(ruta_salida_frontend, 'agregar_libro.html'), 'w', encoding='utf-8') as f:
+            f.write(html_agregar_libro)
+        print(f"✅ Archivo generado: {os.path.join(ruta_salida_frontend, 'agregar_libro.html')}")
 
-            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
 
-            <ul class="options">
-                <li><a class="op" href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
-                <li><a class="op" href="catalogo.html"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</a></li>
-                <li><a class='op' href="repositorio.html"><i class="fa-solid fa-book"></i> Repositorio</a></li>
-                <li><a class="op" href="multimedia.html"><i class="fa-solid fa-people-group"></i> Multimedia</a></li>
-                <li><a class="op" href="agregar_libro.html"><i class="fa-solid fa-plus"></i> Agregar Recurso</a></li>
-                <li><a class="op" href="sobre_proyecto.html"><i class="fa-solid fa-circle-info"></i> Sobre el Proyecto</a></li>
-            </ul>
-        </div>
-    </nav>
-    
-    <main class="main-content">
-        <section class="banner-hero">
-            <div class="banner-overlay">
-                <div class="banner-info">
-                    <h2>Bienvenido a la Biblioteca Digital Olga Bayone</h2>
-                    <hr class="separador">
-                    <p>Tu puerta al conocimiento, disponible en cualquier momento y lugar.</p>
-                    <div class="botones-banner">
-                        <a href="catalogo.html" class="btn-primario"><i class="fa-solid fa-magnifying-glass"></i>Explorar Libros</a>
-                        <a href="sobre_proyecto.html" class="btn-secundario"><i class="fa-solid fa-circle-info"></i>Más Información</a>
-                        <a class="btn-registro">Iniciar Sesión</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="recommend-section" id="recomendaciones">
-            <h2>Colecciones Destacadas</h2>
-            <p>Descubre nuestras recomendaciones personalizadas basadas en tus intereses y búsquedas recientes.</p>
-            <div class="grid-recomendaciones">
-
-            </div>
-        </section>
-        <section class="area-content">
-            <h2>Busca en Nuestras Areas Disponibles</h2>
-            <ul class="list-area">
-                <li>
-                    <a href="catalogo.html?area=Matemática" class="boton-area">
-                        <span class="icono icono-matematica"></span> 
-                        <h3>Matemáticas</h3>
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="catalogo.html?area=Castellano y Literatura" class="boton-area">
-                        <span class="icono icono-castellano"></span>
-                        <h3>Castellano y Literatura</h3>
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="catalogo.html?area=Ciencias Naturales (Física, Química y Biología general)" class="boton-area">
-                        <span class="icono icono-naturales"></span>
-                        <h3>Ciencias Naturales</h3>
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="catalogo.html?area=Ciencias Sociales" class="boton-area">
-                        <span class="icono icono-sociales"></span>
-                        <h3>Ciencias Sociales</h3>
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="catalogo.html?area=Historia" class="boton-area">
-                        <span class="icono icono-historia"></span>
-                        <h3>Historia</h3>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="catalogo.html?area=Informática y Tecnologia" class="boton-area">
-                        <span class="icono icono-informatica"></span>
-                        <h3>Informática y Tecnología</h3>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="catalogo.html?area=Arte y Patrimonio" class="boton-area">
-                        <span class="icono icono-arte"></span>
-                        <h3>Arte y Patrimonio</h3>
-                    </a>
-                </li>
-                <li>
-                    <a href="catalogo.html?area=Ingles y otras lenguas" class="boton-area">
-                        <span class="icono icono-ingles"></span>
-                        <h3>Ingles y otras Lenguas</h3>
-                    </a>
-                </li>
-                <li>
-                    <a href="repositorio.html" class="boton-area">
-                        <span class="icono icono-tesis"></span>
-                        <h3>Proyectos de Investigación</h3>
-                    </a>
-                </li>
-                <li>
-                    <a href="multimedia.html?tipo=Guia" class="boton-area">
-                        <span class="icono icono-guia"></span>
-                        <h3>Guías de Estudio</h3>
-                    </a>
-                </li>
-                <li>
-                    <a href="multimedia.html?tipo=Video" class="boton-area">
-                        <span class="icono icono-video"></span>
-                        <h3>Videos Educativos</h3>
-                    </a>
-                </li>
-                <li>
-                    <a href="multimedia.html?tipo=Web" class="boton-area">
-                        <span class="icono icono-web"></span>
-                        <h3>Recursos Web</h3>
-                    </a>
-                </li>
-            </ul>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Leonardo Tovar. Todos los derechos reservados.</p>
-    </footer>
-    <script>
-        const librosData = """ + json.dumps(libros_data) + """;
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="../js/Registro.js" defer></script>
-    <script src="../js/recomendacionInicio.js"></script>
-    <script src="../js/nav.js"></script>
-    <script src="../js/stars.js"></script>
-</body>
-</html>"""
-
-        # --- 3. ESCRITURA FINAL ---
-        base_dir = r'C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\FRONTEND'
-        os.makedirs(base_dir, exist_ok=True)
-        
-        
-        # Generar catálogo completo
-        tarjetas_html_catalogo = ''.join(tarjetas_catalogo)
-        html_completo_catalogo = html_inicio_catalogo + tarjetas_html_catalogo + html_fin_catalogo
-        ruta_catalogo = os.path.join(base_dir, 'html','catalogo.html')
-        with open(ruta_catalogo, 'w', encoding='utf-8') as f:
-            f.write(html_completo_catalogo)
-        print(f"✅ Archivo escrito: {ruta_catalogo}")
-        
-        # Generar repositorio completo
-        tarjetas_html_repositorio = ''.join(tarjetas_tesis)
-        html_completo_repositorio = html_inicio_repositorio.replace('{pagina}', 'Repositorio') + tarjetas_html_repositorio + html_fin_repositorio
-        ruta_repositorio = os.path.join(base_dir, 'html','repositorio.html')
-        with open(ruta_repositorio, 'w', encoding='utf-8') as f:
-            f.write(html_completo_repositorio)
-        print(f"✅ Archivo escrito: {ruta_repositorio}")
-        
-        # Generar multimedia completo
-        tarjetas_html_multimedia = ''.join(tarjetas_multimedia)
-        html_completo_multimedia = html_inicio_multimedia.replace('{pagina}', 'Multimedia') + tarjetas_html_multimedia + html_fin_multimedia
-        ruta_multimedia = os.path.join(base_dir, 'html','multimedia.html')
-        with open(ruta_multimedia, 'w', encoding='utf-8') as f:
-            f.write(html_completo_multimedia)
-        print(f"✅ Archivo escrito: {ruta_multimedia}")
-        
-        # Generar página de inicio con recomendaciones
-        html_recomendaciones_completp = html_recomendaciones  # Ejemplo: primeras 1000 chars de recomendaciones
-        ruta_inicio = os.path.join(base_dir, 'html','index.html')
-        with open(ruta_inicio, 'w', encoding='utf-8') as f:
-            f.write(html_recomendaciones_completp)
-
-        num_catalogo = len(tarjetas_catalogo)
-        num_repositorio = len(tarjetas_tesis)
-        print(f"✨ ¡Generación completada! Catálogo: {num_catalogo} libros, Repositorio: {num_repositorio} tesis.")
-        
+        print("\n✨ ¡Generación de la web completada!")
         subir_cambios_a_github()
         
     except Exception as e:
         print(f'❌ Error al generar la web: {e}')
+        raise # Re-lanza la excepción para que el bloque principal la capture
 
-# --- EJECUCIÓN PRINCIPAL ---
+# Bloque de ejecución principal
 def ejecucion_final():
-# 1. Llamamos a limpieza_datos(). 
-# Esta función ya hace el Paso 1 (Cargar), Paso 2 (Limpiar) y Paso 3 (Crear Objetos).
+    """
+    Orquesta la limpieza de datos y la creación de la web.
+    """
     try:
         biblioteca_final = limpieza_datos() 
 
-        # 2. Si la biblioteca se creó correctamente, generamos la web
         if biblioteca_final is not None:
             crear_web(biblioteca_final)
             print("🚀 PROCESO COMPLETADO: Web actualizada con éxito.")
             return True
         else:
-            print("❌ ERROR: No se pudo procesar la información de la nube.")
+            print("❌ ERROR: No se pudo procesar la información de la nube o la biblioteca está vacía.")
             return False
     except Exception as e:
-        print(f'ERROR: {e}')
+        print(f'❌ ERROR CRÍTICO en la ejecución final: {e}')
         return False
     
+if __name__ == "__main__":
+    ejecucion_final()

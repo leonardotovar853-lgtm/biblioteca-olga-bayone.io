@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "components/tarjeta.html" import render_tarjeta %}
+
+{% block title %}Archivos Multimedia{% endblock %}
+
+{% block content %}
+    <section class = 'banner-catalogo'>
+        <div class = 'contenido-banner'>
+            <h2 class="titulo_seccion">Encuentra los archivos Multimedia</h2>
+            <p>Encuentra los guias, videos y paginas web educativas en la Biblioteca Olga Bayone</p>
+            <div class="search-container">
+                <input type="search" id="buscador" placeholder="Busca tu proyecto por título, autor o materia...">
+                <select id="filtro-area">
+                    <optgroup label="ARCHIVOS POR MATERIA">
+                        <option value="all">Todas las categorías</option>
+                        <option value="Matemática">Matemáticas</option>
+                        <option value="Castellano y Literatura">Castellano</option>
+                        <option value="Ciencias Naturales (Física, Química y Biología general)">Ciencias Naturales</option>
+                        <option value="Ciencias Sociales">Ciencias Sociales</option>
+                        <option value="Historia">Historia</option>
+                        <option value="Informática y Tecnologia">Informática y Tecnologia</option>
+                        <option value="Ingles y otras lenguas">Ingles y otras Lenguas</option>
+                        <option value="Arte y Patrimonio">Arte y Patrimonio</option>
+                    </optgroup>
+                </select>
+                <select id="filtro-año">
+                    <option value="all">Todos</option>
+                    <option value="1er Año">1er Año</option>
+                    <option value="2do Año">2do Año</option>
+                    <option value="3er Año">3er Año</option>
+                    <option value="4to Año">4to Año</option>
+                    <option value="5to Año">5to Año</option>
+                </select>
+                <select id="filtro-tipo">
+                    <option value="all">Todos</option>
+                    <option value="Guia">Guías de Estudio</option>
+                    <option value="Video">Videos</option>
+                    <option value="Web">Recursos Web</option>
+                </select>
+            </div>
+        </div>
+    </section>
+    <section class="book-content">
+        <div class="grid-libros">
+            {% for recurso in recursos %}
+                {{ render_tarjeta(recurso) }}
+            {% endfor %}
+        </div>
+    </section>
+    <section id="recomendaciones" style="display:none;">
+        <h2>Recomendaciones Relacionadas</h2>
+        <div class="grid-libros" id="grid-recomendaciones"></div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="../js/buscador_multimedia.js"></script> 
+    <script src="../js/accesoArea.js"></script>   
+    <script src="../js/flipCard.js"></script>
+    <script>
+        const librosData = JSON.parse('{{ json_data | safe }}');
+    </script>
+{% endblock %}
