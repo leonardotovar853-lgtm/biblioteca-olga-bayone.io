@@ -53,6 +53,6 @@
     <script src="{{ url_for('static', filename='js/accesoArea.js') }}"></script>   
     <script src="{{ url_for('static', filename='js/flipCard.js') }}"></script>
     <script>
-        const librosData = {{ json_data | tojson | safe }};
+        const librosData = {{ json_data | safe }};
     </script>
 {% endblock %}

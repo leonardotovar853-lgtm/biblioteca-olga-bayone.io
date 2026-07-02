@@ -121,6 +121,6 @@
     <script src="{{ url_for('static', filename='js/Registro.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/recomendacionInicio.js') }}"></script>
     <script>
-        const librosData = {{ json_data | tojson | safe }};
+        const librosData = {{ json_data | safe }};
     </script>
 {% endblock %}
