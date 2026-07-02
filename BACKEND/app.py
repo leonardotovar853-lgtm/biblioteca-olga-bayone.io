@@ -14,9 +14,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configuración de la aplicación Flask
 app = Flask(__name__, 
-            template_folder=os.path.join(BASE_DIR, 'BACKEND', 'templates'), # Plantillas ahora están en BACKEND/templates
-            static_folder=os.path.join(BASE_DIR, 'FRONTEND'), # La carpeta FRONTEND completa es estática
-            static_url_path='/FRONTEND') # Acceso a archivos estáticos vía /FRONTEND
+            template_folder=os.path.join(BASE_DIR, 'BACKEND', 'templates'),
+            static_folder=os.path.join(BASE_DIR, 'FRONTEND'),
+            static_url_path='/static')
 
 # Registramos el Blueprint de cuentas_bp
 app.register_blueprint(cuentas_bp, url_prefix='/api/cuentas') # Prefijo para las rutas de auth
