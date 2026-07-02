@@ -5,23 +5,19 @@ import os
 import csv
 from datetime import datetime
 import gspread
-import requests # Importamos la librería requests para hacer llamadas HTTP
-
-# URL base de tu aplicación Flask (asegúrate de que coincida con donde se ejecuta tu app.py)
-FLASK_APP_URL = "http://localhost:5000"
+import requests
+from config import CREDENCIALES_PATH, SPREADSHEET_NAME, BD_GENERAL_SHEET, MAPA_FORMULARIOS_ORIGEN, PANEL_FLASK_URL, FLASK_HOST, FLASK_PORT
 
 # ==========================================
 # CONEXIÓN GLOBAL CON TU BD GENERAL (gspread)
 # ==========================================
 try:
-    ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json"
-    
-    if os.path.exists(ruta_credenciales):
-        gc = gspread.service_account(filename=ruta_credenciales)
-        sh = gc.open("Agregar Libro (Respuestas)")
-        sheet = sh.worksheet('BD_General')
+    if os.path.exists(CREDENCIALES_PATH):
+        gc = gspread.service_account(filename=CREDENCIALES_PATH)
+        sh = gc.open(SPREADSHEET_NAME)
+        sheet = sh.worksheet(BD_GENERAL_SHEET)
     else:
-        print("Advertencia: El archivo credenciales.json no existe en la ruta especificada.")
+        print(f"Advertencia: El archivo credenciales.json no existe en {CREDENCIALES_PATH}")
         sheet = None
 except Exception as e:
     print(f"Error crítico al conectar con Google Sheets: {e}")
@@ -52,7 +48,7 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
         
         try:
             # Hacemos una llamada a la API de Flask para recargar los datos de la biblioteca
-            response = requests.post(f"{FLASK_APP_URL}/api/recargar_datos")
+            response = requests.post(f"{PANEL_FLASK_URL}/api/recargar_datos")
             response.raise_for_status() # Lanza una excepción para errores HTTP (4xx o 5xx)
             
             resultado = response.json()
@@ -90,9 +86,9 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
     
     def abrir_web():
         # Ahora abrimos la URL del servidor Flask
-        webbrowser.open(FLASK_APP_URL)
-        messagebox.showinfo(title="🌐 Navegador", message=f'Web abierta correctamente en {FLASK_APP_URL}')
-        estado.config(text=f"🌐 Web abierta en {FLASK_APP_URL}", fg="#2563eb")
+        webbrowser.open(PANEL_FLASK_URL)
+        messagebox.showinfo(title="🌐 Navegador", message=f'Web abierta correctamente en {PANEL_FLASK_URL}')
+        estado.config(text=f"🌐 Web abierta en {PANEL_FLASK_URL}", fg="#2563eb")
 
     def obtener_fila_seleccionada():
         seleccion = tree_pendientes.selection()
@@ -122,13 +118,7 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
                 autor_recurso = str(valores_interfaz[2]).strip().lower()
 
                 # Diccionario para mapear el tipo de recurso con el nombre exacto de su hoja Formulario
-                mapa_formularios = {
-                    'libro': 'Form_Libros',
-                    'tesis': 'Form_Tesis',
-                    'guia': 'Form_Guias',
-                    'video': 'Form_Videos',
-                    'web': 'Form_Web'
-                }
+                mapa_formularios = MAPA_FORMULARIOS_ORIGEN
 
                 # 2. SI EL RECURSO ES RECHAZADO, LO BUSCAMOS Y BORRAMOS EN SU HOJA ORIGEN
                 if nuevo_estado == "Rechazado" and tipo_recurso in mapa_formularios:

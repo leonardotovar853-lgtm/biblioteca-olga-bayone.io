@@ -1,6 +1,6 @@
 import sys
 import os
-
+from config import BACKEND_DIR, FRONTEND_DIR, TEMPLATES_DIR, DATA_DIR, BASE_DIR, TIPOS_MULTIMEDIA
 # Añadir esta carpeta (BACKEND/) al path para que los imports funcionen en Render
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,12 +10,11 @@ from admin_datos import limpieza_datos
 from cuentas import cuentas_bp, init_firebase_admin_if_needed
 import firebase_admin
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configuración de la aplicación Flask
 app = Flask(__name__, 
-            template_folder=os.path.join(BASE_DIR, 'BACKEND', 'templates'),
-            static_folder=os.path.join(BASE_DIR, 'FRONTEND'),
+            template_folder=TEMPLATES_DIR,
+            static_folder=FRONTEND_DIR,
             static_url_path='/static')
 
 # Registramos el Blueprint de cuentas_bp
@@ -102,7 +101,7 @@ def multimedia():
     multimedia_data_json = "[]"
     if biblioteca_global:
         recursos_aprobados = [r for r in biblioteca_global.lista_libros if r.estado == 'Aprobado']
-        multimedia_aprobada = [r for r in recursos_aprobados if r.tipo in ['Guia', 'Video', 'Web']]
+        multimedia_aprobada = [r for r in recursos_aprobados if r.tipo in TIPOS_MULTIMEDIA]
         multimedia_data_json = json.dumps(biblioteca_global.exportar_repositorio())
     return render_template('multimedia.html', recursos=multimedia_aprobada, json_data=multimedia_data_json)
 

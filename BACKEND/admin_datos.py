@@ -6,6 +6,7 @@ from modelos import RecursoAcademico, Biblioteca, Libro, Tesis, GuiaEstudio, Vid
 import uuid
 import random
 import os
+from config import CREDENCIALES_PATH, ENV_GSPREAD_CREDENTIALS, SPREADSHEET_NAME, FORMULARIOS
 from sistemas_likes import obtener_likes_actualizados
 
 def creador_objetos(df_limpio, biblioteca):
@@ -98,23 +99,17 @@ def limpieza_datos():
     try:
         try:
             # Leer credenciales desde variable de entorno (Render) o desde archivo local
-            credenciales_json = os.environ.get("GSPREAD_CREDENTIALS")
+            credenciales_json = os.environ.get(ENV_GSPREAD_CREDENTIALS)
             if credenciales_json:
                 gc = gspread.service_account_from_dict(json.loads(credenciales_json))
             else:
-                ruta_credenciales = r"C:\Users\NEW DELL\Documents\PROGRAMACIÓN\PROYECTO_BIBLIOTECA_DIGITAL\DATA\credenciales.json"
-                gc = gspread.service_account(filename=ruta_credenciales)
+                gc = gspread.service_account(filename=CREDENCIALES_PATH)
         except Exception as e:
             print(f"Error conectando a Google Sheets: {e}")
             return None
-        sh = gc.open("Agregar Libro (Respuestas)")
+        sh = gc.open(SPREADSHEET_NAME)
         
-        forms = {
-            'Form_Libros': 'Libro',
-            'Form_Tesis': 'Tesis',
-            'Form_Guias': 'Guia',
-            'Form_Videos': 'Video',
-            'Form_Web': 'Web'
+        forms = FORMULARIOS
         }
         
         lista_df = []

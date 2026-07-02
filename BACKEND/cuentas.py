@@ -6,34 +6,25 @@ from flask import request, jsonify, Blueprint
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import auth as firebase_auth, credentials, db as firebase_db
-
-# URL Oficial de tu base de datos Firebase sin barra diagonal al final
-FIREBASE_DB_URL = "https://biblioteca-olga-bayone-default-rtdb.firebaseio.com"
-
-# Buscamos la carpeta DATA que está al mismo nivel que la carpeta BACKEND
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIREBASE_ADMIN_CREDENTIALS_PATH = os.path.join(BASE_DIR, "DATA", "biblioteca-olga-bayone-firebase-key.json")
-
-# Leer credenciales desde variable de entorno (Render) o desde archivo local
-FIREBASE_ADMIN_CREDENTIALS_JSON = os.environ.get("FIREBASE_ADMIN_CREDENTIALS")
-
+from config import FIREBASE_DB_URL, FIREBASE_KEY_PATH, ENV_FIREBASE_CREDENTIALS
 # ==========================================================================
-# INICIALIZACIÓN DE FIREBASE ADMIN (Se manejará en app.py o un módulo config)
-# Para que el Blueprint funcione, esta lógica debe estar fuera de una clase de Flask
+# INICIALIZACIÓN DE FIREBASE ADMIN
 # ==========================================================================
 def init_firebase_admin_if_needed():
     if not firebase_admin._apps:
-        if FIREBASE_ADMIN_CREDENTIALS_PATH and os.path.exists(FIREBASE_ADMIN_CREDENTIALS_PATH):
-            cred = credentials.Certificate(FIREBASE_ADMIN_CREDENTIALS_PATH)
-        elif FIREBASE_ADMIN_CREDENTIALS_JSON:
+        credenciales_json = os.environ.get(ENV_FIREBASE_CREDENTIALS)
+        if credenciales_json:
             try:
-                cred = credentials.Certificate(json.loads(FIREBASE_ADMIN_CREDENTIALS_JSON))
+                cred = credentials.Certificate(json.loads(credenciales_json))
             except Exception as e:
                 raise RuntimeError(f"Credenciales de Firebase Admin no válidas: {str(e)}")
+        elif FIREBASE_KEY_PATH and os.path.exists(FIREBASE_KEY_PATH):
+            cred = credentials.Certificate(FIREBASE_KEY_PATH)
         else:
             raise RuntimeError(
                 "No se encontraron credenciales de Firebase Admin. "
-                "Configura GOOGLE_APPLICATION_CREDENTIALS o FIREBASE_ADMIN_CREDENTIALS."
+                f"Configura la variable de entorno '{ENV_FIREBASE_CREDENTIALS}' "
+                f"o coloca el archivo en: {FIREBASE_KEY_PATH}"
             )
         firebase_admin.initialize_app(cred, {'databaseURL': FIREBASE_DB_URL})
     return firebase_admin.get_app()
