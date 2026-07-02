@@ -15,16 +15,16 @@ def obtener_likes_actualizados(df):
                 # Mapeamos los likes al DataFrame usando la columna 'ID'
                 # Si el ID no existe en Firebase, pone 0 (fillna)
                 df['Likes'] = df['ID'].map(likes_nube).fillna(0).astype(int)
-                print(f"✅ Se sincronizaron likes para {len(likes_nube)} libros.")
+                print(f"[OK] Se sincronizaron likes para {len(likes_nube)} libros.")
             else:
-                print("ℹ️ No hay likes registrados en la nube todavía.")
+                print("[INFO] No hay likes registrados en la nube todavía.")
                 df['Likes'] = 0
         
         else:
-            print(f"❌ Error al conectar con Firebase: {respuesta.status_code}")
+            print(f"[ERROR] Error al conectar con Firebase: {respuesta.status_code}")
             
     except Exception as e:
-        print(f"⚠️ Ocurrió un error en la sincronización: {e}")
+        print(f"[WARN] Ocurrió un error en la sincronización: {e}")
         
     return df
                 

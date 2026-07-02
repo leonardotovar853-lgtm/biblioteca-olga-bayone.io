@@ -48,6 +48,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
     <script src="{{ url_for('static', filename='js/buscador.js') }}"></script> 
     <script src="{{ url_for('static', filename='js/accesoArea.js') }}"></script>   
     <script src="{{ url_for('static', filename='js/flipCard.js') }}"></script>

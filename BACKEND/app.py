@@ -43,9 +43,9 @@ def cargar_biblioteca():
 # --- Inicialización de Firebase Admin ---
 try:
     init_firebase_admin_if_needed()
-    print("✅ Firebase inicializado correctamente")
+    print("Firebase inicializado correctamente")
 except Exception as e:
-    print(f"⚠️ Firebase no se pudo inicializar (la autenticación no estará disponible): {e}")
+    print(f"Firebase no se pudo inicializar (la autenticacion no estara disponible): {e}")
 
 # Cargar la biblioteca al iniciar la aplicación
 cargar_biblioteca()

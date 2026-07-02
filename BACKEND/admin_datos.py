@@ -26,7 +26,7 @@ def creador_objetos(df_limpio, biblioteca):
         link_portada = str(fila.get('Enlace de Portada', '')).strip()
         descripcion = fila.get('Descripción', '')
         
-        # 🔑 EXTRAER EL ESTADO HISTÓRICO / PROCESADO
+        # [INFO] EXTRAER EL ESTADO HISTÓRICO / PROCESADO
         estado = str(fila.get('Estado', 'Pendiente')).strip()
         
         # Sanitizar año para evitar problemas de tipos de datos (.0 flotantes)
@@ -125,7 +125,7 @@ def limpieza_datos():
                 datos = hoja.get_all_records()
                 
                 if not datos:
-                    print(f"⚠️ La hoja '{form_name}' está vacía. Se omitirá.")
+                    print(f"[WARN] La hoja '{form_name}' está vacía. Se omitirá.")
                     continue
                 
                 df = pd.DataFrame(datos)
@@ -187,10 +187,10 @@ def limpieza_datos():
                 lista_df.append(df)
                 
             except gspread.exceptions.WorksheetNotFound:
-                print(f"⚠️ Hoja '{form_name}' no encontrada. Se omitirá.")
+                print(f"[WARN] Hoja '{form_name}' no encontrada. Se omitirá.")
         
         if not lista_df:
-            print("⚠️ No se encontraron datos en ningún formulario.")
+            print("[WARN] No se encontraron datos en ningún formulario.")
             return None
         
         Df_final = pd.concat(lista_df, ignore_index=True, sort=False)
@@ -205,9 +205,9 @@ def limpieza_datos():
         Df_final = Df_final.reindex(columns=columnas)
         
         # =========================================================================
-        # 🔄 NUEVA LÓGICA MEMORIA: RESCATAR ID, LIKES Y ESTADO HISTÓRICO
+        # [RECYCLE] NUEVA LÓGICA MEMORIA: RESCATAR ID, LIKES Y ESTADO HISTÓRICO
         # =========================================================================
-        print("\n🔍 Analizando 'BD_General' para conservar IDs, Estados y Likes...")
+        print("\n[INFO] Analizando 'BD_General' para conservar IDs, Estados y Likes...")
         dict_ids_viejos = {}
         dict_estados_viejos = {}
         dict_likes_viejos = {}
@@ -232,9 +232,9 @@ def limpieza_datos():
                             dict_estados_viejos[llave] = estado_ext
                         dict_likes_viejos[llave] = likes_ext if likes_ext != '' else 0
                         
-                print(f"📋 Rescatados del histórico: {len(dict_ids_viejos)} IDs | {len(dict_estados_viejos)} Estados | {len(dict_likes_viejos)} Datos de Likes.")
+                print(f"[INFO] Rescatados del histórico: {len(dict_ids_viejos)} IDs | {len(dict_estados_viejos)} Estados | {len(dict_likes_viejos)} Datos de Likes.")
         except gspread.exceptions.WorksheetNotFound:
-            print("✨ No se encontró 'BD_General'. Se creará automáticamente.")
+            print("[OK] No se encontró 'BD_General'. Se creará automáticamente.")
             hoja_destino = sh.add_worksheet(title="BD_General", rows="1000", cols="20")
 
         # Asignación inteligente cruzando datos históricos
@@ -279,7 +279,7 @@ def limpieza_datos():
         # =========================================================================
 
         # =========================================================================
-        # 🗑️ SECCIÓN REVISADA: PURGA ABSOLUTA DE ELEMENTOS RECHAZADOS
+        # [DEL] SECCIÓN REVISADA: PURGA ABSOLUTA DE ELEMENTOS RECHAZADOS
         # =========================================================================
         # Estandarizamos texto para que no falle por espacios o mayúsculas
         Df_final['Estado'] = Df_final['Estado'].fillna('Pendiente').astype(str).str.strip()
@@ -291,7 +291,7 @@ def limpieza_datos():
         cantidad_eliminados = cantidad_antes - len(Df_final)
         
         if cantidad_eliminados > 0:
-            print(f"🗑️ Se purgaron {cantidad_eliminados} recursos marcados como 'Rechazado' de la base de datos.")
+            print(f"[DEL] Se purgaron {cantidad_eliminados} recursos marcados como 'Rechazado' de la base de datos.")
         # =========================================================================
 
         # Rellenar el resto de las columnas generales con N/A de forma segura
@@ -299,7 +299,7 @@ def limpieza_datos():
         Df_final[columnas_sin_estado_likes] = Df_final[columnas_sin_estado_likes].fillna('N/A')
         Df_final['Año de publicacion'] = Df_final['Año de publicacion'].astype(str).replace(['N/A', 'n/a', 'NaN', 'nan'], 'Año desconocido')
         
-        print("\n🧹 Iniciando limpieza de strings y caracteres repetidos...")
+        print("\n[INFO] Iniciando limpieza de strings y caracteres repetidos...")
         cols_para_limpiar = [c for c in Df_final.columns if 'Enlace' not in c and 'link' not in c.lower() and c not in ['ID', 'Estado', 'Likes']]
         for col in cols_para_limpiar:
             Df_final[col] = Df_final[col].astype(str).str.strip()
@@ -315,7 +315,7 @@ def limpieza_datos():
             except:
                 return False
 
-        print("🖼️ Verificando y generando portadas automáticas faltantes...")
+        print("[INFO] Verificando y generando portadas automáticas faltantes...")
         portadas_actualizadas = []
         for _, fila in Df_final.iterrows():
             link_recurso = str(fila.get('Enlace del recurso', '')).strip()
@@ -330,45 +330,45 @@ def limpieza_datos():
                 
         Df_final['Enlace de Portada'] = portadas_actualizadas
 
-        print("🔍 Validando enlaces unificados de recursos...")
+        print("[INFO] Validando enlaces unificados de recursos...")
         Df_final = Df_final[Df_final['Enlace del recurso'].apply(es_url_valida)]
-        print(f"✅ Enlaces validados. Filas limpias finales: {len(Df_final)}")
+        print(f"[OK] Enlaces validados. Filas limpias finales: {len(Df_final)}")
 
         if len(Df_final) > 0:
-            print("\n☁️ Sincronizando y guardando datos en 'BD_General'...")
+            print("\n[INFO] Sincronizando y guardando datos en 'BD_General'...")
             Df_final_subir = Df_final.head(1000).copy()
             datos_formateados = [Df_final_subir.columns.values.tolist()] + Df_final_subir.values.tolist()
             
             hoja_destino.clear()
             hoja_destino.update(values=datos_formateados, range_name='A1')
-            print(f"✨ ¡Base de Datos general consolidada con {len(Df_final_subir)} filas!")
+            print(f"[OK] ¡Base de Datos general consolidada con {len(Df_final_subir)} filas!")
         else:
-            print("⚠️ No hay datos válidos tras el filtrado para actualizar la hoja.")
+            print("[WARN] No hay datos válidos tras el filtrado para actualizar la hoja.")
         
-        print("\n📚 Instanciando objetos de la estructura de datos...")
+        print("\n[INFO] Instanciando objetos de la estructura de datos...")
         biblioteca = Biblioteca('Biblioteca Olga Bayone')
         creador_objetos(Df_final, biblioteca)
         
-        print("\n📊 RESUMEN DE CLASIFICACIÓN FINAL:")
+        print("\n[INFO] RESUMEN DE CLASIFICACIÓN FINAL:")
         print(f"   • Total recursos en memoria: {len(biblioteca.lista_libros)}")
         print("-" * 40)
-        print(f"   📚 [CATÁLOGO] Libros estrictos: {sum(1 for r in biblioteca.lista_libros if type(r) == Libro)}")
-        print(f"   📂 [REPOSITORIO] Tesis:        {sum(1 for r in biblioteca.lista_libros if isinstance(r, Tesis))}")
-        print(f"   📂 [REPOSITORIO] Guías:        {sum(1 for r in biblioteca.lista_libros if isinstance(r, GuiaEstudio))}")
-        print(f"   📂 [REPOSITORIO] Videos:       {sum(1 for r in biblioteca.lista_libros if isinstance(r, VideoTutorial))}")
-        print(f"   📂 [REPOSITORIO] Webs:         {sum(1 for r in biblioteca.lista_libros if isinstance(r, PaginasWeb))}")
+        print(f"   [INFO] [CATÁLOGO] Libros estrictos: {sum(1 for r in biblioteca.lista_libros if type(r) == Libro)}")
+        print(f"   [INFO] [REPOSITORIO] Tesis:        {sum(1 for r in biblioteca.lista_libros if isinstance(r, Tesis))}")
+        print(f"   [INFO] [REPOSITORIO] Guías:        {sum(1 for r in biblioteca.lista_libros if isinstance(r, GuiaEstudio))}")
+        print(f"   [INFO] [REPOSITORIO] Videos:       {sum(1 for r in biblioteca.lista_libros if isinstance(r, VideoTutorial))}")
+        print(f"   [INFO] [REPOSITORIO] Webs:         {sum(1 for r in biblioteca.lista_libros if isinstance(r, PaginasWeb))}")
         print("-" * 40)
         
         return biblioteca
     
     except Exception as e:
-        print(f"\n❌ Error crítico inesperado: {e}")
+        print(f"\n[ERROR] Error crítico inesperado: {e}")
         import traceback
         traceback.print_exc()
         return None
 
 if __name__ == '__main__':
     print("="*60)
-    print("🚀 INICIANDO PROCESO DE LIMPIEZA DE DATOS CON MEMORIA DE ESTADOS")
+    print("[START] INICIANDO PROCESO DE LIMPIEZA DE DATOS CON MEMORIA DE ESTADOS")
     print("="*60)
     biblioteca = limpieza_datos()
