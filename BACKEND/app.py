@@ -1,6 +1,6 @@
 import sys
 import os
-from config import BACKEND_DIR, FRONTEND_DIR, TEMPLATES_DIR, DATA_DIR, BASE_DIR, TIPOS_MULTIMEDIA
+from config import BACKEND_DIR, FRONTEND_DIR, TEMPLATES_DIR, DATA_DIR, BASE_DIR, TIPOS_MULTIMEDIA, FLASK_DEBUG
 # Añadir esta carpeta (BACKEND/) al path para que los imports funcionen en Render
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -8,7 +8,10 @@ from flask import Flask, render_template, jsonify, request
 import json
 from admin_datos import limpieza_datos
 from cuentas import cuentas_bp, init_firebase_admin_if_needed
+from logger import get_logger
 import firebase_admin
+
+logger = get_logger(__name__)
 
 
 # Configuración de la aplicación Flask
@@ -18,33 +21,30 @@ app = Flask(__name__,
             static_url_path='/static')
 
 # Registramos el Blueprint de cuentas_bp
-app.register_blueprint(cuentas_bp, url_prefix='/api/cuentas') # Prefijo para las rutas de auth
+app.register_blueprint(cuentas_bp, url_prefix='/api/cuentas')
 
 # Variable global para almacenar la biblioteca cargada
 biblioteca_global = None
 
 def cargar_biblioteca():
-    """
-    Carga o recarga el objeto Biblioteca desde Google Sheets.
-    """
     global biblioteca_global
-    print("Cargando/Recargando datos de la biblioteca...")
+    logger.info("Cargando/Recargando datos de la biblioteca...")
     try:
         biblioteca_global = limpieza_datos()
         if biblioteca_global is None:
-            print("Advertencia: No se pudo cargar la biblioteca. La web puede mostrar datos incompletos.")
+            logger.warning("No se pudo cargar la biblioteca. La web puede mostrar datos incompletos.")
         else:
-            print(f"Biblioteca cargada con {len(biblioteca_global.lista_libros)} recursos.")
+            logger.info(f"Biblioteca cargada con {len(biblioteca_global.lista_libros)} recursos.")
     except Exception as e:
-        print(f"Error al cargar la biblioteca: {e}")
-        biblioteca_global = None # Asegurar que esté nulo en caso de error
+        logger.error(f"Error al cargar la biblioteca: {e}")
+        biblioteca_global = None
 
 # --- Inicialización de Firebase Admin ---
 try:
     init_firebase_admin_if_needed()
-    print("Firebase inicializado correctamente")
+    logger.info("Firebase inicializado correctamente")
 except Exception as e:
-    print(f"Firebase no se pudo inicializar (la autenticacion no estara disponible): {e}")
+    logger.warning(f"Firebase no se pudo inicializar (autenticacion no disponible): {e}")
 
 # Cargar la biblioteca al iniciar la aplicación
 cargar_biblioteca()
@@ -114,4 +114,5 @@ def agregar_libro():
     return render_template('agregar_libro.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    from config import FLASK_HOST, FLASK_PORT
+    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=FLASK_DEBUG)
