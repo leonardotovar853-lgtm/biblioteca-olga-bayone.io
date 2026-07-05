@@ -67,40 +67,45 @@ def recargar_datos_api():
 def index():
     recursos_aprobados = []
     libros_data_json = "[]"
-if biblioteca_global:
-        # Ahora usamos obtener_recursos_para_recomendacion que devuelve una lista de diccionarios
-        todos_los_recursos_aprobados = obtener_recursos_para_recomendacion()
-        
-        # Para la sección de recomendaciones del index, filtramos libros y tomamos los primeros 4
-        libros_aprobados = [r for r in todos_los_recursos_aprobados if r.get('tipo') == 'Libro']
-        recomendaciones_index = libros_aprobados[:4]
-        
-        # Para el json_data, pasamos todos los libros (no tesis, etc.) para el buscador de JS
-        libros_data_json = json.dumps([r for r in todos_los_recursos_aprobados if r.get('tipo') != 'Tesis'])
+    if biblioteca_global:
+            # Ahora usamos obtener_recursos_para_recomendacion que devuelve una lista de diccionarios
+            todos_los_recursos_aprobados = obtener_recursos_para_recomendacion()
+            
+            # Para la sección de recomendaciones del index, filtramos libros y tomamos los primeros 4
+            libros_aprobados = [r for r in todos_los_recursos_aprobados if r.get('tipo') == 'Libro']
+            recomendaciones_index = libros_aprobados[:4]
+            
+            # Para el json_data, pasamos todos los libros (no tesis, etc.) para el buscador de JS
+            libros_data_json = json.dumps([r for r in todos_los_recursos_aprobados if r.get('tipo') != 'Tesis'])
     else:
         recomendaciones_index = []
         libros_data_json = "[]"
+        
     return render_template('index.html', recursos_recomendados=recomendaciones_index, json_data=libros_data_json)
 
 @app.route('/catalogo')
 def catalogo():
     recursos_aprobados_dicts = obtener_recursos_para_recomendacion()
-        libros_aprobados = [r for r in recursos_aprobados_dicts if r.get('tipo') == 'Libro']
-        libros_data_json = json.dumps([r for r in recursos_aprobados_dicts if r.get('tipo') != 'Tesis'])
+    libros_aprobados = [r for r in recursos_aprobados_dicts if r.get('tipo') == 'Libro']
+    libros_data_json = json.dumps([r for r in recursos_aprobados_dicts if r.get('tipo') != 'Tesis'])
     return render_template('catalogo.html', recursos=libros_aprobados, json_data=libros_data_json)
 
 @app.route('/repositorio')
 def repositorio():
     recursos_aprobados_dicts = obtener_recursos_para_recomendacion()
-        tesis_aprobadas = [r for r in recursos_aprobados_dicts if r.get('tipo') == 'Tesis']
-        tesis_data_json = json.dumps(tesis_aprobadas)
+    tesis_aprobadas = [r for r in recursos_aprobados_dicts if r.get('tipo') == 'Tesis']
+    tesis_data_json = json.dumps(tesis_aprobadas)
     return render_template('repositorio.html', recursos=tesis_aprobadas, json_data=tesis_data_json)
 
 @app.route('/multimedia')
 def multimedia():
-    recursos_aprobados_dicts = obtener_recursos_para_recomendacion()
-        multimedia_aprobada = [r for r in recursos_aprobados_dicts if r.get('tipo') in TIPOS_MULTIMEDIA]
-        multimedia_data_json = json.dumps(multimedia_aprobada)
+    recursos_aprobados = []
+    multimedia_aprobada = []
+    multimedia_data_json = "[]"
+    if biblioteca_global:
+        recursos_aprobados = [r for r in biblioteca_global.lista_libros if r.estado == 'Aprobado']
+        multimedia_aprobada = [r for r in recursos_aprobados if r.tipo in TIPOS_MULTIMEDIA]
+        multimedia_data_json = json.dumps(biblioteca_global.exportar_repositorio())
     return render_template('multimedia.html', recursos=multimedia_aprobada, json_data=multimedia_data_json)
 
 @app.route('/sobre_proyecto')
