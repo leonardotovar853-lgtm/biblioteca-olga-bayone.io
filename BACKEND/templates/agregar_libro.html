@@ -107,6 +107,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const botonesPasar = document.querySelectorAll('.btn-pasar');
