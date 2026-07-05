@@ -7,6 +7,9 @@ from datetime import datetime
 import gspread
 import requests
 from config import CREDENCIALES_PATH, SPREADSHEET_NAME, BD_GENERAL_SHEET, MAPA_FORMULARIOS_ORIGEN, PANEL_FLASK_URL, FLASK_HOST, FLASK_PORT
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 # ==========================================
 # CONEXIÓN GLOBAL CON TU BD GENERAL (gspread)
@@ -17,10 +20,10 @@ try:
         sh = gc.open(SPREADSHEET_NAME)
         sheet = sh.worksheet(BD_GENERAL_SHEET)
     else:
-        print(f"Advertencia: El archivo credenciales.json no existe en {CREDENCIALES_PATH}")
+        logger.warning(f"El archivo credenciales.json no existe en {CREDENCIALES_PATH}")
         sheet = None
 except Exception as e:
-    print(f"Error crítico al conectar con Google Sheets: {e}")
+    logger.error(f"Error crítico al conectar con Google Sheets: {e}")
     sheet = None  
 
 def abrir_panel():  # Función Para Abrir el Panel de Control
@@ -139,14 +142,14 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
                         
                         if fila_a_borrar:
                             hoja_origen.delete_rows(fila_a_borrar)
-                            print(f"🗑️ Fila {fila_a_borrar} eliminada con éxito de la hoja '{nombre_hoja_origen}'.")
+                            logger.info(f"Fila {fila_a_borrar} eliminada con exito de la hoja '{nombre_hoja_origen}'.")
                         else:
-                            print(f"⚠️ No se encontró una coincidencia exacta en '{nombre_hoja_origen}' para borrar.")
+                            logger.warning(f"No se encontro coincidencia exacta en '{nombre_hoja_origen}' para borrar.")
                             
                     except gspread.exceptions.WorksheetNotFound:
-                        print(f"⚠️ No se pudo acceder a la hoja '{nombre_hoja_origen}' para borrar el registro crudo.")
+                        logger.warning(f"No se pudo acceder a la hoja '{nombre_hoja_origen}' para borrar el registro crudo.")
                     except Exception as e_origen:
-                        print(f"⚠️ Error intentando borrar en la hoja de origen: {e_origen}")
+                        logger.error(f"Error intentando borrar en la hoja de origen: {e_origen}")
 
                 # 3. ACTUALIZACIÓN EN LA BD_GENERAL
                 COLUMNA_ESTADO = 18 
@@ -225,7 +228,7 @@ def abrir_panel():  # Función Para Abrir el Panel de Control
                         )
                         tree_pendientes.insert("", "end", values=valores_tabla)
             except Exception as e:
-                print(f"Error cargando datos reales: {e}")
+                logger.error(f"Error cargando datos reales: {e}")
 
     # ==========================================
     # ARQUITECTURA VISUAL: CONTENEDOR DE PESTAÑAS (NOTEBOOK)

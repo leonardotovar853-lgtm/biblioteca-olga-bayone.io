@@ -1,6 +1,7 @@
 import sys
 import os
 from config import BACKEND_DIR, FRONTEND_DIR, TEMPLATES_DIR, DATA_DIR, BASE_DIR, TIPOS_MULTIMEDIA, FLASK_DEBUG
+from recomendaciones import obtener_recursos_para_recomendacion
 # Añadir esta carpeta (BACKEND/) al path para que los imports funcionen en Render
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -8,6 +9,7 @@ from flask import Flask, render_template, jsonify, request
 import json
 from admin_datos import limpieza_datos
 from cuentas import cuentas_bp, init_firebase_admin_if_needed
+from admin_api import admin_bp
 from logger import get_logger
 import firebase_admin
 
@@ -22,6 +24,8 @@ app = Flask(__name__,
 
 # Registramos el Blueprint de cuentas_bp
 app.register_blueprint(cuentas_bp, url_prefix='/api/cuentas')
+
+app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # Variable global para almacenar la biblioteca cargada
 biblioteca_global = None
@@ -63,46 +67,40 @@ def recargar_datos_api():
 def index():
     recursos_aprobados = []
     libros_data_json = "[]"
-    if biblioteca_global:
-        recursos_aprobados = [r for r in biblioteca_global.lista_libros if r.estado == 'Aprobado']
-        libros_aprobados = [r for r in recursos_aprobados if r.tipo == 'Libro']
+if biblioteca_global:
+        # Ahora usamos obtener_recursos_para_recomendacion que devuelve una lista de diccionarios
+        todos_los_recursos_aprobados = obtener_recursos_para_recomendacion()
+        
+        # Para la sección de recomendaciones del index, filtramos libros y tomamos los primeros 4
+        libros_aprobados = [r for r in todos_los_recursos_aprobados if r.get('tipo') == 'Libro']
         recomendaciones_index = libros_aprobados[:4]
-        libros_data_json = json.dumps(biblioteca_global.exportar_libros())
+        
+        # Para el json_data, pasamos todos los libros (no tesis, etc.) para el buscador de JS
+        libros_data_json = json.dumps([r for r in todos_los_recursos_aprobados if r.get('tipo') != 'Tesis'])
     else:
         recomendaciones_index = []
+        libros_data_json = "[]"
     return render_template('index.html', recursos_recomendados=recomendaciones_index, json_data=libros_data_json)
 
 @app.route('/catalogo')
 def catalogo():
-    recursos_aprobados = []
-    libros_aprobados = []
-    libros_data_json = "[]"
-    if biblioteca_global:
-        recursos_aprobados = [r for r in biblioteca_global.lista_libros if r.estado == 'Aprobado']
-        libros_aprobados = [r for r in recursos_aprobados if r.tipo == 'Libro']
-        libros_data_json = json.dumps(biblioteca_global.exportar_libros())
+    recursos_aprobados_dicts = obtener_recursos_para_recomendacion()
+        libros_aprobados = [r for r in recursos_aprobados_dicts if r.get('tipo') == 'Libro']
+        libros_data_json = json.dumps([r for r in recursos_aprobados_dicts if r.get('tipo') != 'Tesis'])
     return render_template('catalogo.html', recursos=libros_aprobados, json_data=libros_data_json)
 
 @app.route('/repositorio')
 def repositorio():
-    recursos_aprobados = []
-    tesis_aprobadas = []
-    tesis_data_json = "[]"
-    if biblioteca_global:
-        recursos_aprobados = [r for r in biblioteca_global.lista_libros if r.estado == 'Aprobado']
-        tesis_aprobadas = [r for r in recursos_aprobados if r.tipo == 'Tesis']
-        tesis_data_json = json.dumps(biblioteca_global.exportar_tesis())
+    recursos_aprobados_dicts = obtener_recursos_para_recomendacion()
+        tesis_aprobadas = [r for r in recursos_aprobados_dicts if r.get('tipo') == 'Tesis']
+        tesis_data_json = json.dumps(tesis_aprobadas)
     return render_template('repositorio.html', recursos=tesis_aprobadas, json_data=tesis_data_json)
 
 @app.route('/multimedia')
 def multimedia():
-    recursos_aprobados = []
-    multimedia_aprobada = []
-    multimedia_data_json = "[]"
-    if biblioteca_global:
-        recursos_aprobados = [r for r in biblioteca_global.lista_libros if r.estado == 'Aprobado']
-        multimedia_aprobada = [r for r in recursos_aprobados if r.tipo in TIPOS_MULTIMEDIA]
-        multimedia_data_json = json.dumps(biblioteca_global.exportar_repositorio())
+    recursos_aprobados_dicts = obtener_recursos_para_recomendacion()
+        multimedia_aprobada = [r for r in recursos_aprobados_dicts if r.get('tipo') in TIPOS_MULTIMEDIA]
+        multimedia_data_json = json.dumps(multimedia_aprobada)
     return render_template('multimedia.html', recursos=multimedia_aprobada, json_data=multimedia_data_json)
 
 @app.route('/sobre_proyecto')

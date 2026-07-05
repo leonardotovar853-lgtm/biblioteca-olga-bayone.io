@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administracion{% endblock %}
+
+{% block head %}
+<style>
+    .admin-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+    .admin-header h1 { margin: 0; font-size: 1.8rem; }
+    .admin-badge { background: #2563eb; color: white; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center; }
+    .stat-card h3 { margin: 0 0 0.5rem; font-size: 0.9rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card .numero { font-size: 2.5rem; font-weight: 700; margin: 0; }
+
+    .admin-toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .admin-btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+    .admin-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .admin-btn-primary { background: #2563eb; color: white; }
+    .admin-btn-success { background: #10b981; color: white; }
+    .admin-btn-danger { background: #ef4444; color: white; }
+    .admin-btn-warning { background: #f59e0b; color: white; }
+    .admin-btn-outline { background: white; color: #475569; border: 1px solid #cbd5e1; }
+    .admin-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .table-wrap { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f8fafc; text-align: left; padding: 0.75rem 1rem; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+    tr:hover td { background: #f8fafc; }
+    .badge-tipo { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .badge-libro { background: #dbeafe; color: #1d4ed8; }
+    .badge-tesis { background: #fef3c7; color: #b45309; }
+    .badge-guia { background: #d1fae5; color: #047857; }
+    .badge-video { background: #fce7f3; color: #be185d; }
+    .badge-web { background: #e0e7ff; color: #4338ca; }
+    .acciones { display: flex; gap: 0.5rem; }
+    .acciones button { padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.2s; }
+    .btn-aprobar { background: #10b981; color: white; }
+    .btn-aprobar:hover { background: #059669; }
+    .btn-rechazar { background: #ef4444; color: white; }
+    .btn-rechazar:hover { background: #dc2626; }
+    .vacio { text-align: center; padding: 3rem 1rem; color: #94a3b8; }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; border-radius: 10px; color: white; font-weight: 600; z-index: 9999; transform: translateY(120px); opacity: 0; transition: 0.3s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-success { background: #10b981; }
+    .toast-error { background: #ef4444; }
+    .toast-info { background: #2563eb; }
+    .spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <div>
+            <h1>Panel de Administracion</h1>
+            <p style="color:#64748b;margin:0;">Gestion de recursos bibliograficos</p>
+        </div>
+        <div class="admin-badge">Cloud Admin</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card"><h3>Total</h3><p class="numero" id="stat-total">-</p></div>
+        <div class="stat-card"><h3>Pendientes</h3><p class="numero" id="stat-pendientes" style="color:#f59e0b;">-</p></div>
+        <div class="stat-card"><h3>Aprobados</h3><p class="numero" id="stat-aprobados" style="color:#10b981;">-</p></div>
+        <div class="stat-card"><h3>Rechazados</h3><p class="numero" id="stat-rechazados" style="color:#ef4444;">-</p></div>
+    </div>
+
+    <div class="admin-toolbar">
+        <button class="admin-btn admin-btn-primary" onclick="recargar()"><i class="fa-solid fa-rotate"></i> Recargar Datos</button>
+        <button class="admin-btn admin-btn-success" onclick="exportarCSV()"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+        <button class="admin-btn admin-btn-outline" onclick="cargarPendientes()"><i class="fa-solid fa-refresh"></i> Refrescar</button>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Titulo</th>
+                    <th>Autor</th>
+                    <th>Area</th>
+                    <th>Nivel</th>
+                    <th>Año</th>
+                    <th>Enlace</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-pendientes">
+                <tr><td colspan="8" class="vacio">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const API = window.location.origin + '/admin/api';
+
+function mostrarToast(msj, tipo = 'info') {
+    const t = document.getElementById('toast');
+    t.textContent = msj;
+    t.className = 'toast toast-' + tipo + ' show';
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function cargarStats() {
+    try {
+        const r = await fetch(API + '/stats');
+        const d = await r.json();
+        document.getElementById('stat-total').textContent = d.total;
+        document.getElementById('stat-pendientes').textContent = d.pendientes;
+        document.getElementById('stat-aprobados').textContent = d.aprobados;
+        document.getElementById('stat-rechazados').textContent = d.rechazados;
+    } catch(e) { console.error(e); }
+}
+
+async function cargarPendientes() {
+    const tbody = document.getElementById('tabla-pendientes');
+    tbody.innerHTML = '<tr><td colspan="8" class="vacio">Cargando...</td></tr>';
+    try {
+        const r = await fetch(API + '/pendientes');
+        const datos = await r.json();
+        if (datos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="vacio">No hay recursos pendientes</td></tr>';
+            return;
+        }
+        tbody.innerHTML = datos.map(d => {
+            const badge = 'badge-' + d.tipo.toLowerCase();
+            const enlace = d.enlace ? `<a href="${d.enlace}" target="_blank" style="color:#2563eb;font-size:0.8rem;">Ver</a>` : '-';
+            return `<tr>
+                <td><span class="badge-tipo ${badge}">${d.tipo}</span></td>
+                <td><strong>${d.titulo}</strong></td>
+                <td>${d.autor}</td>
+                <td>${d.area}</td>
+                <td>${d.nivel}</td>
+                <td>${d.anio}</td>
+                <td>${enlace}</td>
+                <td class="acciones">
+                    <button class="btn-aprobar" onclick="procesar(${d.fila},'Aprobado','${d.tipo}','${d.titulo.replace(/'/g,"\\'")}','${d.autor.replace(/'/g,"\\'")}',this)">Aprobar</button>
+                    <button class="btn-rechazar" onclick="procesar(${d.fila},'Rechazado','${d.tipo}','${d.titulo.replace(/'/g,"\\'")}','${d.autor.replace(/'/g,"\\'")}',this)">Rechazar</button>
+                </td>
+            </tr>`;
+        }).join('');
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="8" class="vacio">Error al cargar datos</td></tr>';
+        mostrarToast('Error al cargar pendientes', 'error');
+    }
+}
+
+async function procesar(fila, estado, tipo, titulo, autor, btn) {
+    if (estado === 'Rechazado' && !confirm('¿Rechazar y ELIMINAR permanentemente este recurso?')) return;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+    try {
+        const r = await fetch(API + '/procesar', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({fila, estado, tipo, titulo, autor})
+        });
+        const d = await r.json();
+        if (d.status === 'success') {
+            mostrarToast(d.message, 'success');
+            cargarPendientes();
+            cargarStats();
+        } else {
+            mostrarToast(d.message, 'error');
+            btn.disabled = false;
+            btn.textContent = estado === 'Aprobado' ? 'Aprobar' : 'Rechazar';
+        }
+    } catch(e) {
+        mostrarToast('Error de conexion', 'error');
+        btn.disabled = false;
+        btn.textContent = estado === 'Aprobado' ? 'Aprobar' : 'Rechazar';
+    }
+}
+
+async function recargar() {
+    const btns = document.querySelectorAll('.admin-toolbar button');
+    btns.forEach(b => b.disabled = true);
+    mostrarToast('Recargando datos...', 'info');
+    try {
+        const r = await fetch(API + '/recargar', { method: 'POST' });
+        const d = await r.json();
+        mostrarToast(d.message, d.status === 'success' ? 'success' : 'error');
+        cargarPendientes();
+        cargarStats();
+    } catch(e) {
+        mostrarToast('Error al recargar', 'error');
+    }
+    btns.forEach(b => b.disabled = false);
+}
+
+function exportarCSV() {
+    window.open(API + '/exportar-csv', '_blank');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarPendientes();
+    cargarStats();
+});
+</script>
+{% endblock %}

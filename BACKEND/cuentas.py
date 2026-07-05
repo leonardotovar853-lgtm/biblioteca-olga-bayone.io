@@ -120,6 +120,7 @@ class Usuario:
 
     @property
     def fecha_registro(self): return self._fecha_registro
+    
 
 # Instancia de Blueprint para las rutas de autenticación
 cuentas_bp = Blueprint('cuentas_api', __name__)

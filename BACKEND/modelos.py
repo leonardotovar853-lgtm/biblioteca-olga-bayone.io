@@ -1,7 +1,10 @@
-from urllib.parse import urlparse  # Para validación de URLs
+from urllib.parse import urlparse
 import uuid
 import random 
 import time
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 class RecursoAcademico:
     # Modelo de recursos académicos (libros, tesis, etc.).
@@ -101,7 +104,7 @@ class RecursoAcademico:
                 file_id = url.split('/d/')[1].split('/')[0]
                 return f'https://drive.google.com/uc?export=view&id={file_id}'
             except IndexError:
-                print(f"Advertencia: No se pudo convertir URL de Drive: {url}")
+                logger.warning(f"No se pudo convertir URL de Drive: {url}")
         return url
     
     # Propiedades y setters comunes
@@ -153,14 +156,14 @@ class RecursoAcademico:
             if año in self.años_validos:
                 self._anio_publicacion = str(año)
             else:
-                print(f"Advertencia: Año '{año}' fuera de rango, asignando 'Año desconocido'.")
+                logger.warning(f"Año '{año}' fuera de rango, asignando 'Año desconocido'.")
                 self._anio_publicacion = 'Año desconocido'
         except (ValueError, TypeError):
             # Si contiene ":" es una duración de video, permitimos guardarla sin levantar alertas
             if ":" in valor_str:
                 self._anio_publicacion = valor_str
             else:
-                print(f"Advertencia: Valor de año inválido '{valor}', asignando 'Año desconocido'.")
+                logger.warning(f"Valor de año inválido '{valor}', asignando 'Año desconocido'.")
                 self._anio_publicacion = 'Año desconocido'
     
     @property
@@ -171,7 +174,7 @@ class RecursoAcademico:
         if valor in self.nivel_validos:
             self._nivel = valor
         else:
-            print(f"Advertencia: Nivel '{valor}' no válido, asignando 'General'.")
+            logger.warning(f"Nivel '{valor}' no válido, asignando 'General'.")
             self._nivel = 'General'
     
     @property
@@ -183,7 +186,7 @@ class RecursoAcademico:
         if parsed.scheme in ['http', 'https'] and parsed.netloc:
             self._link = valor
         else:
-            print(f"Advertencia: Link inválido '{valor}', asignando vacío.")
+            logger.warning(f"Link inválido '{valor}', asignando vacío.")
             self._link = ''
     
     @property
@@ -195,7 +198,7 @@ class RecursoAcademico:
             if valor_limpio.startswith(('http://', 'https://', 'data:image', '/static/')):
                 self._link_portada = valor_limpio
             else:
-                print(f"⚠️ Formato de imagen no soportado: {valor_limpio[:50]}...")
+                logger.warning(f"Formato de imagen no soportado: {valor_limpio[:50]}...")
                 self._link_portada = ''
         else:
             self._link_portada = ''
@@ -323,7 +326,7 @@ class Biblioteca:
         if isinstance(recurso, RecursoAcademico):
             self.lista_libros.append(recurso)
         else:
-            print(f"Advertencia: Intento de agregar recurso inválido: {type(recurso)}")
+            logger.warning(f"Intento de agregar recurso inválido: {type(recurso)}")
     
     def contar_recursos(self):
         return len(self.lista_libros)
