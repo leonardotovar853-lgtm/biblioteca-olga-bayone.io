@@ -12,6 +12,11 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+_cache_instance = None
+
+def set_admin_cache(cache_instance):
+    global _cache_instance
+    _cache_instance = cache_instance
 
 # =============================================================================
 # CONEXIÓN GLOBAL A GOOGLE SHEETS (lazy connection)
@@ -161,7 +166,11 @@ def api_exportar_csv():
 def api_recargar():
     from app import cargar_biblioteca
     try:
+        if _cache_instance:
+            _cache_instance.clear()
+            logger.info("Cache de la biblioteca limpiada desde Admin API.")
         cargar_biblioteca()
         return jsonify({"status": "success", "message": "Biblioteca recargada correctamente"})
     except Exception as e:
+        logger.error(f"Error al recargar biblioteca desde Admin API: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
