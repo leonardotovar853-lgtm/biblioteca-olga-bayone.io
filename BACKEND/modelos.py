@@ -88,13 +88,13 @@ class RecursoAcademico:
         tipo_normalizado = str(tipo).strip().capitalize()
         
         dict_por_defecto = {
-            'Libro': '/static/images/libro_default.png',
-            'Tesis': '/static/images/tesis_default.png',
-            'Guia': '/static/images/Guia_deafut.png',
-            'Video': '/static/images/video_default.png',
-            'Web': '/static/images/web_default.png'
+            'Libro': 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
+            'Tesis': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
+            'Guia': 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80',
+            'Video': 'https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=900&q=80',
+            'Web': 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80'
         }
-        return dict_por_defecto.get(tipo_normalizado, '/static/images/web_default.png')
+        return dict_por_defecto.get(tipo_normalizado, 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80')
 
     @staticmethod
     def _convertir_drive_url(url):

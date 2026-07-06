@@ -35,7 +35,7 @@ function mostrarRecomendacionesInicio() {
         tarjeta.setAttribute('data-category', `${libro.area} ${libro.tipo}`);
         tarjeta.setAttribute('data-year', libro.nivel);
         tarjeta.innerHTML = `
-            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.id}'>
+            <div class='libro-card' data-category='${libro.area}' data-type='${libro.tipo}' data-year='${libro.nivel}' libro-id='${libro.ID}'>
             <img src="${libro.link_portada}">
             <div class="badge-${libro.tipo.toLowerCase()}">${libro.tipo}</div>
             <h3>${libro.titulo}</h3>
@@ -45,8 +45,8 @@ function mostrarRecomendacionesInicio() {
             <div class="card-footer">
                 <button class="btn-flip">Ver Descricion</button>
                 <a href="${libro.link}" target="_blank" class="btn-leer">Leer ${libro.tipo}</a>
-                <button class="btn-like" onclick="darLike('${libro.id}')">
-                    ❤️ <span id="count-${libro.id}">0</span>
+                <button class="btn-like" onclick="darLike('${libro.ID}')">
+                    ❤️ <span id="count-${libro.ID}">0</span>
                 </button>
             </div>
         </div>

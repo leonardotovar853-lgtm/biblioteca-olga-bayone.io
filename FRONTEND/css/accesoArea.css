@@ -84,17 +84,15 @@
     background-position: center;
     margin-bottom: 18px;
     box-shadow: 0 16px 30px rgba(0,0,0,0.08);
-}
-
-.boton-area .icono.icon {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.boton-area .icono.icon i {
+.boton-area .icono i {
     font-size: 2rem;
     color: #1f1f1f;
+    line-height: 1;
 }
 
 /* El texto h3 que ya tienes */

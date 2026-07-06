@@ -1,12 +1,12 @@
 {% macro render_tarjeta(recurso) %}
     <div class='libro-card' data-category='{{ recurso.area }}' data-type='{{ recurso.tipo }}' data-year='{{ recurso.nivel }}' libro-id='{{ recurso.ID }}'  {% if not recurso.estado == 'Aprobado' %} style="display: none;"{% endif %}>
         <img src="{% if recurso.link_portada %}{{ recurso.link_portada }}{% else %}
-            {% if recurso.tipo == 'Libro' %}{{ url_for('static', filename='images/libro_default.png') }}
-            {% elif recurso.tipo == 'Tesis' %}{{ url_for('static', filename='images/tesis_default.png') }}
-            {% elif recurso.tipo == 'Guia' %}{{ url_for('static', filename='images/Guia_deafut.png') }}
-            {% elif recurso.tipo == 'Video' %}{{ url_for('static', filename='images/video_default.png') }}
-            {% elif recurso.tipo == 'Web' %}{{ url_for('static', filename='images/web_default.png') }}
-            {% else %}{{ url_for('static', filename='images/web_default.png') }}
+            {% if recurso.tipo == 'Libro' %}https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80
+            {% elif recurso.tipo == 'Tesis' %}https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80
+            {% elif recurso.tipo == 'Guia' %}https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80
+            {% elif recurso.tipo == 'Video' %}https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=900&q=80
+            {% elif recurso.tipo == 'Web' %}https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80
+            {% else %}https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80
             {% endif %}
         {% endif %}" alt="Portada de {{ recurso.titulo }}" loading="lazy">
         <div class="badge-{{ recurso.tipo|lower }}">{{ recurso.tipo }}</div>
