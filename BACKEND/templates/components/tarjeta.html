@@ -1,5 +1,5 @@
 {% macro render_tarjeta(recurso) %}
-    <div class='libro-card' data-category='{{ recurso.area }}' data-type='{{ recurso.tipo }}' data-year='{{ recurso.nivel }}' libro-id='{{ recurso.id }}'>
+    <div class='libro-card' data-category='{{ recurso.area }}' data-type='{{ recurso.tipo }}' data-year='{{ recurso.nivel }}' libro-id='{{ recurso.ID }}'  {% if not recurso.estado == 'Aprobado' %} style="display: none;">
         <img src="{% if recurso.link_portada %}{{ recurso.link_portada }}{% else %}
             {% if recurso.tipo == 'Libro' %}{{ url_for('static', filename='images/libro_default.png') }}
             {% elif recurso.tipo == 'Tesis' %}{{ url_for('static', filename='images/tesis_default.png') }}
@@ -43,8 +43,8 @@
                 {% else %}Leer {{ recurso.tipo }}
                 {% endif %}
             </a>
-            <button class="btn-like" onclick="darLike('{{ recurso.id }}')">
-                ❤️ <span id="count-{{ recurso.id }}">0</span>
+            <button class="btn-like" onclick="darLike('{{ recurso.ID }}')">
+                ❤️ <span id="count-{{ recurso.ID }}">0</span>
             </button>
         </div>
     </div>
