@@ -7,4 +7,4 @@ gspread
 requests
 google-auth
 google-auth-oauthlib
-Flask-Caching==2.0.2
+Flask-Caching==2.1.0
