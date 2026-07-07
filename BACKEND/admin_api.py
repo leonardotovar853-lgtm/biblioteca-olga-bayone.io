@@ -109,10 +109,21 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        logger.debug(f"Intento de login. Usuario ingresado: {username}")
-        logger.debug(f"Hash almacenado (CONTRASEÑA_ADMIN): {CONTRASEÑA_ADMIN}")
+        # Verificar credenciales. Soporta texto plano (legacy) Y hash.
+        # Si CONTRASEÑA_ADMIN parece un hash (empieza con 'scrypt:', 'pbkdf2:', etc.),
+        # usar check_password_hash; si no, comparar directamente.
+        credenciales_validas = False
+        if CONTRASEÑA_ADMIN and (CONTRASEÑA_ADMIN.startswith('scrypt:') or CONTRASEÑA_ADMIN.startswith('pbkdf2:')):
+            try:
+                credenciales_validas = (username == USUARIO_ADMIN and check_password_hash(CONTRASEÑA_ADMIN, password))
+            except Exception as e:
+                logger.error(f"Error en check_password_hash: {e}")
+                credenciales_validas = False
+        else:
+            # Texto plano (modo compatibilidad)
+            credenciales_validas = (username == USUARIO_ADMIN and password == CONTRASEÑA_ADMIN)
 
-        if username == USUARIO_ADMIN and check_password_hash(CONTRASEÑA_ADMIN, password):
+        if credenciales_validas:
             session['admin_logged_in'] = True
             session['admin_username'] = username
             flash('Inicio de sesión exitoso.', 'success')
