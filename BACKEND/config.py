@@ -21,6 +21,9 @@ FIREBASE_KEY_PATH = os.path.join(DATA_DIR, 'biblioteca-olga-bayone-firebase-key.
 # =============================================================================
 ENV_FIREBASE_CREDENTIALS = "FIREBASE_ADMIN_CREDENTIALS"
 ENV_GSPREAD_CREDENTIALS = "GSPREAD_CREDENTIALS"
+ENV_ADMIN_USERNAME = "ADMIN_USERNAME"
+ENV_ADMIN_PASSWORD_HASH = "ADMIN_PASSWORD_HASH"
+ENV_FLASK_SECRET_KEY = "FLASK_SECRET_KEY"
 
 # =============================================================================
 # FIREBASE
@@ -108,30 +111,30 @@ LOG_LEVEL = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-ADMIN_CREDENTIALS_FILE = os.path.join(DATA_DIR, 'admin.json')  # Archivo JSON con credenciales de admin
+# =============================================================================
+# AUTENTICACIÓN DE ADMIN
+# Prioridad:
+#   1) Variables de entorno (Render / producción)
+#   2) Archivo DATA/admin.json (desarrollo local)
+# =============================================================================
+USUARIO_ADMIN = os.environ.get(ENV_ADMIN_USERNAME)
+CONTRASEÑA_ADMIN = os.environ.get(ENV_ADMIN_PASSWORD_HASH)
 
-with open(ADMIN_CREDENTIALS_FILE, encoding='utf-8') as f:
-    _admin_credentials = json.load(f)
-
-USUARIO_ADMIN = _admin_credentials.get('username', '')
-CONTRASEÑA_ADMIN = _admin_credentials.get('password', '')
+# Si no hay variables de entorno, intentar desde archivo local
+if not USUARIO_ADMIN or not CONTRASEÑA_ADMIN:
+    ADMIN_CREDENTIALS_FILE = os.path.join(DATA_DIR, 'admin.json')
+    if os.path.exists(ADMIN_CREDENTIALS_FILE):
+        try:
+            with open(ADMIN_CREDENTIALS_FILE, encoding='utf-8') as f:
+                _admin_credentials = json.load(f)
+            USUARIO_ADMIN = USUARIO_ADMIN or _admin_credentials.get('username', 'admin')
+            CONTRASEÑA_ADMIN = CONTRASEÑA_ADMIN or _admin_credentials.get('password', '')
+        except Exception:
+            USUARIO_ADMIN = 'admin'
+            CONTRASEÑA_ADMIN = ''
+    else:
+        USUARIO_ADMIN = 'admin'
+        CONTRASEÑA_ADMIN = ''
 
 # Flask Session Secret Key (IMPORTANTE: CAMBIAR EN PRODUCCIÓN)
-# Genera una con: os.urandom(24).hex()
-SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'una_clave_secreta_super_segura_para_desarrollo')
-
-# =============================================================================
-# TEMPORAL: GENERADOR DE HASH DE CONTRASEÑA (Ejecutar SOLO una vez)
-# Descomentar y ejecutar este archivo Python para obtener el hash de tu contraseña.
-# Luego, pega el hash en DATA/admin.json y vuelve a comentar/borrar este bloque.
-# =============================================================================
-# from werkzeug.security import generate_password_hash
-# if __name__ == '__main__':
-#     print("\n--- GENERADOR DE HASH DE CONTRASEÑA ---")
-#     password_plana = input("Introduce la contraseña que deseas usar para el admin: ")
-#     hashed_password = generate_password_hash(password_plana)
-#     print(f"Tu hash de contraseña es: {hashed_password}")
-#     print("Copia este hash y pégalo en el archivo DATA/admin.json, en el campo 'password'.")
-#     print("Ejemplo: {\"username\": \"admin\", \"password\": \"" + hashed_password + "\"} \n")
-#     print("Luego, COMENTA o BORRA este bloque de código del archivo config.py.")
-# =============================================================================
+SECRET_KEY = os.environ.get(ENV_FLASK_SECRET_KEY, os.urandom(24).hex())
