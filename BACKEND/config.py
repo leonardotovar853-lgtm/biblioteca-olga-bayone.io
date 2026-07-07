@@ -106,9 +106,3 @@ TIPOS_MULTIMEDIA = ["Guia", "Video", "Web"]
 LOG_LEVEL = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-# =============================================================================
-# CACHE (Flask-Caching)
-# =============================================================================
-CACHE_TYPE = "SimpleCache"  # Opciones: SimpleCache, FileSystemCache, RedisCache, etc.
-CACHE_DEFAULT_TIMEOUT = 300 # Segundos (5 minutos)
