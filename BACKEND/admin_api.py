@@ -3,15 +3,40 @@ import os
 import csv
 import io
 from datetime import datetime
-from flask import Blueprint, request, jsonify, render_template, send_file
+from functools import wraps
+
+from flask import Blueprint, request, jsonify, render_template, send_file, session, redirect, url_for, flash
+from werkzeug.security import check_password_hash # Para verificar contraseñas
 import gspread
 import pandas as pd
-from config import CREDENCIALES_PATH, ENV_GSPREAD_CREDENTIALS, SPREADSHEET_NAME, BD_GENERAL_SHEET, MAPA_FORMULARIOS_ORIGEN
+
+from config import CREDENCIALES_PATH, ENV_GSPREAD_CREDENTIALS, SPREADSHEET_NAME, BD_GENERAL_SHEET, MAPA_FORMULARIOS_ORIGEN, USUARIO_ADMIN, CONTRASEÑA_ADMIN
 from logger import get_logger
 
 logger = get_logger(__name__)
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+# =============================================================================
+# DECORADOR DE AUTENTICACIÓN BASADO EN SESIONES
+# =============================================================================
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin_logged_in' not in session or not session['admin_logged_in']:
+            flash('Acceso denegado. Por favor, inicia sesión.', 'danger')
+            return redirect(url_for('admin.login')) # Redirige a la ruta de login del blueprint
+        return f(*args, **kwargs)
+    return decorated_function
+
+# =============================================================================
+# BEFORE REQUEST para el Blueprint (excluye rutas de login/logout)
+# =============================================================================
+@admin_bp.before_request
+def before_admin_request():
+    if request.endpoint and 'admin.login' not in request.endpoint and 'admin.logout' not in request.endpoint:
+        if 'admin_logged_in' not in session or not session['admin_logged_in']:
+            return redirect(url_for('admin.login'))
 
 # =============================================================================
 # CONEXIÓN GLOBAL A GOOGLE SHEETS (lazy connection)
@@ -76,14 +101,44 @@ def eliminar_de_hoja_origen(tipo_recurso, titulo, autor):
         return False
 
 # =============================================================================
-# RUTAS
+# RUTAS PÚBLICAS DE AUTENTICACIÓN
 # =============================================================================
+@admin_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
+        if username == USUARIO_ADMIN and check_password_hash(CONTRASEÑA_ADMIN, password):
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            flash('Inicio de sesión exitoso.', 'success')
+            logger.info(f"Admin {username} ha iniciado sesión.")
+            return redirect(url_for('admin.admin_panel'))
+        else:
+            flash('Usuario o contraseña incorrectos.', 'danger')
+            logger.warning(f"Intento de login fallido para usuario: {username}")
+
+    return render_template('admin_login.html')
+
+@admin_bp.route('/logout')
+def logout():
+    session.pop('admin_logged_in', None)
+    session.pop('admin_username', None)
+    flash('Has cerrado sesión correctamente.', 'info')
+    logger.info("Admin ha cerrado sesión.")
+    return redirect(url_for('admin.login'))
+
+# =============================================================================
+# RUTAS PROTEGIDAS DEL PANEL DE ADMINISTRACIÓN
+# =============================================================================
 @admin_bp.route('/')
+@login_required
 def admin_panel():
-    return render_template('admin_panel.html')
+    return render_template('admin_panel.html', admin_username=session.get('admin_username'))
 
 @admin_bp.route('/api/pendientes')
+@login_required
 def api_pendientes():
     registros = get_all_records()
     pendientes = []
@@ -103,6 +158,7 @@ def api_pendientes():
     return jsonify(pendientes)
 
 @admin_bp.route('/api/procesar', methods=['POST'])
+@login_required
 def api_procesar():
     data = request.get_json()
     fila = data.get('fila')
@@ -119,6 +175,7 @@ def api_procesar():
     return jsonify({"status": "error", "message": "No se pudo actualizar"}), 500
 
 @admin_bp.route('/api/stats')
+@login_required
 def api_stats():
     registros = get_all_records()
     total = len(registros)
@@ -133,6 +190,7 @@ def api_stats():
     })
 
 @admin_bp.route('/api/exportar-csv')
+@login_required
 def api_exportar_csv():
     registros = get_all_records()
     output = io.StringIO()
@@ -158,6 +216,7 @@ def api_exportar_csv():
     )
 
 @admin_bp.route('/api/recargar', methods=['POST'])
+@login_required
 def api_recargar():
     from app import cargar_biblioteca
     try:

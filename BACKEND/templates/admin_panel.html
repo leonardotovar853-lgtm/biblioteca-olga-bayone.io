@@ -58,7 +58,10 @@
             <h1>Panel de Administracion</h1>
             <p style="color:#64748b;margin:0;">Gestion de recursos bibliograficos</p>
         </div>
-        <div class="admin-badge">Cloud Admin</div>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <span style="color:#475569;font-weight:600;">Hola, {{ admin_username }}</span>
+            <a href="{{ url_for('admin.logout') }}" class="admin-btn admin-btn-outline"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesion</a>
+        </div>
     </div>
 
     <div class="stats-grid">

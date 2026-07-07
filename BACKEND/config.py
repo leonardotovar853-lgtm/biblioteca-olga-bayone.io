@@ -1,3 +1,4 @@
+import json
 import os
 
 # =============================================================================
@@ -106,3 +107,15 @@ TIPOS_MULTIMEDIA = ["Guia", "Video", "Web"]
 LOG_LEVEL = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+ADMIN_CREDENTIALS_FILE = os.path.join(DATA_DIR, 'admin.json')  # Archivo JSON con credenciales de admin
+
+with open(ADMIN_CREDENTIALS_FILE, encoding='utf-8') as f:
+    _admin_credentials = json.load(f)
+
+USUARIO_ADMIN = _admin_credentials.get('username', '')
+CONTRASEÑA_ADMIN = _admin_credentials.get('password', '')
+
+# Flask Session Secret Key (IMPORTANTE: CAMBIAR EN PRODUCCIÓN)
+# Genera una con: os.urandom(24).hex()
+SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'una_clave_secreta_super_segura_para_desarrollo') 

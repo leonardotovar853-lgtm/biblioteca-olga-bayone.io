@@ -20,6 +20,8 @@ Thumbs.db
 # Firebase credentials (SENSITIVE - DO NOT COMMIT)
 DATA/credenciales.json
 DATA/biblioteca-olga-bayone-firebase-key.json
+DATA/admin.json
+
 
 # Generated HTML files (these are now served by Flask dynamically)
 FRONTEND/html/*.html

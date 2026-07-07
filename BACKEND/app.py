@@ -1,6 +1,6 @@
 import sys
 import os
-from config import BACKEND_DIR, FRONTEND_DIR, TEMPLATES_DIR, DATA_DIR, BASE_DIR, TIPOS_MULTIMEDIA, FLASK_DEBUG, FLASK_HOST, FLASK_PORT
+from config import BACKEND_DIR, FRONTEND_DIR, TEMPLATES_DIR, DATA_DIR, BASE_DIR, TIPOS_MULTIMEDIA, FLASK_DEBUG, FLASK_HOST, FLASK_PORT, SECRET_KEY
 
 # Añadir esta carpeta (BACKEND/) al path para que los imports funcionen en Render
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -21,6 +21,8 @@ app = Flask(__name__,
             template_folder=TEMPLATES_DIR,
             static_folder=FRONTEND_DIR,
             static_url_path='/static')
+
+app.config['SECRET_KEY'] = SECRET_KEY
 
 # Registramos el Blueprint de cuentas_bp
 app.register_blueprint(cuentas_bp, url_prefix='/api/cuentas')
