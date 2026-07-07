@@ -118,4 +118,20 @@ CONTRASEÑA_ADMIN = _admin_credentials.get('password', '')
 
 # Flask Session Secret Key (IMPORTANTE: CAMBIAR EN PRODUCCIÓN)
 # Genera una con: os.urandom(24).hex()
-SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'una_clave_secreta_super_segura_para_desarrollo') 
+SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'una_clave_secreta_super_segura_para_desarrollo')
+
+# =============================================================================
+# TEMPORAL: GENERADOR DE HASH DE CONTRASEÑA (Ejecutar SOLO una vez)
+# Descomentar y ejecutar este archivo Python para obtener el hash de tu contraseña.
+# Luego, pega el hash en DATA/admin.json y vuelve a comentar/borrar este bloque.
+# =============================================================================
+# from werkzeug.security import generate_password_hash
+# if __name__ == '__main__':
+#     print("\n--- GENERADOR DE HASH DE CONTRASEÑA ---")
+#     password_plana = input("Introduce la contraseña que deseas usar para el admin: ")
+#     hashed_password = generate_password_hash(password_plana)
+#     print(f"Tu hash de contraseña es: {hashed_password}")
+#     print("Copia este hash y pégalo en el archivo DATA/admin.json, en el campo 'password'.")
+#     print("Ejemplo: {\"username\": \"admin\", \"password\": \"" + hashed_password + "\"} \n")
+#     print("Luego, COMENTA o BORRA este bloque de código del archivo config.py.")
+# =============================================================================

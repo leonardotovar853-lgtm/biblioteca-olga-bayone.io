@@ -109,6 +109,9 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
+        logger.debug(f"Intento de login. Usuario ingresado: {username}")
+        logger.debug(f"Hash almacenado (CONTRASEÑA_ADMIN): {CONTRASEÑA_ADMIN}")
+
         if username == USUARIO_ADMIN and check_password_hash(CONTRASEÑA_ADMIN, password):
             session['admin_logged_in'] = True
             session['admin_username'] = username
