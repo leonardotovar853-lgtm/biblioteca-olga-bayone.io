@@ -1,6 +1,7 @@
 {% macro render_tarjeta(recurso) %}
-    <div class='libro-card' data-category='{{ recurso.area }}' data-type='{{ recurso.tipo }}' data-year='{{ recurso.nivel }}' libro-id='{{ recurso.ID }}'  {% if not recurso.estado == 'Aprobado' %} style="display: none;"{% endif %}>
-        <img src="{% if recurso.link_portada %}{{ recurso.link_portada }}{% else %}
+    {% set rid = recurso.id or recurso.ID or '' %}
+    <div class='libro-card' data-category='{{ recurso.area }}' data-type='{{ recurso.tipo }}' data-year='{{ recurso.nivel }}' libro-id='{{ rid }}' {% if recurso.estado and recurso.estado != 'Aprobado' %}style="display:none;"{% endif %}>
+        <img src="{% if recurso.link_portada and (recurso.link_portada.startswith('http://') or recurso.link_portada.startswith('https://') or recurso.link_portada.startswith('data:image')) %}{{ recurso.link_portada }}{% else %}
             {% if recurso.tipo == 'Libro' %}https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80
             {% elif recurso.tipo == 'Tesis' %}https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80
             {% elif recurso.tipo == 'Guia' %}https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80
@@ -14,22 +15,22 @@
 
         {% if recurso.tipo == 'Libro' %}
             <p class="autor-name">{{ recurso.autor }} | {{ recurso.editorial }}</p>
-            <p class="año-public"><b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="ano-public"><b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Tesis' %}
             <p class="autor-name">Autores: {{ recurso.autor }}</p>
-            <p class="año-public">Tutor: {{ recurso.tutor }} | Asesor: {{ recurso.asesor_metodologico }} | <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="ano-public">Tutor: {{ recurso.tutor }} | Asesor: {{ recurso.asesor_metodologico }} | <b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Guia' %}
             <p class="autor-name">Autor: {{ recurso.autor }}</p>
-            <p class="año-public">Año: <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="ano-public">Ano: <b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Video' %}
             <p class="autor-name">Autor: {{ recurso.autor }}</p>
             <p class="autor-name">Duracion: {{ recurso.duracion }}</p>
-            <p class="año-public">Año: <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="ano-public">Ano: <b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Web' %}
             <p class="autor-name">Plataforma: {{ recurso.plataforma }}</p>
-            <p class="año-public">Año: <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="ano-public">Ano: <b>{{ recurso.anio_publicacion }}</b></p>
         {% endif %}
-        
+
         <div class="card-footer">
             <button class="btn-flip">Ver Descripcion</button>
             <a href="{{ recurso.link }}" target="_blank" class="btn-leer"
@@ -43,8 +44,8 @@
                 {% else %}Leer {{ recurso.tipo }}
                 {% endif %}
             </a>
-            <button class="btn-like" onclick="darLike('{{ recurso.ID }}')">
-                ❤️ <span id="count-{{ recurso.ID }}">0</span>
+            <button class="btn-like" onclick="darLike('{{ rid }}')">
+                <span id="count-{{ rid }}">0</span>
             </button>
         </div>
     </div>
