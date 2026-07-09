@@ -112,11 +112,12 @@
 }
 
 .libro-card .card-body {
-    padding: 0 18px;
-    flex-grow: 1;
+    padding: 22px 18px 0;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 12px;
 }
 
 .btn-leer {

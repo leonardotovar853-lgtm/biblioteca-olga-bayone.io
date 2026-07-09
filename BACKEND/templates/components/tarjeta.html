@@ -15,20 +15,20 @@
 
         {% if recurso.tipo == 'Libro' %}
             <p class="autor-name">{{ recurso.autor }} | {{ recurso.editorial }}</p>
-            <p class="ano-public"><b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="año-public"><b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Tesis' %}
             <p class="autor-name">Autores: {{ recurso.autor }}</p>
-            <p class="ano-public">Tutor: {{ recurso.tutor }} | Asesor: {{ recurso.asesor_metodologico }} | <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="año-public">Tutor: {{ recurso.tutor }} | Asesor: {{ recurso.asesor_metodologico }} | <b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Guia' %}
             <p class="autor-name">Autor: {{ recurso.autor }}</p>
-            <p class="ano-public">Ano: <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="año-public">Año: <b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Video' %}
             <p class="autor-name">Autor: {{ recurso.autor }}</p>
-            <p class="autor-name">Duracion: {{ recurso.duracion }}</p>
-            <p class="ano-public">Ano: <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="autor-name">Duración: {{ recurso.duracion }}</p>
+            <p class="año-public">Año: <b>{{ recurso.anio_publicacion }}</b></p>
         {% elif recurso.tipo == 'Web' %}
             <p class="autor-name">Plataforma: {{ recurso.plataforma }}</p>
-            <p class="ano-public">Ano: <b>{{ recurso.anio_publicacion }}</b></p>
+            <p class="año-public">Año: <b>{{ recurso.anio_publicacion }}</b></p>
         {% endif %}
 
         <div class="card-footer">
@@ -45,6 +45,7 @@
                 {% endif %}
             </a>
             <button class="btn-like" onclick="darLike('{{ rid }}')">
+                <i class="fa-solid fa-heart"></i>
                 <span id="count-{{ rid }}">0</span>
             </button>
         </div>

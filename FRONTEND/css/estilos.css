@@ -473,11 +473,6 @@ a {
         max-width: 350px;
     }
 
-    .libro-card {
-        width: 100%;
-        max-width: 300px;
-    }
-
 @media (max-width: 700px) {
     .nav-content {
         flex-wrap: nowrap;
