@@ -1,4 +1,5 @@
-from urllib.parse import urlparse
+import re
+from urllib.parse import parse_qs, quote, urlparse
 import uuid
 import random 
 import time
@@ -49,62 +50,106 @@ class RecursoAcademico:
         self.tipo = tipo  
         
     @staticmethod
-    def _generar_portada_automatica(link, tipo):
-        """
-        Determina la URL de la portada de forma automática y óptima 
-        según el enlace del recurso y su tipo. Supports multiple Drive URL formats.
-        """
+    def _extraer_id_drive(link):
+        if not link:
+            return None
+
         link = str(link).strip()
-        
-        # Caso 1: Recursos en Google Drive (Soporta /d/ y open?id=)
-        if 'drive.google.com' in link:
-            file_id = None
+        if not link:
+            return None
+
+        if 'drive.google.com/thumbnail' in link or 'drive.google.com/uc' in link:
+            parsed = urlparse(link)
+            query = parse_qs(parsed.query)
+            if query.get('id') and query['id'][0]:
+                return query['id'][0]
+
+        for pattern in [
+            r'/file/d/([a-zA-Z0-9_-]{4,})',
+            r'/d/([a-zA-Z0-9_-]{4,})',
+            r'[?&]id=([a-zA-Z0-9_-]{4,})'
+        ]:
+            match = re.search(pattern, link)
+            if match:
+                return match.group(1)
+
+        return None
+
+    @staticmethod
+    def _generar_portada_svg(tipo, titulo=''):
+        tipo_normalizado = str(tipo).strip().capitalize() or 'Recurso'
+        titulo = str(titulo).strip() if titulo else tipo_normalizado
+        iniciales = ''.join(part[0].upper() for part in titulo.split()[:2] if part)
+        if not iniciales:
+            iniciales = tipo_normalizado[0].upper()
+
+        colores = {
+            'Libro': '#3b46c4',
+            'Tesis': '#5c60d1',
+            'Guia': '#1073c9',
+            'Video': '#e63946',
+            'Web': '#0097b2',
+            'Recurso': '#0f172a'
+        }
+        color_fondo = colores.get(tipo_normalizado, '#3b46c4')
+        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1350" viewBox="0 0 900 1350">
+            <rect width="900" height="1350" rx="40" fill="{color_fondo}"/>
+            <rect x="40" y="40" width="820" height="1270" rx="34" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.28)" stroke-width="4"/>
+            <circle cx="700" cy="260" r="220" fill="rgba(255,255,255,0.12)"/>
+            <text x="90" y="320" fill="white" font-family="Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="4">{tipo_normalizado.upper()}</text>
+            <text x="90" y="640" fill="white" font-family="Arial, sans-serif" font-size="120" font-weight="700" text-anchor="start">{iniciales}</text>
+            <text x="90" y="760" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif" font-size="44" font-weight="600">{titulo[:34]}</text>
+            <text x="90" y="900" fill="rgba(255,255,255,0.78)" font-family="Arial, sans-serif" font-size="28">Portada generada automáticamente</text>
+        </svg>'''
+        return f'data:image/svg+xml;charset=utf-8,{quote(svg)}'
+
+    @staticmethod
+    def _generar_portada_automatica(link, tipo, titulo=''):
+        """
+        Determina la URL de la portada de forma automática y óptima
+        según el enlace del recurso y su tipo.
+        """
+        link = str(link).strip() if link else ''
+
+        vista_previa_drive = RecursoAcademico._convertir_drive_url(link)
+        if isinstance(vista_previa_drive, str) and 'drive.google.com' in vista_previa_drive:
+            return vista_previa_drive
+
+        if 'youtube.com' in link.lower() or 'youtu.be' in link.lower():
             try:
-                if '/d/' in link:
-                    file_id = link.split('/d/')[1].split('/')[0]
-                elif 'id=' in link:
-                    file_id = link.split('id=')[1].split('&')[0]
-                    
-                if file_id:
-                    # API de Miniaturas de Google Drive: Extrae la primera página en 500px de ancho
-                    return f'https://drive.google.com/thumbnail?sz=w500&id={file_id}'
-            except (IndexError, ValueError):
-                pass
-        
-        # Caso 2: Videos de YouTube
-        if 'youtube.com' in link or 'youtu.be' in link:
-            try:
-                if 'v=' in link:
-                    video_id = link.split('v=')[1].split('&')[0]
+                parsed = urlparse(link)
+                host = parsed.netloc.lower()
+                path = parsed.path
+                query = parse_qs(parsed.query)
+
+                if 'youtu.be' in host:
+                    video_id = path.strip('/').split('/')[0]
+                elif '/shorts/' in path:
+                    video_id = path.split('/shorts/')[1].split('/')[0]
                 else:
-                    video_id = link.split('/')[-1].split('?')[0]
-                # Servidor de miniaturas oficial de YouTube
-                return f'https://img.youtube.com/vi/{video_id}/hqdefault.jpg'
+                    video_id = query.get('v', [path.split('/')[-1].split('?')[0]])[0]
+
+                if video_id:
+                    return f'https://img.youtube.com/vi/{video_id}/hqdefault.jpg'
             except IndexError:
                 pass
 
-        # Caso 3: Imagen por defecto según el tipo de archivo si no se cumple lo anterior
-        # Usamos .capitalize() o .strip() para asegurar que coincida con las claves
         tipo_normalizado = str(tipo).strip().capitalize()
-        
-        dict_por_defecto = {
-            'Libro': 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80',
-            'Tesis': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
-            'Guia': 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80',
-            'Video': 'https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=900&q=80',
-            'Web': 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80'
-        }
-        return dict_por_defecto.get(tipo_normalizado, 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80')
+        if tipo_normalizado in ['Libro', 'Tesis', 'Guia', 'Video', 'Web']:
+            return RecursoAcademico._generar_portada_svg(tipo_normalizado, titulo)
+
+        return RecursoAcademico._generar_portada_svg('Recurso', titulo)
 
     @staticmethod
     def _convertir_drive_url(url):
-        """Convierte enlaces de Google Drive a formato de imagen."""
-        if isinstance(url, str) and 'drive.google.com' in url and '/d/' in url:
-            try:
-                file_id = url.split('/d/')[1].split('/')[0]
-                return f'https://drive.google.com/uc?export=view&id={file_id}'
-            except IndexError:
-                logger.warning(f"No se pudo convertir URL de Drive: {url}")
+        """Devuelve una vista previa de imagen para enlaces de Google Drive."""
+        if isinstance(url, str) and 'drive.google.com' in url:
+            if '/thumbnail' in url or '/uc?' in url:
+                return url
+            file_id = RecursoAcademico._extraer_id_drive(url)
+            if file_id:
+                return f'https://drive.google.com/thumbnail?sz=w500&id={file_id}'
+            logger.warning(f"No se pudo convertir URL de Drive: {url}")
         return url
     
     # Propiedades y setters comunes

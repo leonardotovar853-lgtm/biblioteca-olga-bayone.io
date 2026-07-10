@@ -100,6 +100,16 @@ def eliminar_de_hoja_origen(tipo_recurso, titulo, autor):
         logger.error(f"Error eliminando de hoja origen: {e}")
         return False
 
+
+def refrescar_biblioteca_en_memoria():
+    try:
+        from app import cargar_biblioteca
+        cargar_biblioteca()
+        return True
+    except Exception as e:
+        logger.error(f"Error recargando la biblioteca en memoria tras procesar recurso: {e}")
+        return False
+
 # =============================================================================
 # RUTAS PÚBLICAS DE AUTENTICACIÓN
 # =============================================================================
@@ -185,7 +195,10 @@ def api_procesar():
         eliminar_de_hoja_origen(tipo, titulo, autor)
 
     if update_estado(fila, nuevo_estado):
-        return jsonify({"status": "success", "message": f"Recurso {nuevo_estado}"})
+        refresco_ok = refrescar_biblioteca_en_memoria()
+        if refresco_ok:
+            return jsonify({"status": "success", "message": f"Recurso {nuevo_estado} y cambios aplicados"})
+        return jsonify({"status": "success", "message": f"Recurso {nuevo_estado}, pero no se pudo refrescar la vista en tiempo real"})
     return jsonify({"status": "error", "message": "No se pudo actualizar"}), 500
 
 @admin_bp.route('/api/stats')

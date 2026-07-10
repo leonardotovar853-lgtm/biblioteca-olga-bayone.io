@@ -17,6 +17,9 @@
     .alert-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
     .alert-success { background: #d1fae5; color: #047857; border: 1px solid #6ee7b7; }
     .alert-info { background: #e0e7ff; color: #4338ca; border: 1px solid #a5b4fc; }
+    .login-actions { width: 100%; max-width: 400px; margin-bottom: 1rem; text-align: left; }
+    .btn-back { display: inline-flex; align-items: center; gap: 0.5rem; color: #2563eb; text-decoration: none; font-weight: 600; }
+    .btn-back:hover { color: #1d4ed8; }
 
     /* Ocultar navbar y footer en la página de login */
     .nav-menu, footer { display: none; }
@@ -24,6 +27,9 @@
 {% endblock %}
 
 {% block content %}
+<div class="login-actions">
+    <a href="{{ url_for('index') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+</div>
 <div class="login-container">
     <h1>Admin Login</h1>
 

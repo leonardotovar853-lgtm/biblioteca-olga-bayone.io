@@ -318,9 +318,12 @@ def limpieza_datos():
             link_recurso = str(fila.get('Enlace del recurso', '')).strip()
             portada_actual = str(fila.get('Enlace de Portada', '')).strip()
             tipo_recurso = str(fila.get('Tipo de Recurso', 'Libro')).strip().capitalize()
+            titulo_recurso = str(
+                fila.get('Título', fila.get('Titulo', fila.get('title', '')))
+            ).strip()
             
             if not portada_actual or portada_actual in ['N/A', 'n/a', 'NaN', 'nan', ''] or not portada_actual.startswith(('http://', 'https://', 'data:image')):
-                portada_nueva = RecursoAcademico._generar_portada_automatica(link_recurso, tipo_recurso)
+                portada_nueva = RecursoAcademico._generar_portada_automatica(link_recurso, tipo_recurso, titulo_recurso)
                 portadas_actualizadas.append(portada_nueva)
             else:
                 portadas_actualizadas.append(portada_actual)
